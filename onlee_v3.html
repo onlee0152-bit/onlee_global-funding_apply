@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ONLEE INC. — Global Crowdfunding Application</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#111;--white:#fff;--gray1:#f4f4f4;--gray2:#e8e8e8;--gray3:#bbb;
+  --gray4:#555;--gray5:#222;--red:#c0392b;--red-l:#fdf0ee;
+  --rule:#d8d8d8;--rule2:#cecece;
+  --fs-body:15px;--fs-sm:13.5px;--fs-xs:12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans KR','Noto Sans JP',sans-serif;
+  font-weight:400;background:var(--white);color:var(--black);
+  line-height:1.75;font-size:var(--fs-body);
+}
+a{color:inherit;text-decoration:none}
+
+/* ─── UTILITY ─── */
+.inner{max-width:1040px;margin:0 auto;padding:0 40px}
+@media(max-width:600px){.inner{padding:0 20px}}
+.label-tag{
+  font-size:var(--fs-xs);letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gray4);font-weight:400;
+  display:inline-flex;align-items:center;gap:10px;
+}
+.label-tag::before{content:'';display:block;width:20px;height:1px;background:var(--gray3)}
+.sec-title{
+  font-size:clamp(22px,3vw,32px);font-weight:500;
+  line-height:1.3;margin-top:10px;letter-spacing:-.02em;
+}
+.sec-sub{font-size:var(--fs-body);color:var(--gray5);margin-top:10px;max-width:480px;line-height:1.8}
+.divider{height:1px;background:var(--rule)}
+.red{color:var(--red)}
+.btn{
+  display:inline-block;padding:11px 26px;
+  font-size:var(--fs-xs);letter-spacing:.14em;text-transform:uppercase;
+  font-family:inherit;font-weight:400;cursor:pointer;border:none;
+  transition:opacity .2s,background .2s;
+}
+.btn-dark{background:var(--black);color:var(--white)}
+.btn-dark:hover{opacity:.75}
+.btn-out{background:transparent;color:var(--black);border:1px solid var(--rule2)}
+.btn-out:hover{border-color:var(--black)}
+.btn-red{background:var(--red);color:var(--white)}
+.btn-red:hover{opacity:.82}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease}
+.reveal.in{opacity:1;transform:none}
+section{padding:88px 0}
+
+/* ─── HEADER ─── */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:56px;background:var(--white);border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;justify-content:space-between;padding:0 40px;
+}
+.hd-logo{font-size:15px;font-weight:700;letter-spacing:.08em;color:var(--black);display:flex;align-items:center;gap:8px}
+.hd-logo i{width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block;flex-shrink:0}
+.hd-nav{display:flex;gap:24px}
+.hd-nav a{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray4);transition:color .2s}
+.hd-nav a:hover,.hd-nav a.on{color:var(--black)}
+.hd-cta{
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--red);color:var(--white);padding:8px 18px;
+  border:none;font-family:inherit;cursor:pointer;transition:opacity .2s;
+}
+.hd-cta:hover{opacity:.82}
+@media(max-width:768px){.hd-nav{display:none}header{padding:0 20px}}
+
+/* ─── 01 HERO ─── */
+.hero{
+  min-height:100vh;background:var(--black);color:var(--white);
+  display:flex;align-items:center;padding-top:56px;
+  position:relative;overflow:hidden;
+}
+/* 극도로 미묘한 격자 */
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 56px),
+  repeating-linear-gradient(
+    90deg,rgba(255,255,255,.025) 0 1px,transparent 1px 56px);
+  pointer-events:none;
+}
+.hero-inner{
+  max-width:1040px;margin:0 auto;padding:80px 40px 80px;
+  width:100%;
+}
+.hero-kicker{
+  font-size:var(--fs-xs);letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(255,255,255,.35);margin-bottom:28px;
+  display:flex;align-items:center;gap:12px;
+}
+.hero-kicker::before{content:'';display:block;width:24px;height:1px;background:rgba(255,255,255,.25)}
+.hero-h1{
+  font-size:clamp(30px,5vw,60px);font-weight:300;
+  line-height:1.2;letter-spacing:-.03em;margin-bottom:24px;
+  max-width:640px;
+}
+.hero-h1 strong{font-weight:700}
+.hero-body{font-size:15px;line-height:1.85;color:rgba(255,255,255,.78);max-width:520px;margin-bottom:36px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn-hero-primary{background:var(--white);color:var(--black);padding:13px 32px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;border:none;font-family:inherit;cursor:pointer;transition:opacity .2s}
+.btn-hero-primary:hover{opacity:.85}
+.btn-hero-ghost{background:transparent;color:rgba(255,255,255,.55);padding:12px 28px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;border:1px solid rgba(255,255,255,.18);font-family:inherit;cursor:pointer;transition:all .2s}
+.btn-hero-ghost:hover{color:var(--white);border-color:rgba(255,255,255,.45)}
+/* 플랫폼 태그 라인 */
+.hero-platforms{
+  margin-top:64px;padding-top:32px;border-top:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;gap:0;flex-wrap:wrap;
+}
+.hp-item{
+  display:flex;align-items:center;gap:10px;
+  padding-right:32px;margin-right:32px;
+  border-right:1px solid rgba(255,255,255,.1);
+  font-size:12px;color:rgba(255,255,255,.45);letter-spacing:.06em;
+}
+.hp-item:last-child{border-right:none}
+.hp-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.hp-dot.red{background:var(--red)}
+.hp-dot.green{background:#2e7d52}
+.hp-dot.gray{background:rgba(255,255,255,.3)}
+
+/* ─── MARQUEE ─── */
+.mq-strip{background:#0a0a0a;overflow:hidden;padding:11px 0;border-top:1px solid #1f1f1f}
+.mq-track{display:flex;white-space:nowrap;animation:mq 30s linear infinite}
+.mq-track:hover{animation-play-state:paused}
+.mq-item{padding:0 28px;font-size:var(--fs-xs);letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.22);border-right:1px solid rgba(255,255,255,.07);flex-shrink:0}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ─── 02 플랫폼 ─── */
+.pf-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--rule)}
+@media(max-width:700px){.pf-grid{grid-template-columns:1fr}}
+.pf-panel{padding:44px 40px;border-right:1px solid var(--rule);position:relative}
+.pf-panel:last-child{border-right:none}
+.pf-bar{height:2px;background:var(--red);width:32px;margin-bottom:24px}
+.pf-bar.green{background:#2e7d52}
+.pf-flag{font-size:24px;margin-bottom:10px}
+.pf-name{font-size:26px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.pf-name.jp{color:var(--red)}
+.pf-name.tw{color:#2e7d52}
+.pf-sub{font-size:var(--fs-xs);letter-spacing:.14em;text-transform:uppercase;color:var(--gray4);margin-bottom:20px}
+.pf-desc{font-size:var(--fs-body);color:var(--gray5);line-height:1.85;margin-bottom:24px}
+.pf-stats{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:16px 0;margin-bottom:22px}
+.pf-stat{text-align:center;padding:0 8px}
+.pf-stat-n{font-size:20px;font-weight:700;line-height:1;margin-bottom:4px;letter-spacing:-.02em}
+.pf-stat-n.jp{color:var(--red)}
+.pf-stat-n.tw{color:#2e7d52}
+.pf-stat-l{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray4)}
+.pf-list{list-style:none;display:flex;flex-direction:column;gap:7px}
+.pf-list li{font-size:var(--fs-sm);color:var(--gray5);padding-left:13px;position:relative;line-height:1.65}
+.pf-list li::before{content:'—';position:absolute;left:0;color:var(--gray3)}
+
+/* Kickstarter 힌트 박스 */
+.hint-box{
+  margin-top:24px;padding:18px 20px;border:1px solid var(--rule);
+  background:var(--gray1);border-left:2px solid var(--gray3);
+}
+.hint-box p{font-size:var(--fs-sm);color:var(--gray4);line-height:1.75}
+.hint-box strong{color:var(--gray5)}
+
+/* ─── 03 프로세스 ─── */
+.process-bg{background:var(--black);color:var(--white)}
+.process-row{
+  display:grid;grid-template-columns:repeat(6,1fr);
+  border:1px solid rgba(255,255,255,.12);
+}
+@media(max-width:900px){.process-row{grid-template-columns:1fr 1fr 1fr}}
+@media(max-width:500px){.process-row{grid-template-columns:1fr 1fr}}
+.ps{padding:28px 22px;border-right:1px solid rgba(255,255,255,.1)}
+.ps:last-child{border-right:none}
+.ps-n{font-size:36px;font-weight:700;color:rgba(255,255,255,.09);line-height:1;margin-bottom:12px;letter-spacing:-.02em}
+.ps-t{font-size:var(--fs-sm);font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.88);margin-bottom:7px}
+.ps-d{font-size:var(--fs-xs);color:rgba(255,255,255,.72);line-height:1.65}
+
+/* ─── 04 인증 가이드 ─── */
+.cert-tabs{display:flex;border-bottom:1px solid var(--rule);margin-bottom:28px}
+.ct{padding:10px 22px;font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;color:var(--gray4);transition:all .2s}
+.ct.on{border-color:var(--black);color:var(--black)}
+.ct:hover{color:var(--black)}
+.cp{display:none}
+.cp.on{display:block}
+.cert-table{width:100%;border-collapse:collapse;font-size:var(--fs-sm)}
+.cert-table th{background:var(--gray1);padding:10px 14px;text-align:left;font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;color:var(--gray4);border-bottom:1px solid var(--rule);font-weight:400}
+.cert-table td{padding:10px 14px;border-bottom:1px solid var(--rule);color:var(--gray5);vertical-align:middle}
+.cert-table tr:last-child td{border-bottom:none}
+.cert-table tr:hover td{background:var(--gray1)}
+.cst{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;font-size:var(--fs-xs);letter-spacing:.04em}
+.cst-ok{background:#eaf3de;color:#3b6d11}
+.cst-need{background:var(--red-l);color:var(--red)}
+.cst-warn{background:#faeeda;color:#854f0b}
+.cst-no{background:var(--gray1);color:var(--gray4)}
+
+/* ─── 05 ONLEE 소개 ─── */
+.about-bg{background:var(--gray1)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;background:var(--rule)}
+@media(max-width:700px){.about-grid{grid-template-columns:1fr}}
+.about-cell{background:var(--white);padding:40px 36px}
+.about-label{font-size:var(--fs-xs);letter-spacing:.16em;text-transform:uppercase;color:var(--gray4);margin-bottom:16px}
+.about-text{font-size:var(--fs-body);color:var(--gray5);line-height:1.85}
+.about-table{width:100%;border-collapse:collapse;font-size:var(--fs-sm)}
+.about-table td{padding:8px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+.about-table td:first-child{width:100px;color:var(--gray4);font-size:var(--fs-xs);letter-spacing:.04em}
+.about-contact{background:var(--white);border:1px solid var(--rule);padding:28px 36px;margin-top:1px;display:flex;gap:40px;flex-wrap:wrap}
+.ac-item{}
+.ac-l{font-size:var(--fs-xs);letter-spacing:.14em;text-transform:uppercase;color:var(--gray4);margin-bottom:6px}
+.ac-v{font-size:var(--fs-body);font-weight:400}
+.ac-v a{border-bottom:1px solid var(--rule);transition:border-color .2s}
+.ac-v a:hover{border-color:var(--black)}
+
+/* ─── 06 실적 ─── */
+.results-bg{background:var(--black);color:var(--white)}
+.results-grid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid rgba(255,255,255,.1)}
+@media(max-width:700px){.results-grid{grid-template-columns:1fr 1fr}}
+.ri{padding:36px 28px;border-right:1px solid rgba(255,255,255,.1);border-bottom:1px solid rgba(255,255,255,.1)}
+.ri-n{font-size:clamp(28px,3vw,42px);font-weight:700;letter-spacing:-.03em;line-height:1;color:var(--white);margin-bottom:8px}
+.ri-n sub{font-size:14px;color:rgba(255,255,255,.5);font-weight:300;vertical-align:-.08em}
+.ri-l{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:6px}
+.ri-d{font-size:var(--fs-xs);color:rgba(255,255,255,.62);line-height:1.6}
+.portfolio-pills{margin-top:1px;border:1px solid rgba(255,255,255,.1);padding:28px 32px}
+.pp-label{font-size:var(--fs-xs);letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:16px}
+.pills{display:flex;flex-wrap:wrap;gap:7px}
+.pill{font-size:var(--fs-xs);padding:5px 13px;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.72);letter-spacing:.04em}
+
+/* ─── 07 서류 안내 ─── */
+.docs-grid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--rule)}
+@media(max-width:900px){.docs-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.docs-grid{grid-template-columns:1fr}}
+.dc{padding:26px 22px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);cursor:pointer;transition:background .2s;position:relative}
+.dc:hover{background:var(--black);color:var(--white)}
+.dc:hover .dc-desc{color:rgba(255,255,255,.38)}
+.dc:hover .dc-tag{filter:invert(1) brightness(.6)}
+.dc-num{font-size:32px;font-weight:700;color:var(--gray2);line-height:1;margin-bottom:8px;letter-spacing:-.02em;transition:color .2s}
+.dc:hover .dc-num{color:rgba(255,255,255,.07)}
+.dc-title{font-size:13px;font-weight:500;margin-bottom:5px}
+.dc-desc{font-size:var(--fs-xs);color:var(--gray4);line-height:1.6}
+.dc-tag{position:absolute;top:14px;right:14px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px}
+.dc-tag.jp{background:var(--red-l);color:var(--red)}
+.dc-tag.tw{background:#eaf3de;color:#3b6d11}
+.dc-tag.co{background:var(--gray1);color:var(--gray4)}
+
+/* ─── 08 비용 구조표 ─── */
+.fee-bg{background:var(--gray1)}
+.fee-tabs{display:flex;border-bottom:1px solid var(--rule);margin-bottom:28px}
+.ft{padding:10px 22px;font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;color:var(--gray4);transition:all .2s}
+.ft.on{border-color:var(--black);color:var(--black)}
+.ft:hover{color:var(--black)}
+.fp2{display:none}
+.fp2.on{display:block}
+.fee-table{width:100%;border-collapse:collapse;font-size:var(--fs-sm)}
+.fee-table th{background:var(--black);color:rgba(255,255,255,.5);padding:10px 14px;text-align:left;font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-weight:300}
+.fee-table td{padding:10px 14px;border-bottom:1px solid var(--rule);color:var(--gray5);vertical-align:top}
+.fee-table tr:hover td{background:var(--gray2)}
+.fee-hl{color:var(--black);font-weight:500}
+.fee-cat{font-size:9.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--gray4)}
+.fee-note{margin-top:14px;padding:12px 16px;background:var(--white);border:1px solid var(--rule);font-size:var(--fs-xs);color:var(--gray4);line-height:1.7}
+
+/* ─── 09 신청 폼 ─── */
+.form-bg{background:var(--white)}
+.form-wrap{max-width:740px;margin:0 auto}
+.form-prog{display:flex;align-items:flex-start;gap:0;margin-bottom:44px;overflow-x:auto;padding-bottom:4px}
+.fp-s{display:flex;flex-direction:column;align-items:center;flex:1;min-width:0}
+.fp-d{width:32px;height:32px;border-radius:50%;background:var(--white);border:1.5px solid var(--rule2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:400;color:var(--gray4);cursor:pointer;transition:all .25s;flex-shrink:0}
+.fp-d.active{background:var(--black);border-color:var(--black);color:var(--white)}
+.fp-d.done{background:var(--gray5);border-color:var(--gray5);color:var(--white)}
+.fp-label{font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--gray4);margin-top:5px;white-space:nowrap}
+.fp-line{flex:1;height:1px;background:var(--rule);margin:0 -1px;align-self:flex-start;margin-top:15px}
+.fp-line.done{background:var(--gray5);opacity:.4}
+.fpage{display:none}
+.fpage.on{display:block}
+.fb{margin-bottom:32px;padding-bottom:32px;border-bottom:1px solid var(--rule)}
+.fb:last-child{border-bottom:none;padding-bottom:0;margin-bottom:0}
+.fb-title{font-size:13px;font-weight:500;letter-spacing:.02em;margin-bottom:16px;display:flex;align-items:center;gap:9px}
+.fb-ico{width:20px;height:20px;background:var(--black);color:var(--white);font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:300}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.frow.one{grid-template-columns:1fr}
+.frow.tri{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:560px){.frow,.frow.tri{grid-template-columns:1fr}}
+.fgrp{display:flex;flex-direction:column;gap:5px}
+.flbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray4)}
+.flbl .req{color:var(--red);margin-left:1px}
+.fin,.fsel,.fta{
+  background:var(--gray1);border:1px solid var(--rule);
+  padding:9px 12px;font-size:13.5px;
+  font-family:'Noto Sans KR',sans-serif;color:var(--black);
+  outline:none;transition:border-color .2s,background .2s;width:100%;
+}
+.fin:focus,.fsel:focus,.fta:focus{
+  border-color:var(--black);background:var(--white);
+  box-shadow:0 0 0 3px rgba(17,17,17,.05);
+}
+.fta{resize:vertical;min-height:88px}
+.fsel{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:34px}
+.fhint{font-size:var(--fs-xs);color:var(--gray4);margin-top:3px}
+.radio-g{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+@media(max-width:500px){.radio-g{grid-template-columns:1fr 1fr}}
+.rc{border:1.5px solid var(--rule2);padding:14px 13px;cursor:pointer;transition:all .2s}
+.rc:hover{border-color:var(--black)}
+.rc.on{border-color:var(--black);background:var(--black);color:var(--white)}
+.rc input[type=radio]{display:none}
+.rc-t{font-size:13px;font-weight:500;margin-bottom:2px}
+.rc-s{font-size:10px;color:var(--gray4)}
+.rc.on .rc-s{color:rgba(255,255,255,.4)}
+.ck-list{display:flex;flex-direction:column;gap:7px}
+.ck{display:flex;align-items:flex-start;gap:9px;padding:11px 13px;border:1px solid var(--rule);cursor:pointer;transition:border-color .2s;background:var(--gray1)}
+.ck:hover{border-color:var(--black)}
+.ck input{width:14px;height:14px;flex-shrink:0;margin-top:2px;accent-color:var(--black)}
+.ck-b{font-size:12.5px;line-height:1.7}
+.ck-b strong{display:block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;color:var(--black)}
+.fz{border:1.5px dashed var(--rule2);padding:26px;text-align:center;cursor:pointer;transition:all .2s;background:var(--gray1)}
+.fz:hover,.fz.drag{border-color:var(--black);background:var(--white)}
+.fz-ic{font-size:22px;margin-bottom:5px}
+.fz-tx{font-size:12px;color:var(--gray4)}
+.fz-tx strong{color:var(--black)}
+.chips{margin-top:8px;display:flex;flex-direction:column;gap:4px}
+.chip{display:flex;align-items:center;justify-content:space-between;padding:6px 11px;background:var(--gray2);font-size:11px}
+.chip-rm{cursor:pointer;color:var(--red);font-size:13px}
+.fnav{display:flex;justify-content:space-between;align-items:center;margin-top:32px;padding-top:24px;border-top:1px solid var(--rule)}
+.btn-fnext{background:var(--black);color:var(--white);padding:11px 26px;font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;border:none;font-family:inherit;transition:opacity .2s}
+.btn-fnext:hover{opacity:.72}
+.btn-fprev{background:transparent;color:var(--black);padding:10px 22px;font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border:1px solid var(--rule2);font-family:inherit;transition:border-color .2s}
+.btn-fprev:hover{border-color:var(--black)}
+.rv-table{width:100%;border-collapse:collapse;font-size:13px}
+.rv-table td{padding:8px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+.rv-table td:first-child{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray4);width:130px;background:var(--gray1)}
+.infobox{background:var(--black);color:var(--white);padding:16px 20px;font-size:var(--fs-xs);line-height:1.9;margin-top:20px}
+.infobox strong{color:rgba(255,255,255,.5)}
+/* 완료 화면 */
+.sw{display:none;text-align:center;padding:72px 40px}
+.sw.on{display:block}
+.sw-ic{width:64px;height:64px;background:var(--black);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--white);margin:0 auto 24px}
+.sw-title{font-size:clamp(24px,3vw,34px);font-weight:500;letter-spacing:-.02em;margin-bottom:12px}
+.sw-desc{font-size:14px;color:var(--gray4);max-width:400px;margin:0 auto 28px;line-height:1.85}
+
+/* ─── 10 FAQ ─── */
+.faq-bg{background:var(--gray1)}
+.faq-list{border-top:1px solid var(--rule)}
+.faq-item{border-bottom:1px solid var(--rule)}
+.faq-q{padding:18px 0;cursor:pointer;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;font-size:14px;font-weight:400;color:var(--black);transition:color .2s;user-select:none}
+.faq-q:hover{color:var(--gray4)}
+.faq-arr{font-size:18px;color:var(--gray3);flex-shrink:0;transition:transform .25s;line-height:1;margin-top:1px}
+.faq-item.open .faq-arr{transform:rotate(45deg)}
+.faq-a{display:none;padding:0 0 18px;font-size:var(--fs-body);color:var(--gray5);line-height:1.85;max-width:640px}
+.faq-item.open .faq-a{display:block}
+
+/* ─── 11 CTA ─── */
+.cta-bg{background:var(--gray1)}
+.cta-inner{text-align:center;padding:72px 40px}
+.cta-title{font-size:clamp(22px,3vw,36px);font-weight:500;color:var(--black);letter-spacing:-.02em;margin-bottom:12px}
+.cta-desc{font-size:14px;color:var(--gray4);margin:0 auto 32px;max-width:400px;line-height:1.8}
+.cta-acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn-cta-dark{background:var(--black);color:var(--white);padding:12px 28px;font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;border:none;font-family:inherit;cursor:pointer;transition:opacity .2s}
+.btn-cta-dark:hover{opacity:.75}
+.btn-cta-out{background:transparent;color:var(--black);padding:11px 24px;font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--rule2);font-family:inherit;cursor:pointer;transition:border-color .2s}
+.btn-cta-out:hover{border-color:var(--black)}
+
+/* ─── FOOTER ─── */
+footer{background:var(--white);border-top:1px solid var(--rule);padding:36px 0}
+.footer-inner{max-width:1040px;margin:0 auto;padding:0 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px}
+.footer-logo{font-size:14px;font-weight:700;letter-spacing:.1em;color:var(--black)}
+.footer-info{font-size:11px;color:var(--gray4);line-height:1.75}
+.footer-links{display:flex;gap:18px}
+.footer-links a{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray4);transition:color .2s;border-bottom:1px solid transparent}
+.footer-links a:hover{color:var(--black);border-color:var(--rule2)}
+.footer-copy{text-align:center;padding-top:20px;border-top:1px solid var(--rule);margin:20px 40px 0;font-size:10px;color:var(--gray3);letter-spacing:.08em}
+
+/* ─── MODAL ─── */
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:400;align-items:center;justify-content:center;padding:20px}
+.mbg.on{display:flex}
+.mbox{background:var(--white);max-width:640px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.2)}
+.mhd{padding:18px 26px;background:var(--black);color:var(--white);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0}
+.mhd-t{font-size:15px;font-weight:400}
+.m-close{background:none;border:none;color:rgba(255,255,255,.45);font-size:20px;cursor:pointer;line-height:1;transition:color .2s}
+.m-close:hover{color:var(--white)}
+.mbody{padding:26px}
+.mbody h3{font-size:14px;font-weight:500;margin-bottom:10px;margin-top:20px}
+.mbody h3:first-child{margin-top:0}
+.mbody p,.mbody li{font-size:13px;line-height:1.8;color:var(--gray5)}
+.mbody ul{margin-left:14px;margin-bottom:10px}
+.mbody li{margin-bottom:3px}
+.mfoot{padding:14px 26px;border-top:1px solid var(--rule);display:flex;justify-content:flex-end}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="hd-logo"><i></i>ONLEE INC.</div>
+  <nav class="hd-nav">
+    <a href="#platforms" onclick="go('platforms')">플랫폼</a>
+    <a href="#process" onclick="go('process')">프로세스</a>
+    <a href="#about" onclick="go('about')">소개</a>
+    <a href="#apply" onclick="go('apply')">신청</a>
+  </nav>
+  <a href="onlee_docs_v2.html" target="_blank" class="hd-cta" style="display:inline-flex;align-items:center;text-decoration:none">신청하기</a>
+</header>
+
+
+<!-- ═══ 01. HERO ═══ -->
+<section class="hero" id="top">
+  <div class="hero-inner">
+    <div class="hero-kicker">Global Crowdfunding Agency</div>
+    <h1 class="hero-h1">
+      글로벌 시장 진출의<br>
+      <strong>첫걸음</strong>을 함께합니다
+    </h1>
+    <p class="hero-body">
+      해외 진출을 고려하는 기업이 가장 먼저 접할 수 있는 방법이
+      크라우드펀딩입니다. 리스크를 최소화하며 현지 시장의 반응을
+      직접 확인하는 현실적인 첫 단계입니다.
+    </p>
+    <div class="hero-actions">
+      <a href="onlee_docs_v2.html" target="_blank" class="btn-hero-primary" style="text-decoration:none">대행 신청하기</a>
+      <button class="btn-hero-ghost" onclick="go('platforms')">플랫폼 알아보기 →</button>
+    </div>
+    <div class="hero-platforms">
+      <div class="hp-item">
+        <div class="hp-dot red"></div>
+        🇯🇵 Makuake · Japan
+      </div>
+      <div class="hp-item">
+        <div class="hp-dot green"></div>
+        🇹🇼 嘖嘖 Zeczec · Taiwan
+      </div>
+      <div class="hp-item" style="opacity:.55">
+        <div class="hp-dot gray"></div>
+        Kickstarter · Indiegogo · 추후 대응 가능
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="mq-strip">
+  <div class="mq-track">
+    <span class="mq-item">Makuake · Japan</span>
+    <span class="mq-item">嘖嘖 Zeczec · Taiwan</span>
+    <span class="mq-item">현지화 페이지 제작</span>
+    <span class="mq-item">물류 · 통관 서포트</span>
+    <span class="mq-item">인증 대행 안내</span>
+    <span class="mq-item">도쿄 현지 법인</span>
+    <span class="mq-item">원스톱 프로젝트 관리</span>
+    <span class="mq-item">투명한 비용 명세</span>
+    <span class="mq-item">Makuake · Japan</span>
+    <span class="mq-item">嘖嘖 Zeczec · Taiwan</span>
+    <span class="mq-item">현지화 페이지 제작</span>
+    <span class="mq-item">물류 · 통관 서포트</span>
+    <span class="mq-item">인증 대행 안내</span>
+    <span class="mq-item">도쿄 현지 법인</span>
+    <span class="mq-item">원스톱 프로젝트 관리</span>
+    <span class="mq-item">투명한 비용 명세</span>
+  </div>
+</div>
+
+
+<!-- ═══ 02. 플랫폼 ═══ -->
+<section id="platforms">
+  <div class="inner">
+    <div class="s-head reveal" style="margin-bottom:44px">
+      <div class="label-tag">Platform</div>
+      <h2 class="sec-title">크라우드펀딩 플랫폼</h2>
+      <p class="sec-sub">진출 목적과 제품 카테고리에 따라 적합한 플랫폼이 다릅니다. 각 시장의 플랫폼 특징을 먼저 파악해 두세요.</p>
+    </div>
+
+    <div class="reveal" style="background:var(--white);border:1px solid var(--rule);padding:28px 32px">
+      <!-- 국가 탭 -->
+      <div class="cert-tabs" style="margin-bottom:28px">
+        <div class="ct on" onclick="ctab(this,'pf-jp')">🇯🇵 JAPAN</div>
+        <div class="ct" onclick="ctab(this,'pf-tw')">🇹🇼 TAIWAN</div>
+        <div class="ct" onclick="ctab(this,'pf-us')">🇺🇸 AMERICA</div>
+      </div>
+
+      <!-- ── JAPAN ── -->
+      <div class="cp on" id="pf-jp">
+        <!-- 플랫폼 선택 탭 -->
+        <div style="display:flex;gap:0;border:1px solid var(--rule);margin-bottom:24px;flex-wrap:wrap">
+          <div id="jp-tab-mk" onclick="jpTab('mk')" style="padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;border-right:1px solid var(--rule);background:var(--black);color:#fff;letter-spacing:.04em">Makuake</div>
+          <div id="jp-tab-gf" onclick="jpTab('gf')" style="padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;border-right:1px solid var(--rule);background:var(--white);color:var(--gray4);letter-spacing:.04em">Green Funding</div>
+          <div id="jp-tab-cf" onclick="jpTab('cf')" style="padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;background:var(--white);color:var(--gray4);letter-spacing:.04em">CAMPFIRE</div>
+        </div>
+
+        <!-- Makuake -->
+        <div id="jp-mk" class="jp-pf-panel">
+          <div class="pf-flag">🇯🇵</div>
+          <div class="pf-name jp">Makuake</div>
+          <div class="pf-sub">마쿠아케 · 일본 1위 크라우드펀딩</div>
+          <p class="pf-desc">2013년 사이버에이전트 자회사로 설립, 도쿄증권거래소 상장 플랫폼. "응원구매(応援購入)" 개념을 일본에 정착시킨 서비스로, 신제품 시장성 검증과 초기 고객 확보에 최적입니다. 한국 브랜드의 일본 첫 진입 발판으로 가장 많이 활용됩니다.</p>
+          <div class="pf-stats">
+            <div class="pf-stat"><div class="pf-stat-n jp">700만+</div><div class="pf-stat-l">서포터</div></div>
+            <div class="pf-stat"><div class="pf-stat-n jp">80억+</div><div class="pf-stat-l">누적 거래액(엔)</div></div>
+            <div class="pf-stat"><div class="pf-stat-n jp">1위</div><div class="pf-stat-l">일본 크라우드펀딩</div></div>
+          </div>
+          <ul class="pf-list">
+            <li>30~50대 남성 테크 얼리어답터 층이 주요 구매 고객</li>
+            <li>프로젝트 성공 시 일본 미디어·유통 노출로 이어지는 경우 다수</li>
+            <li>전자제품은 PSE 인증 필수 — 심사 기준 높고 제품 완성도 중시</li>
+            <li>성약 수수료 약 20% (플랫폼·결제·운영 합산)</li>
+          </ul>
+        </div>
+
+        <!-- Green Funding -->
+        <div id="jp-gf" class="jp-pf-panel" style="display:none">
+          <div class="pf-flag">🇯🇵</div>
+          <div class="pf-name jp">Green Funding</div>
+          <div class="pf-sub">그린펀딩 · CCC그룹 운영</div>
+          <p class="pf-desc">TSUTAYA·T-POINT를 운영하는 CCC그룹의 크라우드펀딩 플랫폼. T-포인트 연계로 3,000만 명 이상의 T포인트 회원에게 접근 가능합니다. 라이프스타일·패션·잡화 카테고리에 강점이 있으며, Makuake 대비 심사가 유연한 편입니다.</p>
+          <div class="pf-stats">
+            <div class="pf-stat"><div class="pf-stat-n jp">3,000만+</div><div class="pf-stat-l">T포인트 연계 회원</div></div>
+            <div class="pf-stat"><div class="pf-stat-n jp">CCC</div><div class="pf-stat-l">TSUTAYA 그룹</div></div>
+            <div class="pf-stat"><div class="pf-stat-n jp">2014</div><div class="pf-stat-l">설립연도</div></div>
+          </div>
+          <ul class="pf-list">
+            <li>T포인트·T카드 연계로 폭넓은 소비자 접점 확보</li>
+            <li>라이프스타일·패션·인테리어·식품 카테고리에 강점</li>
+            <li>Makuake 대비 심사 기준 유연 — 초기 진입 장벽 낮음</li>
+            <li>수수료 약 20% 내외 (플랫폼별 협의)</li>
+          </ul>
+        </div>
+
+        <!-- CAMPFIRE -->
+        <div id="jp-cf" class="jp-pf-panel" style="display:none">
+          <div class="pf-flag">🇯🇵</div>
+          <div class="pf-name jp">CAMPFIRE</div>
+          <div class="pf-sub">캠프파이어 · 일본 최대 크라우드펀딩</div>
+          <p class="pf-desc">2011년 설립, 일본 내 프로젝트 수 기준 최대 규모 플랫폼. 제품 판매형(구매형)뿐 아니라 사회공헌·예술·음악 등 다양한 카테고리를 지원합니다. 진입 장벽이 낮아 첫 크라우드펀딩 도전 기업에 적합합니다.</p>
+          <div class="pf-stats">
+            <div class="pf-stat"><div class="pf-stat-n jp">8만+</div><div class="pf-stat-l">누적 프로젝트</div></div>
+            <div class="pf-stat"><div class="pf-stat-n jp">1,000억+</div><div class="pf-stat-l">누적 지원액(엔)</div></div>
+            <div class="pf-stat"><div class="pf-stat-n jp">2011</div><div class="pf-stat-l">설립연도</div></div>
+          </div>
+          <ul class="pf-list">
+            <li>일본 내 프로젝트 수 최다 — 다양한 카테고리 수용</li>
+            <li>구매형·기부형·융자형 등 다양한 펀딩 형태 지원</li>
+            <li>심사 기준 상대적으로 유연 — 소규모 브랜드에 적합</li>
+            <li>수수료 약 17% (플랫폼 12% + 결제 5%)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ── TAIWAN ── -->
+      <div class="cp" id="pf-tw">
+        <div class="pf-flag">🇹🇼</div>
+        <div class="pf-name tw">嘖嘖 Zeczec</div>
+        <div class="pf-sub">적적 · 대만 1위 크라우드펀딩</div>
+        <p class="pf-desc">2012년 설립된 Zeczec은 대만 최대 크라우드펀딩 플랫폼입니다. K-뷰티·K-라이프스타일에 관심 높은 MZ 소비층이 두터워, 한국 브랜드의 진입 사례가 점차 늘고 있습니다.</p>
+        <div class="pf-stats">
+          <div class="pf-stat"><div class="pf-stat-n tw">300만+</div><div class="pf-stat-l">등록 유저</div></div>
+          <div class="pf-stat"><div class="pf-stat-n tw">NT$30억+</div><div class="pf-stat-l">누적 달성액</div></div>
+          <div class="pf-stat"><div class="pf-stat-n tw">1위</div><div class="pf-stat-l">대만 크라우드펀딩</div></div>
+        </div>
+        <ul class="pf-list">
+          <li>K-뷰티·K-라이프스타일 관심도 높은 MZ 여성 소비층</li>
+          <li>번체중문(繁體中文) 페이지 작성 및 현지 규정 준수 필수</li>
+          <li>전자·화장품 등 카테고리별 BSMI / TFDA 인증 요구</li>
+          <li>플랫폼 수수료 약 8.5% (Zeczec+결제 합산)</li>
+        </ul>
+      </div>
+
+      <!-- ── AMERICA ── -->
+      <div class="cp" id="pf-us">
+        <!-- 플랫폼 선택 탭 -->
+        <div style="display:flex;gap:0;border:1px solid var(--rule);margin-bottom:24px;flex-wrap:wrap">
+          <div id="us-tab-ks" onclick="usTab('ks')" style="padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;border-right:1px solid var(--rule);background:var(--black);color:#fff;letter-spacing:.04em">Kickstarter</div>
+          <div id="us-tab-ig" onclick="usTab('ig')" style="padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;background:var(--white);color:var(--gray4);letter-spacing:.04em">Indiegogo</div>
+        </div>
+
+        <!-- Kickstarter -->
+        <div id="us-ks" class="us-pf-panel">
+          <div class="pf-flag">🇺🇸</div>
+          <div class="pf-name" style="color:#2bde73">Kickstarter</div>
+          <div class="pf-sub">킥스타터 · 글로벌 1위 크라우드펀딩</div>
+          <p class="pf-desc">2009년 설립, 세계 최초·최대 크라우드펀딩 플랫폼. All-or-Nothing 방식으로 목표 미달성 시 전액 환불됩니다. 테크·게임·디자인·예술 분야에 강점이 있으며, 글로벌 미디어 노출 효과가 큽니다.</p>
+          <div class="pf-stats">
+            <div class="pf-stat"><div class="pf-stat-n" style="color:#2bde73">2.5억+</div><div class="pf-stat-l">누적 후원자</div></div>
+            <div class="pf-stat"><div class="pf-stat-n" style="color:#2bde73">$80억+</div><div class="pf-stat-l">누적 달성액</div></div>
+            <div class="pf-stat"><div class="pf-stat-n" style="color:#2bde73">24만+</div><div class="pf-stat-l">성공 프로젝트</div></div>
+          </div>
+          <ul class="pf-list">
+            <li>All-or-Nothing 방식 — 목표 미달 시 후원자 전액 환불</li>
+            <li>테크·가젯·게임·디자인 카테고리에서 글로벌 트렌드세터 역할</li>
+            <li>미국 내 판매세(Sales Tax), 수입관세(Customs Duty) 별도 발생</li>
+            <li>플랫폼 수수료 5% + 결제 수수료 3~5%</li>
+            <li>미국 법인 또는 파트너 계정 필요 — ONLEE 별도 상담</li>
+          </ul>
+        </div>
+
+        <!-- Indiegogo -->
+        <div id="us-ig" class="us-pf-panel" style="display:none">
+          <div class="pf-flag">🇺🇸</div>
+          <div class="pf-name" style="color:#eb1478">Indiegogo</div>
+          <div class="pf-sub">인디고고 · 글로벌 크라우드펀딩</div>
+          <p class="pf-desc">2008년 설립. Kickstarter와 달리 목표 미달성 시에도 모인 금액을 수령할 수 있는 Flexible Funding 방식을 지원합니다. 하드웨어·헬스케어·소비재 분야에 강점이 있으며, 펀딩 종료 후 InDemand(일반판매 전환) 기능으로 지속 판매가 가능합니다.</p>
+          <div class="pf-stats">
+            <div class="pf-stat"><div class="pf-stat-n" style="color:#eb1478">800만+</div><div class="pf-stat-l">후원자</div></div>
+            <div class="pf-stat"><div class="pf-stat-n" style="color:#eb1478">235개국</div><div class="pf-stat-l">서비스 국가</div></div>
+            <div class="pf-stat"><div class="pf-stat-n" style="color:#eb1478">2008</div><div class="pf-stat-l">설립연도</div></div>
+          </div>
+          <ul class="pf-list">
+            <li>Flexible Funding — 목표 미달성 시에도 모인 금액 수령 가능</li>
+            <li>펀딩 종료 후 InDemand로 전환 — 지속적인 판매 채널 확보</li>
+            <li>하드웨어·헬스케어·소비재·라이프스타일 카테고리에 강점</li>
+            <li>미국 내 판매세(Sales Tax) 주별 상이 — 세무 대리인 필요</li>
+            <li>플랫폼 수수료 5% + 결제 수수료 3~5%</li>
+            <li>미국 법인 또는 파트너 계정 필요 — ONLEE 별도 상담</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ 03. 프로세스 ═══ -->
+<section class="process-bg" id="process">
+  <div class="inner">
+    <div class="s-head reveal" style="margin-bottom:40px;color:var(--white)">
+      <div class="label-tag" style="color:rgba(255,255,255,.28)">How We Work</div>
+      <h2 class="sec-title" style="color:var(--white)">프로젝트 진행 흐름</h2>
+      <p class="sec-sub" style="color:rgba(255,255,255,.55)">신청서 제출부터 리워드 발송·정산까지 각 단계의 역할을 미리 파악해 두시면 진행이 원활합니다.</p>
+    </div>
+    <div class="process-row reveal">
+      <div class="ps"><div class="ps-n">01</div><div class="ps-t">신청 · 검토</div><div class="ps-d">온라인 신청 제출 → 제품 적합성 검토 → 5영업일 내 담당자 연락</div></div>
+      <div class="ps"><div class="ps-n">02</div><div class="ps-t">계약 체결</div><div class="ps-d">독점계약 + 대행계약 서명 → 초기 대행비 납입 → 프로젝트 킥오프</div></div>
+      <div class="ps"><div class="ps-n">03</div><div class="ps-t">페이지 제작</div><div class="ps-d">현지어 페이지 기획·번역·제작 → 플랫폼 심사 제출 → 승인 대기</div></div>
+      <div class="ps"><div class="ps-n">04</div><div class="ps-t">펀딩 운영</div><div class="ps-d">홍보·SNS 운영 → 실시간 모니터링 → CS 대응 → 달성 관리</div></div>
+      <div class="ps"><div class="ps-n">05</div><div class="ps-t">물류 · 발송</div><div class="ps-d">통관·입고·패킹·배송 → 트래킹 → 이상 대응 → 완료 확인</div></div>
+      <div class="ps" style="border-right:none"><div class="ps-n">06</div><div class="ps-t">정산 · 보고</div><div class="ps-d">1차 정산(3주) → 2차 정산(7일) → 최종 성과 리포트 제공</div></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ 04. 인증 가이드 ═══ -->
+<section id="cert">
+  <div class="inner">
+    <div class="s-head reveal" style="margin-bottom:36px">
+      <div class="label-tag">Compliance</div>
+      <h2 class="sec-title">카테고리별 인증 가이드</h2>
+      <p class="sec-sub">제품 카테고리에 따라 필요한 인증이 다릅니다. 계획 단계에서 미리 확인해 두시면 일정 지연을 예방할 수 있습니다.</p>
+    </div>
+    <div class="reveal" style="background:var(--white);border:1px solid var(--rule);padding:28px 32px">
+      <div class="cert-tabs">
+        <div class="ct on" onclick="ctab(this,'cj')">🇯🇵 JAPAN</div>
+        <div class="ct" onclick="ctab(this,'ct2')">🇹🇼 TAIWAN</div>
+        <div class="ct" onclick="ctab(this,'cu')">🇺🇸 AMERICA</div>
+      </div>
+      <div class="cp on" id="cj">
+        <table class="cert-table">
+          <thead><tr><th>카테고리</th><th>인증 필요</th><th>관련 인증</th><th>소요 기간</th><th>참고 비용</th></tr></thead>
+          <tbody>
+            <tr><td>생활잡화 (비전기)</td><td><span class="cst cst-ok">불필요</span></td><td>—</td><td>즉시</td><td>—</td></tr>
+            <tr><td>패션·잡화</td><td><span class="cst cst-ok">불필요</span></td><td>—</td><td>즉시</td><td>—</td></tr>
+            <tr><td>전기·전자제품</td><td><span class="cst cst-need">필수</span></td><td>PSE 인증</td><td>2~4개월</td><td>50~150만원</td></tr>
+            <tr><td>무선기기 (BT/WiFi)</td><td><span class="cst cst-need">필수</span></td><td>PSE + TELEC</td><td>2~3개월</td><td>100~200만원</td></tr>
+            <tr><td>화장품</td><td><span class="cst cst-need">필수</span></td><td>후생노동성 신고</td><td>1~3개월</td><td>별도 견적</td></tr>
+            <tr><td>식품·건강기능식품</td><td><span class="cst cst-warn">조건부</span></td><td>식품위생법</td><td>협의</td><td>별도 견적</td></tr>
+            <tr><td>의료기기</td><td><span class="cst cst-no">불가</span></td><td>薬機法 승인 필요</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cp" id="ct2">
+        <table class="cert-table">
+          <thead><tr><th>카테고리</th><th>인증 필요</th><th>관련 인증</th><th>한국 대행기관</th><th>소요 기간</th></tr></thead>
+          <tbody>
+            <tr><td>생활잡화·패션 (비전기)</td><td><span class="cst cst-ok">불필요</span></td><td>—</td><td>—</td><td>즉시</td></tr>
+            <tr><td>육아·펫용품 (비전기)</td><td><span class="cst cst-ok">대부분 불필요</span></td><td>—</td><td>—</td><td>즉시</td></tr>
+            <tr><td>전기·전자제품</td><td><span class="cst cst-need">필수</span></td><td>BSMI</td><td>KTC / TÜV SÜD Korea</td><td>2~4개월</td></tr>
+            <tr><td>무선기기 (BT/WiFi)</td><td><span class="cst cst-need">필수</span></td><td>NCC + BSMI</td><td>TÜV SÜD / SGS Korea</td><td>1~2개월</td></tr>
+            <tr><td>화장품</td><td><span class="cst cst-need">필수</span></td><td>TFDA + PIF</td><td>CIRS Korea</td><td>1~3개월</td></tr>
+            <tr><td>미용기기 (전자)</td><td><span class="cst cst-need">필수</span></td><td>TFDA + BSMI</td><td>복합 대행</td><td>2~4개월</td></tr>
+            <tr><td>건강·의료기기</td><td><span class="cst cst-no">불가</span></td><td>TFDA 의료기기</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cp" id="cu">
+        <table class="cert-table">
+          <thead><tr><th>카테고리</th><th>인증 필요</th><th>관련 인증</th><th>비고</th><th>소요 기간</th></tr></thead>
+          <tbody>
+            <tr><td>생활잡화·패션 (비전기)</td><td><span class="cst cst-ok">대부분 불필요</span></td><td>—</td><td>CPSC 라벨 확인 권장</td><td>즉시</td></tr>
+            <tr><td>전기·전자제품</td><td><span class="cst cst-need">필수</span></td><td>FCC Part 15</td><td>인증 없이 판매 불가</td><td>1~3개월</td></tr>
+            <tr><td>무선기기 (BT/WiFi)</td><td><span class="cst cst-need">필수</span></td><td>FCC ID</td><td>FCC 등록 필수</td><td>2~4개월</td></tr>
+            <tr><td>어린이 제품</td><td><span class="cst cst-need">필수</span></td><td>CPSC / ASTM F963</td><td>제3자 시험 필수</td><td>1~3개월</td></tr>
+            <tr><td>화장품·퍼스널케어</td><td><span class="cst cst-warn">조건부</span></td><td>FDA 등록 권장</td><td>성분 라벨 영문 필수</td><td>협의</td></tr>
+            <tr><td>식품·건강기능식품</td><td><span class="cst cst-need">필수</span></td><td>FDA 등록</td><td>영문 영양성분표 필수</td><td>협의</td></tr>
+            <tr><td>의료기기</td><td><span class="cst cst-no">별도 상담</span></td><td>FDA 510(k)</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:12px;padding:10px 14px;background:#f0f7ff;border-left:3px solid #2563eb;font-size:var(--fs-xs);color:#1e3a8a;line-height:1.7">
+          ※ 미국은 주(州)별로 판매세(Sales Tax)가 상이하며, Kickstarter·Indiegogo 모두 미국 내 배송 시 세무 대리인이 필요합니다. 자세한 내용은 신청 후 미팅에서 안내드립니다.
+        </div>
+      </div>
+      <div style="margin-top:12px;padding:11px 14px;background:var(--gray1);font-size:var(--fs-xs);color:var(--gray4);line-height:1.7">
+        ※ 인증 취득 비용과 기간은 제품에 따라 달라질 수 있습니다. 불확실한 경우 신청 시 문의사항으로 기재해 주시면 안내드립니다.
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ 05. ONLEE 소개 ═══ -->
+<section class="about-bg" id="about">
+  <div class="inner">
+    <div class="s-head reveal" style="margin-bottom:36px">
+      <div class="label-tag">About</div>
+      <h2 class="sec-title">ONLEE INC. 소개</h2>
+    </div>
+    <div class="about-grid reveal">
+      <div class="about-cell">
+        <div class="about-label">설립 배경 · 방향</div>
+        <p class="about-text">
+          ONLEE INC.는 2021년 도쿄에서 설립된 마케팅 컨설팅 법인입니다.
+          한국에서 만들어진 좋은 제품이 언어와 유통의 벽에 가로막혀 해외 소비자와
+          만나지 못하는 경우를 자주 목격했습니다. 그 간격을 실질적으로 좁히는 일을
+          하고 싶다는 것이 창업의 출발점입니다.
+        </p>
+        <p class="about-text" style="margin-top:14px">
+          크라우드펀딩은 그 첫 번째 접점으로 적합하다고 판단합니다. 대규모 투자 없이
+          현지 소비자의 반응을 직접 확인하고, 그 결과를 바탕으로 유통·이커머스 확장을
+          결정할 수 있기 때문입니다. ONLEE는 이 과정 전체를 도쿄 현지에서 지원합니다.
+        </p>
+      </div>
+      <div class="about-cell">
+        <div class="about-label">회사 정보</div>
+        <table class="about-table">
+          <tr><td>회사명</td><td>ONLEE INC. (オンリー株式会社)</td></tr>
+          <tr><td>소재지</td><td>〒104-0041 東京都中央区新富1-4-5 東銀座ビル401</td></tr>
+          <tr><td>설립</td><td>2021년 10월</td></tr>
+          <tr><td>자본금</td><td>5,000,000엔</td></tr>
+          <tr><td>대표</td><td>이 찬숙 (李 粲淑)</td></tr>
+          <tr><td>사업 내용</td><td>광고·마케팅 컨설팅, 크라우드펀딩 대행, 수입·온라인 판매, 이벤트 기획</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="about-contact reveal">
+      <div class="ac-item"><div class="ac-l">Phone</div><div class="ac-v">+81-3-5542-0152</div></div>
+      <div class="ac-item"><div class="ac-l">Email</div><div class="ac-v">info@onleeone.com</div></div>
+      <div class="ac-item"><div class="ac-l">영업시간</div><div class="ac-v">평일 10:00 — 18:00 (토·일·공휴일 휴무)</div></div>
+      <div class="ac-item"><div class="ac-l">Website</div><div class="ac-v"><a href="https://www.onleeone.com" target="_blank">www.onleeone.com</a></div></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ 06. 실적 ═══ -->
+<section class="results-bg" id="results">
+  <div class="inner">
+    <div class="s-head reveal" style="margin-bottom:36px;color:var(--white)">
+      <div class="label-tag" style="color:rgba(255,255,255,.38)">Reference</div>
+      <h2 class="sec-title" style="color:var(--white)">레퍼런스</h2>
+      <p class="sec-sub" style="color:rgba(255,255,255,.65)">다양한 카테고리, 폭넓은 유통망으로 일본·대만 시장 론칭을 효과적으로 진행합니다.</p>
+    </div>
+    <div class="results-grid reveal">
+      <div class="ri"><div class="ri-l">펀딩 성공 브랜드</div><div class="ri-n">25<sub>개+</sub></div><div class="ri-d">펫·골프·전자·잡화·뷰티·아웃도어·스마트기기 등 다양한 카테고리</div></div>
+      <div class="ri"><div class="ri-l">펀딩 달성 누적 금액</div><div class="ri-n">1억<sub>엔+</sub></div><div class="ri-d">일본 Makuake · 대만 Zeczec 프로젝트 누적 달성액</div></div>
+      <div class="ri"><div class="ri-l">일본 내 유통 네트워크</div><div class="ri-n">3,000<sub>점+</sub></div><div class="ri-d">펫시장 · 골프용품 · 전자 · 생활잡화 등 현지 유통 연계</div></div>
+      <div class="ri"><div class="ri-l">기획부터 판매까지</div><div class="ri-n">100<sub>%</sub></div><div class="ri-d">신청·계약·페이지 제작·운영·물류·정산 — 맡기면 끝까지</div></div>
+    </div>
+    <div class="portfolio-pills reveal">
+      <div class="pp-label">진행 브랜드 (일부)</div>
+      <div class="pills">
+        <span class="pill">LitZERO 2 · X</span><span class="pill">Duotem</span><span class="pill">V-SCAN 100</span>
+        <span class="pill">AIRLAC</span><span class="pill">OXY BAG</span><span class="pill">シムペット</span>
+        <span class="pill">エアモンペット</span><span class="pill">Magic Carry</span><span class="pill">GEOMETREE</span>
+        <span class="pill">DaGUNDA</span><span class="pill">BeatsGear</span><span class="pill">White Bottle</span>
+        <span class="pill">THEDOOKAN</span><span class="pill">Nano Waterfall</span><span class="pill">OXY POWER</span>
+        <span class="pill">SLX Hybrid mini</span><span class="pill">WING</span><span class="pill">MOJI BLOCK</span>
+        <span class="pill">외 7개</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ 07. 핵심 체크포인트 ═══ -->
+<section id="checklist" style="background:var(--black);padding:88px 0">
+  <div class="inner">
+    <div class="s-head reveal" style="margin-bottom:44px">
+      <div class="label-tag" style="color:rgba(255,255,255,.38)">Before You Apply</div>
+      <h2 class="sec-title" style="color:var(--white)">신청 전 꼭 확인하세요</h2>
+      <p style="font-size:15px;color:rgba(255,255,255,.62);margin-top:12px;max-width:520px;line-height:1.85">해외 크라우드펀딩을 처음 준비하는 기업이 가장 자주 묻는 4가지입니다.</p>
+    </div>
+    <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.09)">
+      <div style="background:#0d0d0d;padding:36px 32px">
+        <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:14px;font-weight:600">01 · 제품 인증</div>
+        <div style="font-size:18px;font-weight:700;color:var(--white);margin-bottom:12px;line-height:1.3">인증이 필요한 제품인가요?</div>
+        <p style="font-size:14px;color:rgba(255,255,255,.65);line-height:1.8;margin-bottom:16px">전자제품·무선기기·화장품은 플랫폼 심사 전 현지 인증이 필수입니다. 생활잡화·패션·비전기 제품은 대부분 인증 없이 진행 가능합니다.</p>
+        <div style="font-size:13px;color:rgba(255,255,255,.42);line-height:1.65;border-left:2px solid rgba(255,255,255,.14);padding-left:12px">전자제품 → PSE(일본) / BSMI(대만)<br>무선기기 → TELEC(일본) / NCC(대만)<br>화장품 → 후생성 신고(일본) / TFDA(대만)</div>
+      </div>
+      <div style="background:#0d0d0d;padding:36px 32px">
+        <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:14px;font-weight:600">02 · 제품 완성도</div>
+        <div style="font-size:18px;font-weight:700;color:var(--white);margin-bottom:12px;line-height:1.3">완성된 제품이 있나요?</div>
+        <p style="font-size:14px;color:rgba(255,255,255,.65);line-height:1.8;margin-bottom:16px">플랫폼 심사는 완성품 기준입니다. 아이디어·개발 단계는 신청이 어렵습니다. 샘플 단계라면 먼저 상담을 통해 일정을 조율하는 것을 권장합니다.</p>
+        <div style="font-size:13px;color:rgba(255,255,255,.42);line-height:1.65;border-left:2px solid rgba(255,255,255,.14);padding-left:12px">Makuake: 제품 완성도·독창성 심사 엄격<br>ZecZec: 실행자 서류 + 제품 사양 제출</div>
+      </div>
+      <div style="background:#0d0d0d;padding:36px 32px">
+        <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:14px;font-weight:600">03 · 공급 능력</div>
+        <div style="font-size:18px;font-weight:700;color:var(--white);margin-bottom:12px;line-height:1.3">약속한 수량을 납품할 수 있나요?</div>
+        <p style="font-size:14px;color:rgba(255,255,255,.65);line-height:1.8;margin-bottom:16px">크라우드펀딩은 선판매입니다. 펀딩 성공 후 리워드를 납품하지 못하면 전액 환불 의무가 발생합니다. 생산 리드타임과 최소 생산 수량을 미리 확인하세요.</p>
+        <div style="font-size:13px;color:rgba(255,255,255,.42);line-height:1.65;border-left:2px solid rgba(255,255,255,.14);padding-left:12px">리워드 미이행 → 서포터 전액 환불 책임<br>납기 지연 → 즉시 공지 의무 발생</div>
+      </div>
+      <div style="background:#0d0d0d;padding:36px 32px">
+        <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:14px;font-weight:600">04 · 독점 계약</div>
+        <div style="font-size:18px;font-weight:700;color:var(--white);margin-bottom:12px;line-height:1.3">현지에 이미 판매 중인 제품인가요?</div>
+        <p style="font-size:14px;color:rgba(255,255,255,.65);line-height:1.8;margin-bottom:16px">ONLEE와의 계약은 해당 국가 독점 진행 계약입니다. 동일 제품이 현지에서 유통 중이거나 병행수입이 있다면 진행 전 미리 알려 주세요.</p>
+        <div style="font-size:13px;color:rgba(255,255,255,.42);line-height:1.65;border-left:2px solid rgba(255,255,255,.14);padding-left:12px">계약 기간 중 타 경로 병행 판매 금지<br>리워드 배송 완료 전 현지 유통 금지</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ 08. 비용 구조표 ═══ -->
+<section class="fee-bg" id="fees">
+  <div class="inner">
+    <div class="s-head reveal" style="margin-bottom:36px">
+      <div class="label-tag">Fee Structure</div>
+      <h2 class="sec-title">대행비용</h2>
+      <p class="sec-sub">계약 전 모든 비용 항목을 서면으로 제시합니다. 예상치 못한 비용이 발생하지 않도록 구조를 미리 파악해 두세요.</p>
+    </div>
+    <div class="reveal" style="background:var(--white);border:1px solid var(--rule);padding:28px 32px">
+      <div class="fee-tabs">
+        <div class="ft on" onclick="ftab(this,'fj')">🇯🇵 JAPAN</div>
+        <div class="ft" onclick="ftab(this,'fw')">🇹🇼 TAIWAN</div>
+        <div class="ft" onclick="ftab(this,'fu')">🇺🇸 AMERICA</div>
+      </div>
+      <div class="fp2 on" id="fj">
+        <table class="fee-table">
+          <thead><tr><th>구분</th><th>항목</th><th>비용 · 비율</th><th>발생 시점</th><th>비고</th></tr></thead>
+          <tbody>
+            <tr><td class="fee-cat" rowspan="2">대행·운영</td><td>ONLEE 대행비</td><td class="fee-hl">₩5,500,000</td><td>계약 시</td><td>JP 총괄 PM</td></tr>
+            <tr><td>성과보수</td><td class="fee-hl">협의</td><td>정산 시</td><td>달성금액 기준</td></tr>
+            <tr><td class="fee-cat" rowspan="2">플랫폼</td><td>플랫폼 수수료</td><td class="fee-hl">약 10~20%</td><td>정산 시</td><td>Makuake 성약 수수료 포함</td></tr>
+            <tr><td>결제 수수료</td><td>약 3~4%</td><td>정산 시</td><td>카드 결제 대행</td></tr>
+            <tr><td class="fee-cat" rowspan="3">세금·물류</td><td>관세</td><td>0~10%</td><td>통관 시</td><td>HS Code 기준</td></tr>
+            <tr><td>일본 소비세</td><td>10%</td><td>판매 시</td><td>포함 가격 표시</td></tr>
+            <tr><td>국제·국내 물류</td><td>실비</td><td>출고 시</td><td>클라이언트 부담</td></tr>
+            <tr><td class="fee-cat" rowspan="2">정산</td><td>1차 정산</td><td class="fee-hl">달성금 50%</td><td>펀딩 종료 익월말</td><td>플랫폼 수수료 차감 후</td></tr>
+            <tr><td>2차 정산</td><td class="fee-hl">나머지 50%</td><td>리워드 완료 후</td><td>제반 비용 차감 후 잔금</td></tr>
+            <tr><td class="fee-cat">선택</td><td>마케팅 광고비</td><td class="fee-hl">₩3,000,000~</td><td>집행 전</td><td>최소 300만원부터</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fp2" id="fw">
+        <table class="fee-table">
+          <thead><tr><th>구분</th><th>항목</th><th>비용 · 비율</th><th>발생 시점</th><th>비고</th></tr></thead>
+          <tbody>
+            <tr><td class="fee-cat" rowspan="2">대행·운영</td><td>ONLEE 대행비</td><td class="fee-hl">₩5,000,000</td><td>계약 시</td><td>TW 총괄 PM</td></tr>
+            <tr><td>성과보수</td><td class="fee-hl">10%</td><td>정산 시</td><td>달성금액 기준</td></tr>
+            <tr><td class="fee-cat" rowspan="3">플랫폼</td><td>ZecZec 수수료</td><td class="fee-hl">약 5~6%</td><td>정산 시</td><td>프로젝트별 상이</td></tr>
+            <tr><td>결제 수수료</td><td>약 3~4%</td><td>정산 시</td><td>결제 대행 비용</td></tr>
+            <tr><td>합계</td><td class="fee-hl">약 8.5%</td><td>정산 시</td><td>차감 후 입금</td></tr>
+            <tr><td class="fee-cat" rowspan="4">세금·물류</td><td>관세</td><td>0~10%</td><td>통관 시</td><td>HS Code 기준</td></tr>
+            <tr><td>대만 영업세 (VAT)</td><td>5%</td><td>통관 시</td><td>(CIF+관세)×5%</td></tr>
+            <tr><td>국제 물류</td><td>실비</td><td>출고 시</td><td>해상/항공 선택</td></tr>
+            <tr><td>대만 내륙 배송</td><td class="fee-hl">₩5,000~/개</td><td>리워드 발송 시</td><td>제품·무게별 상이</td></tr>
+            <tr><td class="fee-cat">정산</td><td>1차 · 2차</td><td>약 50% → 잔금</td><td>3주 → 7일 이내</td><td>파트너 계약 조건</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fp2" id="fu">
+        <table class="fee-table">
+          <thead><tr><th>구분</th><th>항목</th><th>비용 · 비율</th><th>발생 시점</th><th>비고</th></tr></thead>
+          <tbody>
+            <tr><td class="fee-cat" rowspan="2">대행·운영</td><td>ONLEE 대행비</td><td class="fee-hl">₩7,000,000</td><td>계약 시</td><td>US 총괄 PM</td></tr>
+            <tr><td>성과보수</td><td class="fee-hl">협의</td><td>정산 시</td><td>달성금액 기준</td></tr>
+            <tr><td class="fee-cat" rowspan="2">플랫폼</td><td>Kickstarter / Indiegogo</td><td class="fee-hl">5%</td><td>정산 시</td><td>플랫폼 수수료</td></tr>
+            <tr><td>결제 수수료</td><td>약 3~5%</td><td>정산 시</td><td>Stripe 등 결제 대행</td></tr>
+            <tr><td class="fee-cat" rowspan="4">세금·물류</td><td>미국 관세</td><td>0~25%</td><td>통관 시</td><td>HS Code · 원산지 기준</td></tr>
+            <tr><td>판매세 (Sales Tax)</td><td>주별 상이</td><td>판매 시</td><td>주별 6~10% 수준</td></tr>
+            <tr><td>국제 물류</td><td>실비</td><td>출고 시</td><td>해상/항공 선택</td></tr>
+            <tr><td>미국 내 배송</td><td>실비</td><td>리워드 발송 시</td><td>UPS·FedEx 기준</td></tr>
+            <tr><td class="fee-cat">기타</td><td>세무 대리인</td><td>별도 견적</td><td>계약 시</td><td>미국 세법 준수 필수</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:12px;padding:10px 14px;background:#f0f7ff;border-left:3px solid #2563eb;font-size:var(--fs-xs);color:#1e3a8a;line-height:1.7">
+          ※ 미국 시장 진출은 세무·법무 구조가 복잡합니다. 계약 전 반드시 개별 상담을 통해 진행 구조를 확인해 주세요.
+        </div>
+      </div>
+      <div class="fee-note">
+        ※ 모든 비용 항목은 계약 전 명세서로 제시되며, 계약 이후 추가 청구는 없습니다.
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ 09. 신청하기 ═══ -->
+<section id="apply" style="background:var(--black);padding:88px 0">
+  <div class="inner">
+    <div class="s-head reveal" style="margin-bottom:48px">
+      <div class="label-tag" style="color:rgba(255,255,255,.35)">Application</div>
+      <h2 class="sec-title" style="color:var(--white);font-size:clamp(26px,3.5vw,40px)">크라우드펀딩 대행 신청</h2>
+      <p style="font-size:15px;color:rgba(255,255,255,.65);margin-top:14px;max-width:540px;line-height:1.85">신청서는 별도 페이지에서 작성합니다.<br>회사 정보·제품 정보·물류 조건을 입력하고 전자 서명 후 이메일로 제출하면 됩니다.<br><span style="font-size:14px;color:rgba(255,255,255,.40)">5영업일 이내 담당자가 연락드립니다.</span></p>
+    </div>
+    <div class="reveal" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.08);margin-bottom:48px">
+      <div style="background:var(--black);padding:28px 22px"><div style="font-size:28px;font-weight:700;color:rgba(255,255,255,.08);margin-bottom:10px;line-height:1">01</div><div style="font-size:14px;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:6px">플랫폼 선택</div><div style="font-size:13px;color:rgba(255,255,255,.50);line-height:1.65">Makuake / Zeczec / 양쪽 중 선택 후 해당 서류만 표시</div></div>
+      <div style="background:var(--black);padding:28px 22px"><div style="font-size:28px;font-weight:700;color:rgba(255,255,255,.08);margin-bottom:10px;line-height:1">02</div><div style="font-size:14px;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:6px">정보 입력</div><div style="font-size:13px;color:rgba(255,255,255,.50);line-height:1.65">회사명 입력 시 모든 서류에 자동 반영</div></div>
+      <div style="background:var(--black);padding:28px 22px"><div style="font-size:28px;font-weight:700;color:rgba(255,255,255,.08);margin-bottom:10px;line-height:1">03</div><div style="font-size:14px;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:6px">전자 서명</div><div style="font-size:13px;color:rgba(255,255,255,.50);line-height:1.65">캔버스 서명 + 법인명 자동 날인</div></div>
+      <div style="background:var(--black);padding:28px 22px"><div style="font-size:28px;font-weight:700;color:rgba(255,255,255,.08);margin-bottom:10px;line-height:1">04</div><div style="font-size:14px;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:6px">PDF · 제출</div><div style="font-size:13px;color:rgba(255,255,255,.50);line-height:1.65">PDF 생성 후 이메일로 발송</div></div>
+    </div>
+    <div class="reveal" style="text-align:center">
+      <a href="onlee_docs_v2.html" target="_blank" style="display:inline-block;background:var(--white);color:var(--black);padding:18px 56px;font-size:15px;font-weight:700;letter-spacing:.06em;text-decoration:none" onmouseover="this.style.opacity='.82'" onmouseout="this.style.opacity='1'">신청 서류 작성 시작 →</a>
+      <div style="font-size:13px;color:rgba(255,255,255,.32);margin-top:16px">별도 설치 불필요 · 브라우저에서 바로 작성</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ 10. FAQ ═══ -->
+<section class="faq-bg" id="faq">
+  <div class="inner">
+    <div class="s-head reveal" style="margin-bottom:32px">
+      <div class="label-tag">FAQ</div>
+      <h2 class="sec-title">자주 묻는 질문</h2>
+    </div>
+    <div style="max-width:700px" class="reveal">
+      <div class="faq-list">
+        <div class="faq-item"><div class="faq-q" onclick="faq(this)"><span>Makuake, Green Funding, CAMPFIRE — 어떤 플랫폼이 우리 제품에 맞나요?</span><span class="faq-arr">+</span></div><div class="faq-a">Makuake는 테크·가전·뷰티 중심으로 심사가 엄격하지만 노출 효과가 큽니다. Green Funding은 T-포인트 3,000만 회원 연계로 라이프스타일·패션·잡화에 강하며 심사가 비교적 유연합니다. CAMPFIRE는 진입 장벽이 낮아 첫 도전 기업에 적합합니다. 제품 카테고리와 완성도, 목표에 따라 ONLEE가 최적 플랫폼을 제안합니다.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="faq(this)"><span>일본 Makuake 심사에서 탈락하면 어떻게 되나요?</span><span class="faq-arr">+</span></div><div class="faq-a">심사 이유는 플랫폼 정책상 공개되지 않는 경우가 많습니다. 탈락 시 ONLEE는 피드백을 분석해 Green Funding·CAMPFIRE 등 대안 플랫폼을 함께 검토합니다. 초기 대행비는 심사 결과와 무관하게 반환되지 않으며, 계약 전 반드시 확인해 주세요.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="faq(this)"><span>일본과 대만을 동시에 진행하면 어떤 점이 유리한가요?</span><span class="faq-arr">+</span></div><div class="faq-a">일본(Makuake)과 대만(Zeczec)을 동시 진행하면 두 시장의 소비자 반응을 한 번에 검증할 수 있고, 물류·인증 준비를 병행해 시간을 절약할 수 있습니다. ONLEE는 일·대만 동시 대행 체계를 갖추고 있으며, 별도 계약 및 비용 구조로 진행됩니다.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="faq(this)"><span>미국 시장 진출도 가능한가요?</span><span class="faq-arr">+</span></div><div class="faq-a">Kickstarter·Indiegogo를 통한 미국 크라우드펀딩도 지원합니다. 다만 미국은 주별 판매세, 미국 법인 또는 파트너 계정, 세무 대리인 선임 등 구조가 복잡합니다. 신청서 제출 후 온라인 개별 상담을 통해 진행 여부와 구조를 결정합니다.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="faq(this)"><span>인증이 필요한 제품도 진행할 수 있나요?</span><span class="faq-arr">+</span></div><div class="faq-a">가능합니다. 전자제품(PSE·BSMI·FCC), 무선기기(TELEC·NCC·FCC ID), 화장품(후생성 신고·TFDA) 등 각 시장별 필요 인증을 한국 내 대행기관과 연계해 안내합니다. 인증 비용과 기간(1~4개월)은 별도 발생하며 클라이언트 부담입니다.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="faq(this)"><span>정산은 어떻게 이루어지나요?</span><span class="faq-arr">+</span></div><div class="faq-a">펀딩 종료 익월말에 달성금의 50%를 1차 정산하고, 리워드 발송 완료 후 나머지 50%를 2차 정산합니다. 플랫폼 수수료·대행비·물류비 등을 차감한 금액이 지정 계좌로 송금됩니다. 세부 조건은 계약서에 명시됩니다.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="faq(this)"><span>샘플 단계인 제품도 신청할 수 있나요?</span><span class="faq-arr">+</span></div><div class="faq-a">신청 자체는 가능합니다. 다만 플랫폼 심사 및 펀딩 오픈을 위해서는 완성품이 필요합니다. 샘플 단계라면 상담 형태로 신청 후 예정 완성 시기와 스펙을 공유해 주시면 일정 계획을 함께 수립합니다.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ 11. CTA ═══ -->
+<section class="cta-bg">
+  <div class="cta-inner">
+    <div class="cta-title">아직 검토 중이라면</div>
+    <p class="cta-desc">부담 없이 신청서를 제출해 주세요. 미팅 전까지 어떠한 비용도 발생하지 않습니다.</p>
+    <div class="cta-acts">
+      <a href="onlee_docs_v2.html" target="_blank" class="btn-cta-dark" style="text-decoration:none">대행 신청하기</a>
+      <a href="https://www.onleeone.com" target="_blank" class="btn-cta-out">ONLEE 홈페이지 →</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">ONLEE INC.</div>
+    <div class="footer-info">〒104-0041 東京都中央区新富1-4-5 東銀座ビル401<br>Tel. +81-3-5542-0152 · info@onleeone.com</div>
+    <div class="footer-links">
+      <a href="https://www.onleeone.com" target="_blank">Website</a>
+      <a href="https://www.instagram.com/onlee1_official/" target="_blank">Instagram</a>
+      <a href="https://www.youtube.com/@onlee1com" target="_blank">YouTube</a>
+    </div>
+  </div>
+  <div class="footer-copy">© 2021 ONLEE INC. ALL RIGHTS RESERVED.</div>
+</footer>
+
+
+<!-- MODALS -->
+<div id="m-app" class="mbg"><div class="mbox"><div class="mhd"><span class="mhd-t">00 — 온라인 신청서</span><button class="m-close" onclick="closeM('m-app')">✕</button></div><div class="mbody"><h3>작성 안내</h3><p>본 페이지 하단의 5단계 신청 폼을 통해 제출합니다. 기본 정보 → 제품 정보 → 물류·일정 → 동의사항 → 최종 확인 순으로 작성하시면 됩니다.</p><h3>제출 후 흐름</h3><ul><li>신청 접수 후 5영업일 이내 담당자 연락</li><li>제품 적합성 검토 및 미팅 일정 협의</li><li>계약서 작성 후 프로젝트 킥오프</li></ul></div><div class="mfoot"><button class="btn-dark btn" onclick="closeM('m-app')">확인</button></div></div></div>
+<div id="m-mk" class="mbg"><div class="mbox"><div class="mhd"><span class="mhd-t">01 — 마쿠아케 실행자 동의서</span><button class="m-close" onclick="closeM('m-mk')">✕</button></div><div class="mbody"><h3>개요</h3><p>마쿠아케 프로젝트 진행을 위한 필수 서류입니다. 모든 항목을 확인·체크·기입 후 법인 인감 날인하여 PDF로 제출해야 합니다.</p><h3>필수 준수사항 10개 항목</h3><ul><li>진실성 보증 및 이용약관 준수</li><li>규정 위반 시 프로젝트 중지 및 수수료 발생 동의</li><li>위약금 규정 (응원금 총액의 20%, 5만~300만엔)</li><li>반사회적 세력 배제 확인</li><li>특정상거래법에 따른 실행자 정보 공개 동의</li><li>비밀유지 의무 / 허위·과장 금지 / 구매 조작 금지</li><li>입금 계좌 명의 일치 / 회계 처리 책임 명시</li></ul></div><div class="mfoot"><button class="btn-dark btn" onclick="closeM('m-mk')">확인</button></div></div></div>
+<div id="m-zz" class="mbg"><div class="mbox"><div class="mhd"><span class="mhd-t">02 — ZecZec 실행자 동의서</span><button class="m-close" onclick="closeM('m-zz')">✕</button></div><div class="mbody"><h3>개요</h3><p>대만 ZecZec(嘖嘖) 프로젝트 진행을 위한 필수 확인서입니다. 법인 인감 날인 후 PDF로 제출해야 합니다.</p><h3>주요 동의 항목</h3><ul><li>실행자 자격 및 행위능력 확인</li><li>ZecZec 이용약관 및 운영 정책 준수</li><li>서포터 보호 의무 — 정보 공개, 리스크 고지</li><li>플랫폼 수수료 인지 (기본 5% + 결제 수수료)</li><li>리워드 이행 책임 및 지연 시 처리 절차</li><li>대만 소비자보호법 준수</li></ul><h3>주의사항</h3><p>화장품 등 TFDA 인증 대상 제품은 ZecZec 오픈 전 TFDA 통지 완료가 필수입니다. 미통지 상태에서는 게재가 불가합니다.</p></div><div class="mfoot"><button class="btn-dark btn" onclick="closeM('m-zz')">확인</button></div></div></div>
+<div id="m-co" class="mbg"><div class="mbox"><div class="mhd"><span class="mhd-t">03 — 협업 동의서</span><button class="m-close" onclick="closeM('m-co')">✕</button></div><div class="mbody"><h3>주요 협업 조건 (10개 항목)</h3><ul><li>Makuake 신청서·이용규약 전 항목 동의</li><li>독점계약 체결 및 샘플·이미지·영상 등 콘텐츠 제공 동의</li><li>심사 결과에 따른 게재 미승인 가능성 인지</li><li>프로젝트 내용과 실제 제품 상이 시 환불 의무 (수수료 미반환)</li><li>리턴 미이행·지연 시 즉시 서포터 공지 의무</li><li>실행자 귀책 중단 시 위약금 및 비용 전액 부담</li><li>서포터 개인정보 일본 개인정보보호법(APPI) 준수</li><li>리워드 배송 완료 전 일본 내 일반 유통 판매 금지</li><li>할인율 표시 시 배송 후 3개월간 판매정가 유지</li><li>게재 프로젝트 페이지 단독 삭제 불가</li></ul></div><div class="mfoot"><button class="btn-dark btn" onclick="closeM('m-co')">확인</button></div></div></div>
+<div id="m-lg" class="mbg"><div class="mbox"><div class="mhd"><span class="mhd-t">04 — 물류 히어링 시트</span><button class="m-close" onclick="closeM('m-lg')">✕</button></div><div class="mbody"><h3>수집 정보 항목</h3><p><strong>수출자 정보:</strong> 회사명(영·한), 주소, 담당자, 연락처, 이메일</p><p style="margin-top:8px"><strong>제품 정보:</strong> 제품명, HS Code, 원산지, 제조사, 리드타임, 재질, SKU, 바코드, 제품·박스·카톤 규격/중량</p><p style="margin-top:8px"><strong>무역 조건:</strong> 인코텀즈, 운송방법, 배송비 부담, 결제통화·조건</p><p style="margin-top:8px"><strong>통관 서류:</strong> Invoice, Packing List, C/O, 인증서, PL 라벨</p><p style="margin-top:8px"><strong>런칭 일정:</strong> 프로젝트명, 플랫폼, 일정, 예상 판매가, 리워드 구성</p><h3>작성 방법</h3><p>본 신청 폼의 "물류·일정" 단계에서 주요 항목을 먼저 입력해 주세요. 상세 시트는 담당자가 별도로 전달드립니다.</p></div><div class="mfoot"><button class="btn-dark btn" onclick="closeM('m-lg')">확인</button></div></div></div>
+<div id="m-ct" class="mbg"><div class="mbox"><div class="mhd"><span class="mhd-t">05 — 기본 계약서 (독점)</span><button class="m-close" onclick="closeM('m-ct')">✕</button></div><div class="mbody"><h3>주요 계약 내용</h3><ul><li><strong>목적:</strong> 갑 공급 제품을 을(ONLEE INC.)이 일본 내 독점 수입·유통·판매</li><li><strong>독점 판매권:</strong> 일본 전역 독점 판매권 부여, 병행수입·우회공급 방지 의무</li><li><strong>가격·조건:</strong> MOQ, 공급가, 인도조건은 별첨 특약으로 결정</li><li><strong>검품·반품:</strong> 인도 후 30일 내 검품, 하자 발견 시 서면 통지</li><li><strong>제품책임(PL):</strong> 제조·설계 하자 관련 책임은 갑(공급자) 부담</li><li><strong>계약 기간:</strong> 1년, 30일 전 이의 없으면 자동 갱신</li><li><strong>예비 수량:</strong> 전체 공급수량의 3% 무상 제공</li></ul><h3>체결 시점</h3><p>신청서 검토 및 미팅 이후 프로젝트 진행 확정 시 체결됩니다. 실제 계약서는 담당자가 전달드립니다.</p></div><div class="mfoot"><button class="btn-dark btn" onclick="closeM('m-ct')">확인</button></div></div></div>
+<div id="m-fee" class="mbg"><div class="mbox"><div class="mhd"><span class="mhd-t">06 — 대행비용 구조표</span><button class="m-close" onclick="closeM('m-fee')">✕</button></div><div class="mbody"><h3>비용 요약 (ZecZec · 파일럿 1건)</h3><p><strong>초기 고정비:</strong> ¥500,000 (계약 시, JP·TW 총괄 PM 포함)</p><p><strong>성과보수:</strong> 달성금액의 10%</p><p><strong>플랫폼 수수료:</strong> 약 8.5% (ZecZec 5~6% + 결제 3~4%)</p><p><strong>물류비:</strong> 관세 0~10% + 대만 VAT 5% + 국제 물류 실비 + 대만 내륙 약 ¥500/개</p><h3>정산 구조</h3><p>1차: 달성금의 약 50% → 펀딩 종료 후 3주 이내<br>2차: 비용 차감 후 잔금 → 리워드 발송 후 7일 이내</p><p style="margin-top:10px;padding:10px 12px;background:var(--gray1);font-size:var(--fs-xs);color:var(--gray4)">모든 비용 항목은 계약 전 명세서로 제시됩니다.</p></div><div class="mfoot"><button class="btn-dark btn" onclick="closeM('m-fee')">확인</button></div></div></div>
+<div id="m-cert-doc" class="mbg"><div class="mbox"><div class="mhd"><span class="mhd-t">07 — 인증 체크리스트</span><button class="m-close" onclick="closeM('m-cert-doc')">✕</button></div><div class="mbody"><h3>즉시 판단 기준</h3><p>아래 중 하나라도 해당되면 인증 필요:</p><ul><li>피부에 직접 사용하는 제품</li><li>"미백·주름·재생·개선" 등 효능 표현</li><li>전원 연결 / 배터리 포함</li><li>Bluetooth / Wi-Fi 기능</li><li>충전기·어댑터 포함</li></ul><h3>인증 없이 가능한 카테고리</h3><ul><li>생활 잡화 (수납, 주방, 인테리어 소품)</li><li>육아용품 (전기·배터리 없음)</li><li>펫용품 (비전기) · 패션 소품 · 문구·교육 교구</li></ul><h3>대만 인증 한국 대행기관</h3><ul><li>BSMI (전기·전자): KTC, TÜV SÜD Korea — 2~4개월</li><li>NCC (무선): TÜV SÜD Korea, SGS Korea — 1~2개월</li><li>TFDA (화장품): CIRS Korea — 1~3개월</li></ul></div><div class="mfoot"><button class="btn-dark btn" onclick="closeM('m-cert-doc')">확인</button></div></div></div>
+
+
+<script>
+function go(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'})}
+function ctab(el,id){const p=el.parentElement,s=p.parentElement;p.querySelectorAll('.ct').forEach(t=>t.classList.remove('on'));el.classList.add('on');s.querySelectorAll('.cp').forEach(c=>c.classList.remove('on'));document.getElementById(id).classList.add('on')}
+function jpTab(id){
+  ['mk','gf','cf'].forEach(p=>{
+    document.getElementById('jp-'+p).style.display='none';
+    document.getElementById('jp-tab-'+p).style.background='var(--white)';
+    document.getElementById('jp-tab-'+p).style.color='var(--gray4)';
+  });
+  document.getElementById('jp-'+id).style.display='block';
+  document.getElementById('jp-tab-'+id).style.background='var(--black)';
+  document.getElementById('jp-tab-'+id).style.color='#fff';
+}
+function usTab(id){
+  ['ks','ig'].forEach(p=>{
+    document.getElementById('us-'+p).style.display='none';
+    document.getElementById('us-tab-'+p).style.background='var(--white)';
+    document.getElementById('us-tab-'+p).style.color='var(--gray4)';
+  });
+  document.getElementById('us-'+id).style.display='block';
+  document.getElementById('us-tab-'+id).style.background='var(--black)';
+  document.getElementById('us-tab-'+id).style.color='#fff';
+}
+function ftab(el,id){const p=el.parentElement,s=p.parentElement;p.querySelectorAll('.ft').forEach(t=>t.classList.remove('on'));el.classList.add('on');s.querySelectorAll('.fp2').forEach(c=>c.classList.remove('on'));document.getElementById(id).classList.add('on')}
+function faq(el){el.parentElement.classList.toggle('open')}
+function openM(id){const el=document.getElementById(id);if(el){el.classList.add('on');document.body.style.overflow='hidden'}}
+function closeM(id){const el=document.getElementById(id);if(el){el.classList.remove('on');document.body.style.overflow=''}}
+document.querySelectorAll('.mbg').forEach(el=>el.addEventListener('click',function(e){if(e.target===el)closeM(el.id)}));
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+window.addEventListener('scroll',()=>{
+  const ids=['platforms','process','about','apply'];let a='';
+  ids.forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<80)a=id});
+  document.querySelectorAll('.hd-nav a').forEach(x=>x.classList.remove('on'));
+  if(a){const m=document.querySelector('.hd-nav a[href="#'+a+'"]');if(m)m.classList.add('on')}
+});
+</script>
+</body>
+</html>
