@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ONLEE INC. — 신청 서류 작성</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --bk:#111;--wh:#fff;--g1:#f3f3f3;--g2:#e6e6e6;--g3:#aaa;
+  --g4:#555;--g5:#222;--red:#c0392b;--rl:#d0d0d0;
+  --green:#2e7d52;
+  --fs:16px;--sm:15px;--xs:13px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans KR',sans-serif;font-weight:400;background:var(--g1);color:var(--bk);line-height:1.75;font-size:var(--fs)}
+
+/* ── HEADER ── */
+.hdr{background:var(--bk);padding:0 32px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.hdr-logo{font-size:16px;font-weight:700;letter-spacing:.08em;color:var(--wh);display:flex;align-items:center;gap:8px}
+.hdr-logo span{width:8px;height:8px;border-radius:50%;background:var(--red);display:inline-block}
+.hdr-sub{font-size:13px;color:rgba(255,255,255,.5);letter-spacing:.04em}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:252px 1fr;min-height:calc(100vh - 58px)}
+@media(max-width:800px){.layout{grid-template-columns:1fr}}
+
+/* ── SIDEBAR ── */
+.sb{background:var(--wh);border-right:1px solid var(--rl);padding:20px 0;position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto}
+.sb-lbl{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--g4);padding:10px 22px 5px;font-weight:600}
+.sb-it{display:flex;align-items:center;gap:10px;padding:11px 22px;font-size:14px;color:var(--g5);cursor:pointer;transition:all .15s;border-left:3px solid transparent}
+.sb-it:hover{background:var(--g1);color:var(--bk)}
+.sb-it.on{background:#fff5f5;color:var(--red);border-color:var(--red);font-weight:600}
+.sb-it.done .sb-after{content:'✓';color:#2a5200;font-size:14px}
+.sb-it.done::after{content:'✓';margin-left:auto;font-size:14px;color:#2a5200;font-weight:700}
+.sb-it.locked{color:var(--g3);cursor:not-allowed;pointer-events:none}
+.sb-dot{width:24px;height:24px;border-radius:50%;background:var(--g2);font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700}
+.sb-it.on .sb-dot{background:var(--red);color:var(--wh)}
+.sb-it.locked .sb-dot{background:var(--g2);color:var(--g3)}
+.sb-div{height:1px;background:var(--rl);margin:8px 22px}
+@media(max-width:800px){.sb{display:none}}
+
+/* ── MAIN ── */
+.main{padding:28px 32px;max-width:960px}
+@media(max-width:800px){.main{padding:18px 16px}}
+
+/* ── PROGRESS ── */
+.prog{background:var(--wh);border:1px solid var(--rl);padding:16px 22px;margin-bottom:24px}
+.prog-lbl{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--g4);margin-bottom:10px;font-weight:600}
+.prog-bar{background:var(--g2);height:5px}
+.prog-fill{height:5px;background:var(--bk);transition:width .4s}
+.prog-steps{display:flex;gap:14px;margin-top:9px;flex-wrap:wrap}
+.prog-step{font-size:13px;color:var(--g4)}
+.prog-step.done{color:#2a5200;font-weight:600}
+.prog-step.done::before{content:'✓ '}
+
+/* ── CARD ── */
+.card{background:var(--wh);border:1px solid var(--rl);margin-bottom:24px}
+.card-hd{padding:18px 26px;border-bottom:1px solid var(--rl);display:flex;align-items:center;gap:14px}
+.card-bar{width:4px;height:24px;background:var(--red);flex-shrink:0}
+.card-bar.gr{background:var(--green)}
+.card-bar.gy{background:var(--g3)}
+.card-ttl{font-size:17px;font-weight:700}
+.card-stl{font-size:14px;color:var(--g4);margin-top:3px}
+.card-bd{padding:24px 26px}
+.notice{padding:13px 18px;border-left:4px solid #d4a017;background:#fffbe6;font-size:14px;color:#4a3200;line-height:1.72;margin-bottom:22px}
+.notice.red{border-color:var(--red);background:#fff5f5;color:#5e1010}
+.notice.blue{border-color:#2563eb;background:#f0f7ff;color:#0f2e6a}
+.notice.green{border-color:var(--green);background:#f0fff4;color:#1a4d30}
+
+/* ── PLATFORM SELECTOR ── */
+.pf-select{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:8px}
+@media(max-width:600px){.pf-select{grid-template-columns:1fr}}
+.pf-card{border:2px solid var(--rl);padding:20px 18px;cursor:pointer;transition:all .2s;text-align:center}
+.pf-card:hover{border-color:var(--g4)}
+.pf-card.on-jp{border-color:var(--red);background:var(--wh);box-shadow:0 0 0 2px var(--red) inset}
+.pf-card.on-tw{border-color:var(--green);background:var(--wh);box-shadow:0 0 0 2px var(--green) inset}
+.pf-card.on-both{border-color:var(--bk);background:var(--wh);box-shadow:0 0 0 2px var(--bk) inset}
+.pf-logo-wrap{height:52px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.pf-logo{max-height:44px;max-width:140px;object-fit:contain;display:block}
+.pf-flag{font-size:30px;margin-bottom:8px}
+.pf-name{font-size:16px;font-weight:700;margin-bottom:4px}
+.pf-desc{font-size:13px;color:var(--g4)}
+
+/* ── FORM ── */
+.fsec{margin-bottom:26px;padding-bottom:26px;border-bottom:1px solid var(--rl)}
+.fsec:last-of-type{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.ftitle{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--g4);margin-bottom:16px;font-weight:600;display:flex;align-items:center;gap:9px}
+.ftitle::before{content:'';display:block;width:18px;height:2px;background:var(--g3)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.frow.one{grid-template-columns:1fr}
+.frow.tri{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:600px){.frow,.frow.tri{grid-template-columns:1fr}}
+.fgrp{display:flex;flex-direction:column;gap:6px}
+.flbl{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--g4);font-weight:600}
+.flbl .req{color:var(--red);margin-left:2px}
+.fin,.fsel,.fta{background:var(--g1);border:1.5px solid var(--rl);padding:10px 13px;font-size:var(--fs);font-family:'Noto Sans KR',sans-serif;color:var(--bk);outline:none;transition:border-color .18s,background .18s;width:100%;font-weight:400}
+.fin:focus,.fsel:focus,.fta:focus{border-color:var(--bk);background:var(--wh);box-shadow:0 0 0 3px rgba(0,0,0,.06)}
+.fta{resize:vertical;min-height:80px}
+.fsel{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7'%3E%3Cpath d='M0 0l5.5 7 5.5-7z' fill='%23555'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px}
+.fhint{font-size:13px;color:var(--g4);line-height:1.55}
+/* auto-filled field styling */
+.fin.auto-fill{background:#fefef0;border-color:#ccc97a}
+
+/* ── RADIO OPTS ── */
+.ropts{display:flex;gap:9px;flex-wrap:wrap;margin-top:4px}
+.ro{display:flex;align-items:center;gap:6px;padding:8px 14px;border:1.5px solid var(--rl);font-size:14px;cursor:pointer;transition:all .15s}
+.ro:hover{border-color:var(--g4)}
+.ro.on{border-color:var(--bk);background:var(--bk);color:var(--wh)}
+.ro input{display:none}
+
+/* ── CHECKBOX TABLE ── */
+.agt{width:100%;border-collapse:collapse;font-size:var(--sm)}
+.agt th{background:var(--bk);color:rgba(255,255,255,.88);padding:10px 14px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;font-weight:400;text-align:left}
+.agt td{padding:12px 14px;border-bottom:1px solid var(--rl);vertical-align:top}
+.agt tr:last-child td{border-bottom:none}
+.agt tr:hover td{background:var(--g1)}
+.agt td:first-child{width:40px;text-align:center}
+.agt td.nm{width:140px;font-size:14px;font-weight:700;color:var(--bk)}
+.chk{width:18px;height:18px;accent-color:var(--bk);cursor:pointer}
+/* doc list table */
+.doc-list-table{width:100%;border-collapse:collapse;font-size:var(--sm)}
+.doc-list-table th{background:var(--bk);color:rgba(255,255,255,.88);padding:10px 14px;font-size:13px;text-align:left;font-weight:400}
+.doc-list-table td{padding:12px 14px;border-bottom:1px solid var(--rl);vertical-align:middle}
+.doc-list-table td.doc-name{width:45%;font-weight:500}
+.doc-list-table td.doc-target{width:20%}
+.doc-list-table td.doc-note{font-size:13px;color:var(--g4)}
+
+/* ── SIGN ── */
+.sign-c{border:1.5px solid var(--rl);background:var(--wh);height:120px;cursor:crosshair;position:relative;display:block;width:100%}
+.sign-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:14px;color:#bbb;pointer-events:none;text-align:center;line-height:1.9}
+.seal{width:92px;height:92px;border-radius:50%;border:3px solid var(--red);display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--red);font-weight:700;letter-spacing:.04em;line-height:1.45;text-align:center;cursor:default;flex-shrink:0}
+.seal-corp{font-size:11px;display:block;word-break:keep-all;max-width:72px;text-align:center;line-height:1.3}
+.seal-title{font-size:10px;display:block;margin-top:2px}
+.seal-in{font-size:11px;display:block}
+
+/* ── IMAGE UPLOAD ── */
+.img-drop{border:2px dashed var(--rl);padding:24px;text-align:center;cursor:pointer;transition:all .18s;background:var(--g1)}
+.img-drop:hover,.img-drop.drag{border-color:var(--bk);background:var(--wh)}
+.img-drop-ic{font-size:26px;margin-bottom:6px}
+.img-drop-tx{font-size:14px;color:var(--g4)}
+.img-drop-tx strong{color:var(--bk)}
+.img-previews{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.img-thumb{position:relative;width:120px;height:120px;cursor:zoom-in}
+.img-thumb img{width:120px;height:120px;object-fit:cover;border:1px solid var(--rl);transition:opacity .15s}
+.img-thumb:hover img{opacity:.82}
+.img-thumb .img-sz{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.58);color:#fff;font-size:10px;padding:3px 5px;text-align:center;line-height:1.3}
+.img-rm{position:absolute;top:-6px;right:-6px;width:20px;height:20px;background:var(--red);color:var(--wh);border-radius:50%;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;z-index:2}
+/* 라이트박스 */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:999;align-items:center;justify-content:center;cursor:zoom-out}
+.lightbox.on{display:flex}
+.lightbox img{max-width:90vw;max-height:88vh;object-fit:contain;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.lb-close{position:absolute;top:18px;right:24px;color:#fff;font-size:30px;cursor:pointer;line-height:1;opacity:.65;transition:opacity .15s}
+.lb-close:hover{opacity:1}
+.lb-info{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.5);font-size:12px;letter-spacing:.06em}
+
+/* ── BADGE ── */
+.badge{display:inline-flex;align-items:center;padding:5px 12px;font-size:13px;font-weight:600}
+.badge-pend{background:#fffbe6;color:#5a4200}
+.badge-done{background:#eaf3de;color:#2a5200}
+.badge-jp{background:#fff5f5;color:var(--red)}
+.badge-tw{background:#f0fff4;color:var(--green)}
+.badge-co{background:var(--g1);color:var(--g4)}
+
+/* ── BTN ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 24px;font-size:14px;letter-spacing:.06em;font-family:inherit;font-weight:600;cursor:pointer;border:none;transition:opacity .18s,background .18s}
+.btn-bk{background:var(--bk);color:var(--wh)}
+.btn-bk:hover{opacity:.75}
+.btn-ol{background:transparent;color:var(--bk);border:1.5px solid var(--rl);padding:10px 20px}
+.btn-ol:hover{border-color:var(--bk)}
+.btn-red{background:var(--red);color:var(--wh)}
+.btn-red:hover{opacity:.82}
+.btn-gr{background:var(--green);color:var(--wh)}
+.btn-gr:hover{opacity:.82}
+.btn-sm{padding:8px 16px;font-size:13px}
+.btn-lg{padding:14px 36px;font-size:15px}
+.actbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 26px;border-top:1px solid var(--rl);background:var(--g1);flex-wrap:wrap}
+.actbar-r{display:flex;gap:12px;flex-wrap:wrap}
+
+/* ── PDF SUBMIT SECTION ── */
+.pdf-doc-row{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--g1);border:1px solid var(--rl);margin-bottom:8px;flex-wrap:wrap;gap:10px}
+.pdf-doc-info{}
+.pdf-doc-name{font-size:15px;font-weight:600;margin-bottom:3px}
+.pdf-doc-sub{font-size:13px;color:var(--g4)}
+.pdf-doc-actions{display:flex;align-items:center;gap:10px}
+
+/* ── SUBMIT SUCCESS ── */
+.success-wrap{display:none;text-align:center;padding:60px 28px}
+.success-wrap.on{display:block}
+.success-ic{width:68px;height:68px;background:var(--bk);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--wh);margin:0 auto 22px}
+.success-ttl{font-size:24px;font-weight:700;margin-bottom:12px;letter-spacing:-.02em}
+.success-body{font-size:15px;color:var(--g4);line-height:1.8;max-width:440px;margin:0 auto 28px}
+.next-steps{background:var(--bk);color:var(--wh);padding:22px 26px;text-align:left;max-width:480px;margin:0 auto}
+.ns-title{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:14px;font-weight:600}
+.ns-item{display:flex;gap:12px;margin-bottom:12px;font-size:14px;color:rgba(255,255,255,.82);line-height:1.65}
+.ns-num{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.12);color:rgba(255,255,255,.6);font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-weight:700}
+
+/* ── MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:500;align-items:center;justify-content:center;padding:16px}
+.modal-bg.on{display:flex}
+.modal{background:var(--wh);width:100%;max-width:620px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.22);display:flex;flex-direction:column}
+.modal-hd{padding:16px 24px;background:var(--bk);color:var(--wh);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:sticky;top:0}
+.modal-hd-t{font-size:16px;font-weight:500}
+.modal-x{background:none;border:none;color:rgba(255,255,255,.6);font-size:22px;cursor:pointer;line-height:1}
+.modal-x:hover{color:var(--wh)}
+.modal-bd{padding:26px;flex:1}
+.modal-ft{padding:16px 24px;border-top:1px solid var(--rl);display:flex;justify-content:flex-end;gap:10px;flex-shrink:0}
+
+/* sections */
+.sec{display:none}
+.sec.on{display:block}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-logo"><span></span>ONLEE INC.</div>
+  <div class="hdr-sub">신청 서류 작성 시스템</div>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sb" id="sidebar">
+  <div style="padding:0 0 8px">
+    <div class="sb-lbl">안내</div>
+    <div class="sb-it on" onclick="goSec('intro')" id="si-intro"><div class="sb-dot">―</div>작성 방법</div>
+  </div>
+  <div class="sb-div"></div>
+  <div id="sb-common-group">
+    <div class="sb-lbl">공통 서류</div>
+    <div class="sb-it locked" onclick="goSec('logistics')" id="si-logistics"><div class="sb-dot">1</div>물류 히어링 시트</div>
+  </div>
+  <div class="sb-div"></div>
+  <div id="sb-jp-group" style="display:none">
+    <div class="sb-lbl">🇯🇵 Japan / Makuake</div>
+    <div class="sb-it locked" onclick="goSec('mk-agree')" id="si-mk-agree"><div class="sb-dot">2</div>실행자 동의서</div>
+    <div class="sb-it locked" onclick="goSec('mk-collab')" id="si-mk-collab"><div class="sb-dot">3</div>협업 동의서</div>
+  </div>
+  <div id="sb-jp-div" class="sb-div" style="display:none"></div>
+  <div id="sb-tw-group" style="display:none">
+    <div class="sb-lbl">🇹🇼 Taiwan / Zeczec</div>
+    <div class="sb-it locked" onclick="goSec('zz-agree')" id="si-zz-agree"><div class="sb-dot">4</div>실행자 동의서</div>
+    <div class="sb-it locked" onclick="goSec('zz-collab')" id="si-zz-collab"><div class="sb-dot">5</div>협업 동의서</div>
+  </div>
+  <div id="sb-tw-div" class="sb-div" style="display:none"></div>
+  <div id="sb-us-group" style="display:none">
+    <div class="sb-lbl">🇺🇸 America</div>
+    <div class="sb-it locked" onclick="goSec('us-consult')" id="si-us-consult"><div class="sb-dot">4</div>미국 상담 안내</div>
+  </div>
+  <div id="sb-us-div" class="sb-div" style="display:none"></div>
+  <div>
+    <div class="sb-lbl">제출</div>
+    <div class="sb-it locked" onclick="goSec('submit')" id="si-submit"><div class="sb-dot">✉</div>PDF 생성 · 신청 제출</div>
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- PROGRESS -->
+<div class="prog" id="prog-wrap">
+  <div class="prog-lbl">작성 진행 현황</div>
+  <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  <div class="prog-steps" id="prog-steps"></div>
+</div>
+
+<!-- ══ INTRO ══ -->
+<div class="sec on" id="sec-intro">
+  <div class="card">
+    <div class="card-hd"><div class="card-bar gy"></div><div><div class="card-ttl">신청 서류 작성 방법</div><div class="card-stl">작성 → 서명 → PDF 생성 → 신청서 제출</div></div></div>
+    <div class="card-bd">
+      <div class="notice blue" style="margin-bottom:28px">아래에서 신청 플랫폼을 먼저 선택하세요. 선택한 플랫폼에 해당하는 서류만 표시됩니다.</div>
+
+      <!-- 플랫폼 선택 -->
+      <div class="fsec">
+        <div class="ftitle">신청 플랫폼 선택</div>
+        <div class="pf-select" id="pf-cards">
+          <div class="pf-card" id="pfc-jp" onclick="setPlatform('JP')">
+            <div class="pf-logo-wrap"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iX+ODrOOCpOODpOODvF8xIiBkYXRhLW5hbWU9IuODrOOCpOODpOODvF8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDE5MjAgNTMwIj4KICA8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMjkuNC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogMi4xLjAgQnVpbGQgMTUyKSAgLS0+CiAgPGRlZnM+CiAgICA8c3R5bGU+CiAgICAgIC5zdDAgewogICAgICAgIGZpbGw6ICNmZmUyMDA7CiAgICAgIH0KCiAgICAgIC5zdDEgewogICAgICAgIGZpbGw6ICNmZmY7CiAgICAgIH0KCiAgICAgIC5zdDIgewogICAgICAgIGZpbGw6ICMxOWNlZmY7CiAgICAgIH0KCiAgICAgIC5zdDMgewogICAgICAgIGZpbGw6ICNiMmVmMTY7CiAgICAgIH0KCiAgICAgIC5zdDQgewogICAgICAgIGZpbGw6ICNmYTI1NmU7CiAgICAgIH0KICAgIDwvc3R5bGU+CiAgPC9kZWZzPgogIDxnPgogICAgPHBhdGggZD0iTTI1NC43OSw5OS4yOWMxMzAuNTQtOC4wMSwyMTcuNTgsMTMzLjU2LDE1My4zOCwyNDcuMzgtNTYuMDgsOTkuNDEtMTk2LjczLDExMi41LTI3MC4xNCwyNC44LTg3LjcyLTEwNC44LTE4LjktMjYzLjg2LDExNi43Ny0yNzIuMThaTTI2OCwxMTV2MTQ3LjVjMTkuNjUsMTcuNDksNDkuNTEsMTcuMzYsNjkuNTEuNTFsLjMtMTI3LjMxYy0xLjAxLTMuMzUtMTkuODQtMTAuNTItMjQuMDQtMTEuOTYtNy42LTIuNjEtMTYuNjQtNS4yMS0yNC41Ni02LjQ0LTcuMS0xLjEtMTQuMjItLjg2LTIxLjIxLTIuMjlaTTM1MywxNDV2ODIuNWMxNi4yNiwxMi44NywzOC45OCwxNy4zMyw1OC4wMiw3Ljk2LTcuNDYtMzUuOTctMjguMDItNjkuMzQtNTguMDItOTAuNDZaTTE2NywzMzR2LTE4MmMtNDguOTQsNDAuNTQtNjQuNiwxMDguNzgtNDEuNDgsMTY3Ljk4LDIuMjIsNS42OCw3LjM0LDE3LjUzLDExLjAyLDIxLjk4LDIuNDksMy4wMSw0LjE3LDIuMDksNy41MiwxLjU5LDguMzEtMS4yNSwxNS40Ny02LjIyLDIyLjk1LTkuNTVaTTM1MywyNDV2MjEuNWMwLDQuMjgtMTYuMjIsMTQuNjgtMjAuMzIsMTYuNjgtMjIuMzgsMTAuODctNDQuMSw3LjQ4LTY1LjY4LTMuMTh2MjIuNWMtMjMuMDUsMjMuODMtNTcuNjgsMjcuNjktODYsMTAuNXYyNS41YzAsNi4xLTI4LjA1LDE3Ljk5LTM0LDE5LDQ5LjIzLDYxLjM4LDEzNi45Miw3NS4xNywyMDIuMzEsMzAuMzIsNDMuOTctMzAuMTUsNzAuMTYtODQuMzIsNjMuNjctMTM3LjgyLTIwLjE1LDkuMjItNDEsNC4xNi01OS45OS01WiIvPgogICAgPHBhdGggZD0iTTU4MCwzODIuNWMtMi40MywxMi4xMy0yNC4wMywxNC40Ni0yNS45OS01LjAxdi0yMjQuOThjLjUxLTE1LjI4LDE2Ljk0LTIwLjI4LDI1LjItNy4yMmw1MS4yOSwxMDguNzEsNTIuNjQtMTExLjM1YzcuNC05LjQ1LDIyLjg4LTQuMDYsMjIuODksNy44MWwtLjEsMjMwLjk3Yy0xLjU2LDEwLjA2LTE0Ljk2LDEzLjgxLTIxLjg1LDYuOTgtMS4zMS0xLjI5LTQuMDgtNy40Ny00LjA4LTguOTJ2LTE2OS41bC0zNy43OSw3OS43MWMtNC45NSw5LjEzLTE3LjExLDEwLjMyLTIzLjA2LDEuNjRsLTM5LjE1LTgyLjM1djE3My41WiIvPgogICAgPHBhdGggZD0iTTEwMDIsMjg2bDY3LjA0LTc0LjQ2YzEyLjc1LTYuNjUsMjQuNzQsNi4wMSwxNS45NSwxNy45NWwtNDcuODYsNTMuODMsNDkuMDQsODljNy4zLDEyLjktOC41NiwyNC42NS0xOS4yLDE1LjJsLTQ2LjQ5LTg0LjU0Yy0xLjctLjAxLTE3Ljc4LDE3LjU1LTE4LjI4LDE5LjcyLTEuNTMsMTcuNDUsMS4zLDM2LjU4LS4xOCw1My44Mi0xLjc0LDIwLjI2LTI0LjIsMTguODQtMjUuMDcsMGwuMDUtMjMyLjAyYy43NS05LjI2LDYuNTMtMTUuNTUsMTYuMjgtMTMuMywzLjg4LjksOC43MSw3LjU0LDguNzEsMTEuMjl2MTQzLjVaIi8+CiAgICA8cGF0aCBkPSJNMTU2MiwyODZsNjcuNDktNzQuMDFjMTEuODEtNy42OSwyNC45Niw0LjcyLDE2Ljk2LDE2Ljk2bC00OC4zLDU0LjM2LDQ5LjU4LDkwLjQ1YzUuOTIsMTIuNjItMTAuODUsMjMuMzUtMjAuMjgsMTMuMjktMTUuODctMjcuMTItMjkuNDUtNTUuNjItNDUuMjMtODIuNzctLjM1LS42MS0uMDMtMS45Ni0xLjctMS4yNy0xLjExLjQ2LTE1LjI4LDE1LjctMTYuNTEsMTcuNDktLjcxLDEuMDItMS41NywxLjkxLTEuNzksMy4yMS0xLjcsMTcuOTcsMS41NCwzOC4xNS0uMTYsNTUuODQtMS4zNSwxNC4wOS0xOS4xOSwxNS40My0yMy4xMSwzLjAxbC0uOTMtMjM5LjA0Yy4xOC05LjUxLDguNjUtMTUuNDIsMTcuNzMtMTEuNzYsMS40OC42LDYuMjYsNS41Myw2LjI2LDYuNzR2MTQ3LjVaIi8+CiAgICA8cGF0aCBkPSJNODYyLDI4N3YtMzMuNWMwLS40Ni0yLjI5LTUuMTgtMi44MS02LjE5LTYtMTEuNDUtMTkuOC0xNi43NC0zMS45Ny0xMi42LTkuMjUsMy4xNS0xNS41OSwxNi4yNi0yNi43NCw3LjNzMS4wNy0yMC41MSw5LjYtMjUuNDRjMzYuMzYtMjEuMDEsNzQuNDEsNC44LDc2Ljk2LDQ0Ljg4LDIuMzQsMzYuNzktMS44Nyw3Ni4wMiwwLDExMy4wOC0uNjUsNy41OC0zLjIzLDEzLjc1LTExLjQ5LDE0LjUxLTExLjY0LDEuMDctNDQsMS4yLTU0LjU3LTEuNTMtMzkuOTUtMTAuMzEtNTAuMjMtNjQuNDYtMTcuODktODkuOTQsNC4xMS0zLjI0LDE3LjYzLTEwLjU4LDIyLjQyLTEwLjU4aDM2LjVaTTg2MiwzMTFoLTMzLjVjLS44LDAtOC4yMywzLjcyLTkuNDQsNC41Ni0xNS4wMiwxMC41LTE0Ljk1LDM0LjM2LDAsNDQuODcsMS4xOS44NCw4LjY1LDQuNTYsOS40NCw0LjU2aDMzLjV2LTU0WiIvPgogICAgPHBhdGggZD0iTTE3NDMsMzQ1LjVjMi4zMSwxNC44NywxOS4wOSwyMy42MiwzMy4wNSwyMS4wNSwxMC4zMy0xLjksMjEuNTktMTkuNTMsMzEuNS02LjU5LDEyLjQxLDE2LjItMjAuNjgsMzAuMDgtMzMuMDYsMzEuMDMtMjYuOTQsMi4wNy01My4xNC0xNy45Ny01NS41Mi00NS40NS0yLjU0LTI5LjI2LDEuODctNjIuMjYuMTYtOTEuOTEsMTIuOTUtNjMsOTguNjctNTcuNzcsMTAyLjkyLDguODQuNjIsOS43LjcyLDI0LjQ1LDAsMzQuMDktLjM5LDUuMi0yLjkyLDE1LjQ2LTkuNTQsMTUuNDZoLTY5LjVjMS4xMywxMC4yNS0xLjUzLDIzLjY3LDAsMzMuNVpNMTc5NywyODh2LTM0LjVjMC0xLjQzLTUuMjUtMTAtNi41Ni0xMS40NC0xMS40Ny0xMi43LTMzLjE0LTEwLjkxLTQyLjg4LDMuMDEtLjg0LDEuMi00LjU2LDguNjQtNC41Niw5LjQ0djMzLjVoNTRaIi8+CiAgICA8cGF0aCBkPSJNMTQyMywyODd2LTMzLjVjMC0uNDYtMi4yOS01LjE4LTIuODEtNi4xOS01Ljk3LTExLjM4LTIwLTE2Ljc3LTMyLjE4LTEyLjgxLTguODksMi44OS0xNi4wMSwxNy40OC0yNy4wNiw3LjA0LTkuNjQtOS4xMS0uMTMtMTguNjksOC4xMy0yMy45NywzMS4zMS0yMCw3NC43OC0uNDEsNzcuOTUsMzYuODgsMy40LDM5Ljk0LTIuNjMsODQuNjEtLjAxLDEyNS4wNi0uNzgsNS42My00Ljk1LDkuMDItMTAuNDgsOS41Mi0xNC44OSwxLjM3LTQ5LjYsMS40Ny02Mi41Ny00LjUyLTM5LjI1LTE4LjExLTM4Ljg5LTc1Ljc2LjY3LTkzLjM4LDEuODctLjgzLDEwLjU5LTQuMTQsMTEuODYtNC4xNGgzNi41Wk0xNDIzLDMxMWgtMzMuNWMtLjgsMC04LjIzLDMuNzItOS40NCw0LjU2LTE1LjA2LDEwLjUzLTE1LjA2LDM0LjM0LDAsNDQuODcsMS4yLjg0LDguNjQsNC41Niw5LjQ0LDQuNTZoMzMuNXYtNTRaIi8+CiAgICA8cGF0aCBkPSJNMTI0MiwyMTguNWMyLjQ0LTEyLjE4LDIyLjQ3LTEyLjEzLDI0LjAyLjk4bC0uMDIsMTU5LjAyYy0uMzQsNS40Mi00LjExLDkuODktOS40OCwxMC41Mi0xMC45NiwxLjMtNDUuNCwxLjA0LTU1LjUxLTEuNTMtMjIuNDgtNS43Mi0zNi41MS0yNi40Mi0zOC4wNS00OC45NS0yLjYtMzguMSwxLjgxLTc5LjM2LjMtMTE3Ljc4Ljk3LTEzLjQ1LDE5LjI5LTE1LjgyLDIzLjUxLTMuMDNsLjM2LDEyMC42NGMtMS4zMiw5LjYyLDEyLjE0LDI2LjYzLDIxLjM3LDI2LjYzaDMzLjV2LTE0Ni41WiIvPgogICAgPHBhdGggY2xhc3M9InN0MSIgZD0iTTM1MywyNDVjMTguOTksOS4xNiwzOS44NCwxNC4yMiw1OS45OSw1LDYuNDksNTMuNDktMTkuNzEsMTA3LjY2LTYzLjY3LDEzNy44Mi02NS4zOSw0NC44NS0xNTMuMDgsMzEuMDYtMjAyLjMxLTMwLjMyLDUuOTUtMSwzNC0xMi45LDM0LTE5di0yNS41YzI4LjMyLDE3LjE5LDYyLjk1LDEzLjMzLDg2LTEwLjV2LTIyLjVjMjEuNTgsMTAuNjUsNDMuMywxNC4wNCw2NS42OCwzLjE4LDQuMS0xLjk5LDIwLjMyLTEyLjQsMjAuMzItMTYuNjh2LTIxLjVaIi8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjY4LDExNWMxMS41Ny41NSwxNC4xMSwxLjE5LDIxLjIxLDIuMjksNy45MiwxLjIzLDE2Ljk3LDMuODMsMjQuNTYsNi40NCw0LjE5LDEuNDQsMjMuMDMsOC42MiwyNC4wNCwxMS45NmwtLjMsMTI3LjMxYy0yMCwxNi44Ni00OS44NiwxNi45OC02OS41MS0uNTFWMTE1WiIvPgogICAgPHBhdGggY2xhc3M9InN0MiIgZD0iTTE2NywzMzRjLTYuNDEsNS4yMS0xNC42NCw4LjMtMjIuOTUsOS41NS0zLjM1LjUtNS4wMywxLjQzLTcuNTItMS41OS0zLjY4LTQuNDUtOC44LTE2LjMtMTEuMDItMjEuOTgtMjMuMTEtNTkuMjEtNy40NS0xMjcuNDQsNDEuNDgtMTY3Ljk4djE4MloiLz4KICAgIDxwYXRoIGNsYXNzPSJzdDMiIGQ9Ik0zNTMsMTQ1YzMwLDIxLjEyLDUwLjU2LDU0LjQ5LDU4LjAyLDkwLjQ2LTE5LjA0LDkuMzctNDEuNzYsNC45MS01OC4wMi03Ljk2di04Mi41WiIvPgogICAgPHBhdGggY2xhc3M9InN0NCIgZD0iTTE4My4wOCwxNDAuMDJsLS4wOSwxNTQuMmM4LjI5LDguNTEsMjEuMjcsMTQsMzUuODksMTRzMjcuNi01LjQ5LDM1Ljg5LTE0bC4wOS0xNzguOTljLTI2LjQ0LDEuOTctNTAuOTYsMTAuODMtNzEuNzcsMjQuNzhaIi8+CiAgPC9nPgogIDxnPgogICAgPHBhdGggZD0iTTM0OTkuMzIsNDEzLjgzYy0zLjM2LDMuNTItNS4xLDkuMTctMTEuMTIsNy4wOWwtNTcuMDEtNDMuOWMtMS4yLS41NS0xMS41NS0uNTktMTMuMzMtLjM1LTIuMzEuMzItNi4xNSwzLjgyLTguMjcsNS4zNS0xNywxMi4zNC0zMy4wMiwyNi4xNC01MCwzOC41My0xLjU1Ljk2LTMuNTEuOTUtNS4yMS40My0yLjQyLS43NS0xMC44NC0xMS4yMy02Ljc4LTE0LjI3bDM4LjQtMzAuMDFoLTI3LjU2Yy0xLjU4LDAtNC42LTMuMjYtNC4wNy01LjIybC4zMi0xMDMuNzMsMi43OS0yLjc4aDEyOS41YzIuNjguODMsMy40OSw0LjM2LDMuNzEsNi44MSwxLjEsMTIuNC4yMiwyNi40Ny41NywzOS4wNC40NywxNy4xMS44NywzNC4xOSwxLjI0LDUxLjM2LjA2LDIuOTMsMS43NywxMC4wOC4wNywxMi40LS4yNC4zMy0zLjI1LDIuMTItMy40NiwyLjEyaC0yNy41NmwzNy43OCwyOS4wOXY4LjA0Wk0zMzc4LjU2LDI4MS43MXYxNC41NGw1NC41LDMuNGMuNTMuMzEuOTMuNzYsMS4xMSwxLjM2LDEuMjEsNC4wMy00LjA4LDE3LjY4LTEuNzQsMTkuNjkuNTEuNDMsMS42NS41MiwyLjMyLjc3bDMyLjk4LDEuMzljLjc2LS43Ny0uNi0xMS44OC0uNjUtMTMuOS0uMi04LjAzLjYtMTguMTktLjYzLTI1Ljk4LS41NC0zLjQzLTMuMzktNC40Mi02LjQ0LTQuNy0yNC4xMi0yLjI2LTUxLjcyLDEuNzUtNzYuMjEsMC0xLjc5LjA5LTQuODYsMS42My01LjI1LDMuNDJaTTMzNzguNTYsMzEwLjQ4djQ5LjJjMCwuODUsNC40NSwzLjkxLDUuODgsMy40LDI1LjA1LTEuNTgsNTIuNjksMi4xMSw3Ny40My4wMiw0LjM0LS4zNyw2LjY5LTEuMjIsNy4xMy01Ljg3LjU4LTYuMTItMS42LTEzLjczLS42NC0yMC4xNWwtNTIuMjEtMi42Yy0uOTMtLjMzLTEuNTgtMS4wNS0xLjY3LTIuMDUtLjM3LTQuMTMsNC4wMS0xNC4zLDIuOTgtMTcuOC0uMTctLjU3LS42LTEuMTEtMS4xMy0xLjM3bC0zNy43Ny0yLjc5WiIvPgogICAgPHBhdGggZD0iTTI0NzguNTksNjYuODRjMTY2LjM3LTkuMjYsMjgwLjAxLDE2NS40NywxOTkuODYsMzEyLjk3LTM3Ljc1LDY5LjQ4LTEwNy42NiwxMDkuMTItMTg2LjM5LDEwOS41NC05OS4zNi41Mi0xODUuNTUtNjcuOS0yMDYuODgtMTY1LjI0LTUuMDEtMjIuODgtNS40NS02Mi40MS0xLjI1LTg1LjQyLDE3LjExLTkzLjYxLDk5LjMzLTE2Ni41MywxOTQuNjUtMTcxLjg0Wk0yMzc3Ljk2LDIzMy4zYy0yLjQsMy4wMy0yLjc4LDE5LjE4LTQuNTQsMjMuNjktLjE4LDIuMTMsMS4wOSw0LjEsMi45Myw1LjFsOTUuMjQsNi4zMmMzLjU5LjQ1LDYuMjYsMS4yMiw3LjQ3LDQuOTRsLTcuMTcsNDAuNTZjLjM0LDMuOCwzLjEzLDQuODksNi41Myw1LjIzLDE1LjU5LDEuNTcsMzMuMSwxLjA3LDQ4Ljk0LDEuODQsMjMuMjYsMS4xMyw0Ni42NCwzLjAzLDY5LjkzLDMuNzYsMy4yLjEsNi40NS43NSw4LjA5LTIuNDkuOTktMS45NSw1LjgtMjIuODksNS44Mi0yNS4xNi4wNS01LjcyLTExLjAzLTMuNzItMTUuMTUtMy45Mi01LjkxLS4yOC0xMi0xLTE3LjkxLTEuMjktMTkuOTQtLjk2LTQxLjY3LS41LTYxLjMzLTIuNDYtMy45MS0uMzktNy4wNy0yLjIxLTcuMTUtNi40NWw2Ljc5LTM4LjM2Yy0uNTMtNC42LTQuMzEtNS41Ni04LjMyLTUuOTEtMjQuNDctMi4xNy01MC4yNi0yLjQxLTc0LjkyLTMuNzMtMTYuMi0uODctMzIuNjQtMi41LTQ4LjktMy4xMS0xLjktLjA3LTUuMDYtLjE5LTYuMzUsMS40M1oiLz4KICAgIDxwYXRoIGQ9Ik0zMDgzLjc3LDM3Ni43bDM4LjA3LDI5LjcxYzMuNDksMy40LTIuMjUsMTEuMzQtNC45MywxMy42Mi0zLjEzLDIuNjUtNS44Ljk4LTguNTYtLjc1LTE4LTExLjIzLTM1LjItMjkuMTktNTMuMTMtNDAuOTgtNC40NC0yLjkyLTExLjMzLTEuNDQtMTYuNjQtMS4yN2wtNTguMDYsNDQuMDljLTMuNTksMi4zOS0xMC41NC02LjY1LTExLjE3LTguOTktLjQ5LTEuODItLjMyLTQuMTYuNzktNS43MmwzOC4wOC0yOS43MmgtMjcuNTZjLTEuMTUsMC00LjQ4LTMuNjEtNC4wNC01LjI1bC0uMDItMTAwLjkyYy4wOC0yLjU2LDEuMTEtNC44NSwzLjU5LTUuNjhsMTI3LjQ2LS4yYzYuODEuNjcsNC45NCw4LjUxLDUuMjMsMTMuMzQsMS42LDI2LjA5LDEuOTgsNTMuNjQsMi41LDc5LjgxLjA4LDMuOTguNiwxMi4wMi0uMDQsMTUuNDgtLjI3LDEuNDUtMi43OSwzLjQyLTQuMDEsMy40MmgtMjcuNTZaTTMwMDAuNzksMjgyLjMzYy0uOCwzLjY5LjU5LDkuOTEsMCwxMy45Mmw1NC45NywzLjVjLjM2LjExLjYxLjMyLjgxLjYzLDEuNzIsMi42My0zLjA4LDE1LjM1LTIuNTYsMTkuMDUuMjEsMS40NywxLjUzLDEuOTEsMi44NiwyLjE0bDMzLjA5LDEuMjhjLS4xMy01LjI2LjE1LTEwLjU1LjAzLTE1LjgxLS4wNC0xLjc2LS42My0zLjI3LS42Ny00LjktLjEyLTQuNTksMS4wNC0xOC45Ny0xLjU1LTIxLjk4LS43Mi0uODQtMi4xOS0xLjMxLTMuMjEtMS43M2wtNzguNTItLjE2Yy0xLjg2LS4yLTQuOTEsMi40NS01LjI1LDQuMDRaTTMwMDAuNzksMzEwLjQ4djQ4LjU4YzAsMi42OSw0Ljk4LDMuODYsNy4xLDQuMDQsMjQuOSwyLjEsNTIuNzgtMS41Nyw3OC0uMDcsMS4yOC0uMTgsNC40LTEuMzYsNC45LTIuNTcsMi4xNi01LjIyLTEuMDEtMTcuNDEtLjItMjMuMzdsLTUyLjY1LTIuNzdjLS42OS0uNjQtMS4wNC0xLjQyLTEuMDQtMi4zNiwwLTQuNTcsMy42MS0xMi40LDMuMjQtMTYuODUtLjA3LS44NS0uNS0xLjc1LTEuMzctMi4wNGwtMzcuOTgtMi41OFoiLz4KICAgIDxwYXRoIGQ9Ik0zNDk1LjQsMjM5LjUxYzMuMjEsMy41MSwxLjU4LDEyLjU3LTQuNDUsMTIuMThsLTEzNy0uNDhjLTQuMDQtMS4zNC00LjgyLTcuMTktMi45LTEwLjYxLDEuNDEtMi41MSw0LjEyLTIuOTUsNi43NC0zLjE3LDE1LjgzLTEuMzQsMzMuNTYsMS4wMiw0OS42LjA1LDIuMy0uMDMsMy4xNi0yLjAxLDMuMzktNC4wNC4zMi0yLjc0LjY1LTE0Ljg5LTEuODctMTYuMTFsLTQ2LjA4LS4zNmMtNy42NC0uOTEtNy4yNi0xMy42NS42Mi0xNC4xMmw0NS4wMy0uMTdjMy4yLS45NiwyLjU2LTEyLjA0LDIuMzEtMTUuMDctLjIxLTIuNTEtLjUtNC44OC0zLjQ3LTUuMmwtNTMuMDktLjE3Yy01LjI0LTEuMTctNi4xNi0xMi42NCwxLjA5LTEzLjUsMTUuNjItMS44NCwzNC44MiwxLjQxLDUwLjgyLjA0LDMuMjctLjI4LDQuMjUtMS4xNyw0LjY0LTQuNjUuODMtNy41MS0uOS0xNi42OS0uMDMtMjQuMTYuMjEtMS43Ny45My0zLjQzLDIuNjUtNC4xNiwxLjg0LS43OCwxNy4xNC0uODMsMTguOS0uMDEsMS4yOS42LDIuMzcsMi44NSwyLjU4LDQuMjMsMS4xMyw3LjM3LS44NSwxNy4xNS4wMywyNC43Mi40LDMuNDksMi4wOSwzLjc3LDUuMjUsNC4wNCwxNi44NiwxLjM5LDM1LjU3LTEuMTIsNTIuNjMuMDEsNi4xNS45Niw1LjUxLDEyLjY3LS42MiwxMy41NGgtNTMuODhjLTIuMDMuMTMtMy4xNiwxLjQ3LTMuNDEsMy40MS0uMjksMi4yNC0uMjMsMTQuMTQuNDksMTUuNjcuMjYuNTYuNTYsMS4wNywxLjE5LDEuMjhsNTAuNjMuMTZjNy45Ni40LDguMzYsMTMuMjMuNjIsMTQuMTJsLTUwLjU5LjE5Yy0uNTUuMTYtMS40My45LTEuNzIsMS4zOC0uOTcsMS42My0uOTksMTYuMzcuMDksMTcuOTQuNzksMS4xNiwyLjY1LDEuNDYsMy45OCwxLjU5LDE2LjQsMS43MSwzNi41NC0xLjk5LDUyLjY2LS4wMywxLjA1LjEzLDIuNDkuNywzLjE4LDEuNDZaIi8+CiAgICA8cGF0aCBkPSJNMjk4MS43OCwyMTUuNjFjLTMuMzQtMy4xMi0yLjQ3LTExLjU5LDIuODYtMTIuNTMsMTQuNDEtMS40LDMwLjA5Ljk0LDQ0LjM1LS4yNCwxLjA0LS4wOSwyLjgyLS4wOSwzLjQzLTEuMDYuODQtMS4zMy45My0xNS45OC4yNS0xNy41Mi0uMjYtLjU5LTEuMDMtMS4xMy0xLjU1LTEuNTVsLTUzLjUxLS4zNmMtNi42OS0uNzctNi42Ni0xMi45MS0uMDUtMTMuNTgsMTYtMS42MSwzNC43NCwxLjUxLDUwLjgyLjAzLDEuNzItLjE2LDMuMzUtLjI2LDQuMTYtMi4wMywxLjk2LTQuMjgtLjQ3LTIxLjE2LjQ5LTI3LjM1LjI1LTEuNjMsMS40MS0zLjI4LDMuMDMtMy43OCwyLjAzLS42MywxNi42OC0uNTcsMTguNDUuMTlzMi40NCwyLjQsMi42NSw0LjE2Yy44OCw3LjU0LTEuMTIsMTcuNDEuMDIsMjQuNzMuMjgsMS43OCwxLjM3LDMuMSwzLjAzLDMuNzhsNTYuNzMuODdjMy44OCwyLjY3LDMuNTQsMTEuNzktMS40LDEyLjg5bC01NC4zOC4xMmMtMi43Mi4zMi0zLjcxLDEuMjgtNC4wMyw0LjAyLS4zNSwzLjA0LS44OCwxNS4zNCwyLjMsMTYuMjlsNDkuNDEuMTNjOC4xNi0uOCw5LjIxLDEzLjAyLDEuODMsMTQuMTlsLTUxLjY4LjM0Yy0yLjU3LDEuMjItMi4yMSwxMy4xOC0xLjg3LDE2LjEuMzIsMi43MiwxLjgzLDQuNDQsNC42NCw0LjY0bDUzLjc2LjEyYzUuMTksMS4xNiw0Ljg1LDExLjY4LS4xNCwxMy4yMWwtMTM4LjMxLjE1Yy03LjQ4LTMuMi01LjMxLTE0LjkzLDMuNTYtMTQuMTNsNTAuMTkuMDJjMS40NC0uMTYsMS45My0xLjU1LDIuMTMtMi44My4zNi0yLjMxLjMzLTE0LjYzLS41NC0xNi4wOS0uMjktLjQ4LTEuMTctMS4yMi0xLjcyLTEuMzhsLTQ1LjA5LS4xMWMtMS4xMi0uMTMtMy4wMi0uNy0zLjgyLTEuNDVaIi8+CiAgICA8cGF0aCBkPSJNMzMyNi4zNCwyMDQuODZjLjkxLjk5LDEuNDUsMy4wNSwxLjQ3LDQuNDJsLS41LDEyOS41MmMtMS4wMywxLjc0LTIuNjYsMy4yMi00Ljc4LDMuMjctMjEuNzMtMS41My00Ni4xMywxLjk4LTY3LjU1LjAyLTQuMDMtLjM3LTUuNy0yLjQ3LTUuODgtNi41bC40OS0xMjguODljMS4wMy0xLjQyLDIuMTgtMy4yNSw0LjE0LTMuMjhsNzAuNDguMmMuNjcuMzYsMS42My43MiwyLjEyLDEuMjdaTTMyNzYuODEsMjE3LjE3Yy0zLjY2LjgyLTMuOTcsNC41My00LjE2LDcuNTYtMS45NywzMi4yMiwxLjM2LDY2LjQ5LjE1LDk4LjkxLjQ3LDIuNjEsMi4wNCw0LjE4LDQuNjQsNC42NCwzLjU3LjY0LDE4LjQzLjY0LDIyLDAsMi42Mi0uNDcsNC42My0yLjM2LDQuODEtNS4xbC0uMTQtMTAxLjk5Yy0uNjYtMi0yLjQyLTMuNzgtNC41NS00LjEyLTMuMTEtLjQ5LTE5LjkzLS41NC0yMi43NS4xWiIvPgogICAgPHBhdGggZD0iTTI4NzUuNTEsMjAzLjU2bDY5Ljg2LS4xNWMxLjgxLjA1LDMuMzQsMS4wNSw0LjE3LDIuNjV2MTMzLjM3Yy0uNzUsMS42NC0zLjYxLDIuNjgtNS4zOSwyLjY1LTIxLjU2LTEuNTMtNDUuNywxLjkzLTY2Ljk0LDAtMi4xOS0uMi0zLjY3LS41NS00Ljc3LTIuNjZsLS41LTEzMC43NmMtLjExLTIuNDMsMS4yMy00LjQzLDMuNTctNS4xWk0yOTI1LjA0LDMyNi45OWMuNTQtLjUuOTEtMS40NSwxLjI3LTIuMTJsLjAzLTEwNC4zYy0uNTQtMS44OS0xLjk3LTMuMTktMy45My0zLjUtMy4yMS0uNS0yMC40Ni0uNTUtMjMuMzYuMS0yLjA1LjQ2LTMuNTEsMi40NC0zLjU1LDQuNWwuMTUsMTAzLjIzYy41LDIuMjMsMy4wNCwzLjMsNS4xMiwzLjU1LDQuNDEuNTIsMTYuMDIuNSwyMC40NiwwLDEuMTUtLjEzLDIuOTktLjY5LDMuODItMS40NVoiLz4KICA8L2c+Cjwvc3ZnPg==" class="pf-logo" alt="Makuake"></div>
+            <div class="pf-flag" style="font-size:15px;margin-bottom:4px">🇯🇵</div>
+            <div class="pf-desc">일본 크라우드펀딩</div>
+          </div>
+          <div class="pf-card" id="pfc-tw" onclick="setPlatform('TW')">
+            <div class="pf-logo-wrap"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iX+ODrOOCpOODpOODvF8xIiBkYXRhLW5hbWU9IuODrOOCpOODpOODvF8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDE5MjAgNTMwIj4KICA8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMjkuNC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogMi4xLjAgQnVpbGQgMTUyKSAgLS0+CiAgPHBhdGggZD0iTTE1NTkuMzIsNDEzLjgzYy0zLjM2LDMuNTItNS4xLDkuMTctMTEuMTIsNy4wOWwtNTcuMDEtNDMuOWMtMS4yLS41NS0xMS41NS0uNTktMTMuMzMtLjM1LTIuMzEuMzItNi4xNSwzLjgyLTguMjcsNS4zNS0xNywxMi4zNC0zMy4wMiwyNi4xNC01MCwzOC41My0xLjU1Ljk2LTMuNTEuOTUtNS4yMS40My0yLjQyLS43NS0xMC44NC0xMS4yMy02Ljc4LTE0LjI3bDM4LjQtMzAuMDFoLTI3LjU2Yy0xLjU4LDAtNC42LTMuMjYtNC4wNy01LjIybC4zMi0xMDMuNzMsMi43OS0yLjc4aDEyOS41YzIuNjguODMsMy40OSw0LjM2LDMuNzEsNi44MSwxLjEsMTIuNC4yMiwyNi40Ny41NywzOS4wNC40NywxNy4xMS44NywzNC4xOSwxLjI0LDUxLjM2LjA2LDIuOTMsMS43NywxMC4wOC4wNywxMi40LS4yNC4zMy0zLjI1LDIuMTItMy40NiwyLjEyaC0yNy41NmwzNy43OCwyOS4wOXY4LjA0Wk0xNDM4LjU2LDI4MS43MXYxNC41NGw1NC41LDMuNGMuNTMuMzEuOTMuNzYsMS4xMSwxLjM2LDEuMjEsNC4wMy00LjA4LDE3LjY4LTEuNzQsMTkuNjkuNTEuNDMsMS42NS41MiwyLjMyLjc3bDMyLjk4LDEuMzljLjc2LS43Ny0uNi0xMS44OC0uNjUtMTMuOS0uMi04LjAzLjYtMTguMTktLjYzLTI1Ljk4LS41NC0zLjQzLTMuMzktNC40Mi02LjQ0LTQuNy0yNC4xMi0yLjI2LTUxLjcyLDEuNzUtNzYuMjEsMC0xLjc5LjA5LTQuODYsMS42My01LjI1LDMuNDJaTTE0MzguNTYsMzEwLjQ4djQ5LjJjMCwuODUsNC40NSwzLjkxLDUuODgsMy40LDI1LjA1LTEuNTgsNTIuNjksMi4xMSw3Ny40My4wMiw0LjM0LS4zNyw2LjY5LTEuMjIsNy4xMy01Ljg3LjU4LTYuMTItMS42LTEzLjczLS42NC0yMC4xNWwtNTIuMjEtMi42Yy0uOTMtLjMzLTEuNTgtMS4wNS0xLjY3LTIuMDUtLjM3LTQuMTMsNC4wMS0xNC4zLDIuOTgtMTcuOC0uMTctLjU3LS42LTEuMTEtMS4xMy0xLjM3bC0zNy43Ny0yLjc5WiIvPgogIDxwYXRoIGQ9Ik01MzguNTksNjYuODRjMTY2LjM3LTkuMjYsMjgwLjAxLDE2NS40NywxOTkuODYsMzEyLjk3LTM3Ljc1LDY5LjQ4LTEwNy42NiwxMDkuMTItMTg2LjM5LDEwOS41NC05OS4zNi41Mi0xODUuNTUtNjcuOS0yMDYuODgtMTY1LjI0LTUuMDEtMjIuODgtNS40NS02Mi40MS0xLjI1LTg1LjQyLDE3LjExLTkzLjYxLDk5LjMzLTE2Ni41MywxOTQuNjUtMTcxLjg0Wk00MzcuOTYsMjMzLjNjLTIuNCwzLjAzLTIuNzgsMTkuMTgtNC41NCwyMy42OS0uMTgsMi4xMywxLjA5LDQuMSwyLjkzLDUuMWw5NS4yNCw2LjMyYzMuNTkuNDUsNi4yNiwxLjIyLDcuNDcsNC45NGwtNy4xNyw0MC41NmMuMzQsMy44LDMuMTMsNC44OSw2LjUzLDUuMjMsMTUuNTksMS41NywzMy4xLDEuMDcsNDguOTQsMS44NCwyMy4yNiwxLjEzLDQ2LjY0LDMuMDMsNjkuOTMsMy43NiwzLjIuMSw2LjQ1Ljc1LDguMDktMi40OS45OS0xLjk1LDUuOC0yMi44OSw1LjgyLTI1LjE2LjA1LTUuNzItMTEuMDMtMy43Mi0xNS4xNS0zLjkyLTUuOTEtLjI4LTEyLTEtMTcuOTEtMS4yOS0xOS45NC0uOTYtNDEuNjctLjUtNjEuMzMtMi40Ni0zLjkxLS4zOS03LjA3LTIuMjEtNy4xNS02LjQ1bDYuNzktMzguMzZjLS41My00LjYtNC4zMS01LjU2LTguMzItNS45MS0yNC40Ny0yLjE3LTUwLjI2LTIuNDEtNzQuOTItMy43My0xNi4yLS44Ny0zMi42NC0yLjUtNDguOS0zLjExLTEuOS0uMDctNS4wNi0uMTktNi4zNSwxLjQzWiIvPgogIDxwYXRoIGQ9Ik0xMTQzLjc3LDM3Ni43bDM4LjA3LDI5LjcxYzMuNDksMy40LTIuMjUsMTEuMzQtNC45MywxMy42Mi0zLjEzLDIuNjUtNS44Ljk4LTguNTYtLjc1LTE4LTExLjIzLTM1LjItMjkuMTktNTMuMTMtNDAuOTgtNC40NC0yLjkyLTExLjMzLTEuNDQtMTYuNjQtMS4yN2wtNTguMDYsNDQuMDljLTMuNTksMi4zOS0xMC41NC02LjY1LTExLjE3LTguOTktLjQ5LTEuODItLjMyLTQuMTYuNzktNS43MmwzOC4wOC0yOS43MmgtMjcuNTZjLTEuMTUsMC00LjQ4LTMuNjEtNC4wNC01LjI1bC0uMDItMTAwLjkyYy4wOC0yLjU2LDEuMTEtNC44NSwzLjU5LTUuNjhsMTI3LjQ2LS4yYzYuODEuNjcsNC45NCw4LjUxLDUuMjMsMTMuMzQsMS42LDI2LjA5LDEuOTgsNTMuNjQsMi41LDc5LjgxLjA4LDMuOTguNiwxMi4wMi0uMDQsMTUuNDgtLjI3LDEuNDUtMi43OSwzLjQyLTQuMDEsMy40MmgtMjcuNTZaTTEwNjAuNzksMjgyLjMzYy0uOCwzLjY5LjU5LDkuOTEsMCwxMy45Mmw1NC45NywzLjVjLjM2LjExLjYxLjMyLjgxLjYzLDEuNzIsMi42My0zLjA4LDE1LjM1LTIuNTYsMTkuMDUuMjEsMS40NywxLjUzLDEuOTEsMi44NiwyLjE0bDMzLjA5LDEuMjhjLS4xMy01LjI2LjE1LTEwLjU1LjAzLTE1LjgxLS4wNC0xLjc2LS42My0zLjI3LS42Ny00LjktLjEyLTQuNTksMS4wNC0xOC45Ny0xLjU1LTIxLjk4LS43Mi0uODQtMi4xOS0xLjMxLTMuMjEtMS43M2wtNzguNTItLjE2Yy0xLjg2LS4yLTQuOTEsMi40NS01LjI1LDQuMDRaTTEwNjAuNzksMzEwLjQ4djQ4LjU4YzAsMi42OSw0Ljk4LDMuODYsNy4xLDQuMDQsMjQuOSwyLjEsNTIuNzgtMS41Nyw3OC0uMDcsMS4yOC0uMTgsNC40LTEuMzYsNC45LTIuNTcsMi4xNi01LjIyLTEuMDEtMTcuNDEtLjItMjMuMzdsLTUyLjY1LTIuNzdjLS42OS0uNjQtMS4wNC0xLjQyLTEuMDQtMi4zNiwwLTQuNTcsMy42MS0xMi40LDMuMjQtMTYuODUtLjA3LS44NS0uNS0xLjc1LTEuMzctMi4wNGwtMzcuOTgtMi41OFoiLz4KICA8cGF0aCBkPSJNMTU1NS40LDIzOS41MWMzLjIxLDMuNTEsMS41OCwxMi41Ny00LjQ1LDEyLjE4bC0xMzctLjQ4Yy00LjA0LTEuMzQtNC44Mi03LjE5LTIuOS0xMC42MSwxLjQxLTIuNTEsNC4xMi0yLjk1LDYuNzQtMy4xNywxNS44My0xLjM0LDMzLjU2LDEuMDIsNDkuNi4wNSwyLjMtLjAzLDMuMTYtMi4wMSwzLjM5LTQuMDQuMzItMi43NC42NS0xNC44OS0xLjg3LTE2LjExbC00Ni4wOC0uMzZjLTcuNjQtLjkxLTcuMjYtMTMuNjUuNjItMTQuMTJsNDUuMDMtLjE3YzMuMi0uOTYsMi41Ni0xMi4wNCwyLjMxLTE1LjA3LS4yMS0yLjUxLS41LTQuODgtMy40Ny01LjJsLTUzLjA5LS4xN2MtNS4yNC0xLjE3LTYuMTYtMTIuNjQsMS4wOS0xMy41LDE1LjYyLTEuODQsMzQuODIsMS40MSw1MC44Mi4wNCwzLjI3LS4yOCw0LjI1LTEuMTcsNC42NC00LjY1LjgzLTcuNTEtLjktMTYuNjktLjAzLTI0LjE2LjIxLTEuNzcuOTMtMy40MywyLjY1LTQuMTYsMS44NC0uNzgsMTcuMTQtLjgzLDE4LjktLjAxLDEuMjkuNiwyLjM3LDIuODUsMi41OCw0LjIzLDEuMTMsNy4zNy0uODUsMTcuMTUuMDMsMjQuNzIuNCwzLjQ5LDIuMDksMy43Nyw1LjI1LDQuMDQsMTYuODYsMS4zOSwzNS41Ny0xLjEyLDUyLjYzLjAxLDYuMTUuOTYsNS41MSwxMi42Ny0uNjIsMTMuNTRoLTUzLjg4Yy0yLjAzLjEzLTMuMTYsMS40Ny0zLjQxLDMuNDEtLjI5LDIuMjQtLjIzLDE0LjE0LjQ5LDE1LjY3LjI2LjU2LjU2LDEuMDcsMS4xOSwxLjI4bDUwLjYzLjE2YzcuOTYuNCw4LjM2LDEzLjIzLjYyLDE0LjEybC01MC41OS4xOWMtLjU1LjE2LTEuNDMuOS0xLjcyLDEuMzgtLjk3LDEuNjMtLjk5LDE2LjM3LjA5LDE3Ljk0Ljc5LDEuMTYsMi42NSwxLjQ2LDMuOTgsMS41OSwxNi40LDEuNzEsMzYuNTQtMS45OSw1Mi42Ni0uMDMsMS4wNS4xMywyLjQ5LjcsMy4xOCwxLjQ2WiIvPgogIDxwYXRoIGQ9Ik0xMDQxLjc4LDIxNS42MWMtMy4zNC0zLjEyLTIuNDctMTEuNTksMi44Ni0xMi41MywxNC40MS0xLjQsMzAuMDkuOTQsNDQuMzUtLjI0LDEuMDQtLjA5LDIuODItLjA5LDMuNDMtMS4wNi44NC0xLjMzLjkzLTE1Ljk4LjI1LTE3LjUyLS4yNi0uNTktMS4wMy0xLjEzLTEuNTUtMS41NWwtNTMuNTEtLjM2Yy02LjY5LS43Ny02LjY2LTEyLjkxLS4wNS0xMy41OCwxNi0xLjYxLDM0Ljc0LDEuNTEsNTAuODIuMDMsMS43Mi0uMTYsMy4zNS0uMjYsNC4xNi0yLjAzLDEuOTYtNC4yOC0uNDctMjEuMTYuNDktMjcuMzUuMjUtMS42MywxLjQxLTMuMjgsMy4wMy0zLjc4LDIuMDMtLjYzLDE2LjY4LS41NywxOC40NS4xOXMyLjQ0LDIuNCwyLjY1LDQuMTZjLjg4LDcuNTQtMS4xMiwxNy40MS4wMiwyNC43My4yOCwxLjc4LDEuMzcsMy4xLDMuMDMsMy43OGw1Ni43My44N2MzLjg4LDIuNjcsMy41NCwxMS43OS0xLjQsMTIuODlsLTU0LjM4LjEyYy0yLjcyLjMyLTMuNzEsMS4yOC00LjAzLDQuMDItLjM1LDMuMDQtLjg4LDE1LjM0LDIuMywxNi4yOWw0OS40MS4xM2M4LjE2LS44LDkuMjEsMTMuMDIsMS44MywxNC4xOWwtNTEuNjguMzRjLTIuNTcsMS4yMi0yLjIxLDEzLjE4LTEuODcsMTYuMS4zMiwyLjcyLDEuODMsNC40NCw0LjY0LDQuNjRsNTMuNzYuMTJjNS4xOSwxLjE2LDQuODUsMTEuNjgtLjE0LDEzLjIxbC0xMzguMzEuMTVjLTcuNDgtMy4yLTUuMzEtMTQuOTMsMy41Ni0xNC4xM2w1MC4xOS4wMmMxLjQ0LS4xNiwxLjkzLTEuNTUsMi4xMy0yLjgzLjM2LTIuMzEuMzMtMTQuNjMtLjU0LTE2LjA5LS4yOS0uNDgtMS4xNy0xLjIyLTEuNzItMS4zOGwtNDUuMDktLjExYy0xLjEyLS4xMy0zLjAyLS43LTMuODItMS40NVoiLz4KICA8cGF0aCBkPSJNMTM4Ni4zNCwyMDQuODZjLjkxLjk5LDEuNDUsMy4wNSwxLjQ3LDQuNDJsLS41LDEyOS41MmMtMS4wMywxLjc0LTIuNjYsMy4yMi00Ljc4LDMuMjctMjEuNzMtMS41My00Ni4xMywxLjk4LTY3LjU1LjAyLTQuMDMtLjM3LTUuNy0yLjQ3LTUuODgtNi41bC40OS0xMjguODljMS4wMy0xLjQyLDIuMTgtMy4yNSw0LjE0LTMuMjhsNzAuNDguMmMuNjcuMzYsMS42My43MiwyLjEyLDEuMjdaTTEzMzYuODEsMjE3LjE3Yy0zLjY2LjgyLTMuOTcsNC41My00LjE2LDcuNTYtMS45NywzMi4yMiwxLjM2LDY2LjQ5LjE1LDk4LjkxLjQ3LDIuNjEsMi4wNCw0LjE4LDQuNjQsNC42NCwzLjU3LjY0LDE4LjQzLjY0LDIyLDAsMi42Mi0uNDcsNC42My0yLjM2LDQuODEtNS4xbC0uMTQtMTAxLjk5Yy0uNjYtMi0yLjQyLTMuNzgtNC41NS00LjEyLTMuMTEtLjQ5LTE5LjkzLS41NC0yMi43NS4xWiIvPgogIDxwYXRoIGQ9Ik05MzUuNTEsMjAzLjU2bDY5Ljg2LS4xNWMxLjgxLjA1LDMuMzQsMS4wNSw0LjE3LDIuNjV2MTMzLjM3Yy0uNzUsMS42NC0zLjYxLDIuNjgtNS4zOSwyLjY1LTIxLjU2LTEuNTMtNDUuNywxLjkzLTY2Ljk0LDAtMi4xOS0uMi0zLjY3LS41NS00Ljc3LTIuNjZsLS41LTEzMC43NmMtLjExLTIuNDMsMS4yMy00LjQzLDMuNTctNS4xWk05ODUuMDQsMzI2Ljk5Yy41NC0uNS45MS0xLjQ1LDEuMjctMi4xMmwuMDMtMTA0LjNjLS41NC0xLjg5LTEuOTctMy4xOS0zLjkzLTMuNS0zLjIxLS41LTIwLjQ2LS41NS0yMy4zNi4xLTIuMDUuNDYtMy41MSwyLjQ0LTMuNTUsNC41bC4xNSwxMDMuMjNjLjUsMi4yMywzLjA0LDMuMyw1LjEyLDMuNTUsNC40MS41MiwxNi4wMi41LDIwLjQ2LDAsMS4xNS0uMTMsMi45OS0uNjksMy44Mi0xLjQ1WiIvPgo8L3N2Zz4=" class="pf-logo" alt="Zeczec"></div>
+            <div class="pf-flag" style="font-size:15px;margin-bottom:4px">🇹🇼</div>
+            <div class="pf-desc">대만 크라우드펀딩</div>
+          </div>
+          <div class="pf-card" id="pfc-us" onclick="setPlatform('US')">
+            <div class="pf-logo-wrap" style="height:52px;display:flex;align-items:center;justify-content:center;font-size:32px">🇺🇸</div>
+            <div class="pf-flag" style="font-size:12px;font-weight:700;margin-bottom:4px;color:#1d4ed8">AMERICA</div>
+            <div class="pf-desc">미국 크라우드펀딩</div>
+          </div>
+          <div class="pf-card" id="pfc-both" onclick="setPlatform('BOTH')">
+            <div class="pf-logo-wrap" style="flex-direction:column;gap:4px">
+              <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iX+ODrOOCpOODpOODvF8xIiBkYXRhLW5hbWU9IuODrOOCpOODpOODvF8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDE5MjAgNTMwIj4KICA8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMjkuNC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogMi4xLjAgQnVpbGQgMTUyKSAgLS0+CiAgPGRlZnM+CiAgICA8c3R5bGU+CiAgICAgIC5zdDAgewogICAgICAgIGZpbGw6ICNmZmUyMDA7CiAgICAgIH0KCiAgICAgIC5zdDEgewogICAgICAgIGZpbGw6ICNmZmY7CiAgICAgIH0KCiAgICAgIC5zdDIgewogICAgICAgIGZpbGw6ICMxOWNlZmY7CiAgICAgIH0KCiAgICAgIC5zdDMgewogICAgICAgIGZpbGw6ICNiMmVmMTY7CiAgICAgIH0KCiAgICAgIC5zdDQgewogICAgICAgIGZpbGw6ICNmYTI1NmU7CiAgICAgIH0KICAgIDwvc3R5bGU+CiAgPC9kZWZzPgogIDxnPgogICAgPHBhdGggZD0iTTI1NC43OSw5OS4yOWMxMzAuNTQtOC4wMSwyMTcuNTgsMTMzLjU2LDE1My4zOCwyNDcuMzgtNTYuMDgsOTkuNDEtMTk2LjczLDExMi41LTI3MC4xNCwyNC44LTg3LjcyLTEwNC44LTE4LjktMjYzLjg2LDExNi43Ny0yNzIuMThaTTI2OCwxMTV2MTQ3LjVjMTkuNjUsMTcuNDksNDkuNTEsMTcuMzYsNjkuNTEuNTFsLjMtMTI3LjMxYy0xLjAxLTMuMzUtMTkuODQtMTAuNTItMjQuMDQtMTEuOTYtNy42LTIuNjEtMTYuNjQtNS4yMS0yNC41Ni02LjQ0LTcuMS0xLjEtMTQuMjItLjg2LTIxLjIxLTIuMjlaTTM1MywxNDV2ODIuNWMxNi4yNiwxMi44NywzOC45OCwxNy4zMyw1OC4wMiw3Ljk2LTcuNDYtMzUuOTctMjguMDItNjkuMzQtNTguMDItOTAuNDZaTTE2NywzMzR2LTE4MmMtNDguOTQsNDAuNTQtNjQuNiwxMDguNzgtNDEuNDgsMTY3Ljk4LDIuMjIsNS42OCw3LjM0LDE3LjUzLDExLjAyLDIxLjk4LDIuNDksMy4wMSw0LjE3LDIuMDksNy41MiwxLjU5LDguMzEtMS4yNSwxNS40Ny02LjIyLDIyLjk1LTkuNTVaTTM1MywyNDV2MjEuNWMwLDQuMjgtMTYuMjIsMTQuNjgtMjAuMzIsMTYuNjgtMjIuMzgsMTAuODctNDQuMSw3LjQ4LTY1LjY4LTMuMTh2MjIuNWMtMjMuMDUsMjMuODMtNTcuNjgsMjcuNjktODYsMTAuNXYyNS41YzAsNi4xLTI4LjA1LDE3Ljk5LTM0LDE5LDQ5LjIzLDYxLjM4LDEzNi45Miw3NS4xNywyMDIuMzEsMzAuMzIsNDMuOTctMzAuMTUsNzAuMTYtODQuMzIsNjMuNjctMTM3LjgyLTIwLjE1LDkuMjItNDEsNC4xNi01OS45OS01WiIvPgogICAgPHBhdGggZD0iTTU4MCwzODIuNWMtMi40MywxMi4xMy0yNC4wMywxNC40Ni0yNS45OS01LjAxdi0yMjQuOThjLjUxLTE1LjI4LDE2Ljk0LTIwLjI4LDI1LjItNy4yMmw1MS4yOSwxMDguNzEsNTIuNjQtMTExLjM1YzcuNC05LjQ1LDIyLjg4LTQuMDYsMjIuODksNy44MWwtLjEsMjMwLjk3Yy0xLjU2LDEwLjA2LTE0Ljk2LDEzLjgxLTIxLjg1LDYuOTgtMS4zMS0xLjI5LTQuMDgtNy40Ny00LjA4LTguOTJ2LTE2OS41bC0zNy43OSw3OS43MWMtNC45NSw5LjEzLTE3LjExLDEwLjMyLTIzLjA2LDEuNjRsLTM5LjE1LTgyLjM1djE3My41WiIvPgogICAgPHBhdGggZD0iTTEwMDIsMjg2bDY3LjA0LTc0LjQ2YzEyLjc1LTYuNjUsMjQuNzQsNi4wMSwxNS45NSwxNy45NWwtNDcuODYsNTMuODMsNDkuMDQsODljNy4zLDEyLjktOC41NiwyNC42NS0xOS4yLDE1LjJsLTQ2LjQ5LTg0LjU0Yy0xLjctLjAxLTE3Ljc4LDE3LjU1LTE4LjI4LDE5LjcyLTEuNTMsMTcuNDUsMS4zLDM2LjU4LS4xOCw1My44Mi0xLjc0LDIwLjI2LTI0LjIsMTguODQtMjUuMDcsMGwuMDUtMjMyLjAyYy43NS05LjI2LDYuNTMtMTUuNTUsMTYuMjgtMTMuMywzLjg4LjksOC43MSw3LjU0LDguNzEsMTEuMjl2MTQzLjVaIi8+CiAgICA8cGF0aCBkPSJNMTU2MiwyODZsNjcuNDktNzQuMDFjMTEuODEtNy42OSwyNC45Niw0LjcyLDE2Ljk2LDE2Ljk2bC00OC4zLDU0LjM2LDQ5LjU4LDkwLjQ1YzUuOTIsMTIuNjItMTAuODUsMjMuMzUtMjAuMjgsMTMuMjktMTUuODctMjcuMTItMjkuNDUtNTUuNjItNDUuMjMtODIuNzctLjM1LS42MS0uMDMtMS45Ni0xLjctMS4yNy0xLjExLjQ2LTE1LjI4LDE1LjctMTYuNTEsMTcuNDktLjcxLDEuMDItMS41NywxLjkxLTEuNzksMy4yMS0xLjcsMTcuOTcsMS41NCwzOC4xNS0uMTYsNTUuODQtMS4zNSwxNC4wOS0xOS4xOSwxNS40My0yMy4xMSwzLjAxbC0uOTMtMjM5LjA0Yy4xOC05LjUxLDguNjUtMTUuNDIsMTcuNzMtMTEuNzYsMS40OC42LDYuMjYsNS41Myw2LjI2LDYuNzR2MTQ3LjVaIi8+CiAgICA8cGF0aCBkPSJNODYyLDI4N3YtMzMuNWMwLS40Ni0yLjI5LTUuMTgtMi44MS02LjE5LTYtMTEuNDUtMTkuOC0xNi43NC0zMS45Ny0xMi42LTkuMjUsMy4xNS0xNS41OSwxNi4yNi0yNi43NCw3LjNzMS4wNy0yMC41MSw5LjYtMjUuNDRjMzYuMzYtMjEuMDEsNzQuNDEsNC44LDc2Ljk2LDQ0Ljg4LDIuMzQsMzYuNzktMS44Nyw3Ni4wMiwwLDExMy4wOC0uNjUsNy41OC0zLjIzLDEzLjc1LTExLjQ5LDE0LjUxLTExLjY0LDEuMDctNDQsMS4yLTU0LjU3LTEuNTMtMzkuOTUtMTAuMzEtNTAuMjMtNjQuNDYtMTcuODktODkuOTQsNC4xMS0zLjI0LDE3LjYzLTEwLjU4LDIyLjQyLTEwLjU4aDM2LjVaTTg2MiwzMTFoLTMzLjVjLS44LDAtOC4yMywzLjcyLTkuNDQsNC41Ni0xNS4wMiwxMC41LTE0Ljk1LDM0LjM2LDAsNDQuODcsMS4xOS44NCw4LjY1LDQuNTYsOS40NCw0LjU2aDMzLjV2LTU0WiIvPgogICAgPHBhdGggZD0iTTE3NDMsMzQ1LjVjMi4zMSwxNC44NywxOS4wOSwyMy42MiwzMy4wNSwyMS4wNSwxMC4zMy0xLjksMjEuNTktMTkuNTMsMzEuNS02LjU5LDEyLjQxLDE2LjItMjAuNjgsMzAuMDgtMzMuMDYsMzEuMDMtMjYuOTQsMi4wNy01My4xNC0xNy45Ny01NS41Mi00NS40NS0yLjU0LTI5LjI2LDEuODctNjIuMjYuMTYtOTEuOTEsMTIuOTUtNjMsOTguNjctNTcuNzcsMTAyLjkyLDguODQuNjIsOS43LjcyLDI0LjQ1LDAsMzQuMDktLjM5LDUuMi0yLjkyLDE1LjQ2LTkuNTQsMTUuNDZoLTY5LjVjMS4xMywxMC4yNS0xLjUzLDIzLjY3LDAsMzMuNVpNMTc5NywyODh2LTM0LjVjMC0xLjQzLTUuMjUtMTAtNi41Ni0xMS40NC0xMS40Ny0xMi43LTMzLjE0LTEwLjkxLTQyLjg4LDMuMDEtLjg0LDEuMi00LjU2LDguNjQtNC41Niw5LjQ0djMzLjVoNTRaIi8+CiAgICA8cGF0aCBkPSJNMTQyMywyODd2LTMzLjVjMC0uNDYtMi4yOS01LjE4LTIuODEtNi4xOS01Ljk3LTExLjM4LTIwLTE2Ljc3LTMyLjE4LTEyLjgxLTguODksMi44OS0xNi4wMSwxNy40OC0yNy4wNiw3LjA0LTkuNjQtOS4xMS0uMTMtMTguNjksOC4xMy0yMy45NywzMS4zMS0yMCw3NC43OC0uNDEsNzcuOTUsMzYuODgsMy40LDM5Ljk0LTIuNjMsODQuNjEtLjAxLDEyNS4wNi0uNzgsNS42My00Ljk1LDkuMDItMTAuNDgsOS41Mi0xNC44OSwxLjM3LTQ5LjYsMS40Ny02Mi41Ny00LjUyLTM5LjI1LTE4LjExLTM4Ljg5LTc1Ljc2LjY3LTkzLjM4LDEuODctLjgzLDEwLjU5LTQuMTQsMTEuODYtNC4xNGgzNi41Wk0xNDIzLDMxMWgtMzMuNWMtLjgsMC04LjIzLDMuNzItOS40NCw0LjU2LTE1LjA2LDEwLjUzLTE1LjA2LDM0LjM0LDAsNDQuODcsMS4yLjg0LDguNjQsNC41Niw5LjQ0LDQuNTZoMzMuNXYtNTRaIi8+CiAgICA8cGF0aCBkPSJNMTI0MiwyMTguNWMyLjQ0LTEyLjE4LDIyLjQ3LTEyLjEzLDI0LjAyLjk4bC0uMDIsMTU5LjAyYy0uMzQsNS40Mi00LjExLDkuODktOS40OCwxMC41Mi0xMC45NiwxLjMtNDUuNCwxLjA0LTU1LjUxLTEuNTMtMjIuNDgtNS43Mi0zNi41MS0yNi40Mi0zOC4wNS00OC45NS0yLjYtMzguMSwxLjgxLTc5LjM2LjMtMTE3Ljc4Ljk3LTEzLjQ1LDE5LjI5LTE1LjgyLDIzLjUxLTMuMDNsLjM2LDEyMC42NGMtMS4zMiw5LjYyLDEyLjE0LDI2LjYzLDIxLjM3LDI2LjYzaDMzLjV2LTE0Ni41WiIvPgogICAgPHBhdGggY2xhc3M9InN0MSIgZD0iTTM1MywyNDVjMTguOTksOS4xNiwzOS44NCwxNC4yMiw1OS45OSw1LDYuNDksNTMuNDktMTkuNzEsMTA3LjY2LTYzLjY3LDEzNy44Mi02NS4zOSw0NC44NS0xNTMuMDgsMzEuMDYtMjAyLjMxLTMwLjMyLDUuOTUtMSwzNC0xMi45LDM0LTE5di0yNS41YzI4LjMyLDE3LjE5LDYyLjk1LDEzLjMzLDg2LTEwLjV2LTIyLjVjMjEuNTgsMTAuNjUsNDMuMywxNC4wNCw2NS42OCwzLjE4LDQuMS0xLjk5LDIwLjMyLTEyLjQsMjAuMzItMTYuNjh2LTIxLjVaIi8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjY4LDExNWMxMS41Ny41NSwxNC4xMSwxLjE5LDIxLjIxLDIuMjksNy45MiwxLjIzLDE2Ljk3LDMuODMsMjQuNTYsNi40NCw0LjE5LDEuNDQsMjMuMDMsOC42MiwyNC4wNCwxMS45NmwtLjMsMTI3LjMxYy0yMCwxNi44Ni00OS44NiwxNi45OC02OS41MS0uNTFWMTE1WiIvPgogICAgPHBhdGggY2xhc3M9InN0MiIgZD0iTTE2NywzMzRjLTYuNDEsNS4yMS0xNC42NCw4LjMtMjIuOTUsOS41NS0zLjM1LjUtNS4wMywxLjQzLTcuNTItMS41OS0zLjY4LTQuNDUtOC44LTE2LjMtMTEuMDItMjEuOTgtMjMuMTEtNTkuMjEtNy40NS0xMjcuNDQsNDEuNDgtMTY3Ljk4djE4MloiLz4KICAgIDxwYXRoIGNsYXNzPSJzdDMiIGQ9Ik0zNTMsMTQ1YzMwLDIxLjEyLDUwLjU2LDU0LjQ5LDU4LjAyLDkwLjQ2LTE5LjA0LDkuMzctNDEuNzYsNC45MS01OC4wMi03Ljk2di04Mi41WiIvPgogICAgPHBhdGggY2xhc3M9InN0NCIgZD0iTTE4My4wOCwxNDAuMDJsLS4wOSwxNTQuMmM4LjI5LDguNTEsMjEuMjcsMTQsMzUuODksMTRzMjcuNi01LjQ5LDM1Ljg5LTE0bC4wOS0xNzguOTljLTI2LjQ0LDEuOTctNTAuOTYsMTAuODMtNzEuNzcsMjQuNzhaIi8+CiAgPC9nPgogIDxnPgogICAgPHBhdGggZD0iTTM0OTkuMzIsNDEzLjgzYy0zLjM2LDMuNTItNS4xLDkuMTctMTEuMTIsNy4wOWwtNTcuMDEtNDMuOWMtMS4yLS41NS0xMS41NS0uNTktMTMuMzMtLjM1LTIuMzEuMzItNi4xNSwzLjgyLTguMjcsNS4zNS0xNywxMi4zNC0zMy4wMiwyNi4xNC01MCwzOC41My0xLjU1Ljk2LTMuNTEuOTUtNS4yMS40My0yLjQyLS43NS0xMC44NC0xMS4yMy02Ljc4LTE0LjI3bDM4LjQtMzAuMDFoLTI3LjU2Yy0xLjU4LDAtNC42LTMuMjYtNC4wNy01LjIybC4zMi0xMDMuNzMsMi43OS0yLjc4aDEyOS41YzIuNjguODMsMy40OSw0LjM2LDMuNzEsNi44MSwxLjEsMTIuNC4yMiwyNi40Ny41NywzOS4wNC40NywxNy4xMS44NywzNC4xOSwxLjI0LDUxLjM2LjA2LDIuOTMsMS43NywxMC4wOC4wNywxMi40LS4yNC4zMy0zLjI1LDIuMTItMy40NiwyLjEyaC0yNy41NmwzNy43OCwyOS4wOXY4LjA0Wk0zMzc4LjU2LDI4MS43MXYxNC41NGw1NC41LDMuNGMuNTMuMzEuOTMuNzYsMS4xMSwxLjM2LDEuMjEsNC4wMy00LjA4LDE3LjY4LTEuNzQsMTkuNjkuNTEuNDMsMS42NS41MiwyLjMyLjc3bDMyLjk4LDEuMzljLjc2LS43Ny0uNi0xMS44OC0uNjUtMTMuOS0uMi04LjAzLjYtMTguMTktLjYzLTI1Ljk4LS41NC0zLjQzLTMuMzktNC40Mi02LjQ0LTQuNy0yNC4xMi0yLjI2LTUxLjcyLDEuNzUtNzYuMjEsMC0xLjc5LjA5LTQuODYsMS42My01LjI1LDMuNDJaTTMzNzguNTYsMzEwLjQ4djQ5LjJjMCwuODUsNC40NSwzLjkxLDUuODgsMy40LDI1LjA1LTEuNTgsNTIuNjksMi4xMSw3Ny40My4wMiw0LjM0LS4zNyw2LjY5LTEuMjIsNy4xMy01Ljg3LjU4LTYuMTItMS42LTEzLjczLS42NC0yMC4xNWwtNTIuMjEtMi42Yy0uOTMtLjMzLTEuNTgtMS4wNS0xLjY3LTIuMDUtLjM3LTQuMTMsNC4wMS0xNC4zLDIuOTgtMTcuOC0uMTctLjU3LS42LTEuMTEtMS4xMy0xLjM3bC0zNy43Ny0yLjc5WiIvPgogICAgPHBhdGggZD0iTTI0NzguNTksNjYuODRjMTY2LjM3LTkuMjYsMjgwLjAxLDE2NS40NywxOTkuODYsMzEyLjk3LTM3Ljc1LDY5LjQ4LTEwNy42NiwxMDkuMTItMTg2LjM5LDEwOS41NC05OS4zNi41Mi0xODUuNTUtNjcuOS0yMDYuODgtMTY1LjI0LTUuMDEtMjIuODgtNS40NS02Mi40MS0xLjI1LTg1LjQyLDE3LjExLTkzLjYxLDk5LjMzLTE2Ni41MywxOTQuNjUtMTcxLjg0Wk0yMzc3Ljk2LDIzMy4zYy0yLjQsMy4wMy0yLjc4LDE5LjE4LTQuNTQsMjMuNjktLjE4LDIuMTMsMS4wOSw0LjEsMi45Myw1LjFsOTUuMjQsNi4zMmMzLjU5LjQ1LDYuMjYsMS4yMiw3LjQ3LDQuOTRsLTcuMTcsNDAuNTZjLjM0LDMuOCwzLjEzLDQuODksNi41Myw1LjIzLDE1LjU5LDEuNTcsMzMuMSwxLjA3LDQ4Ljk0LDEuODQsMjMuMjYsMS4xMyw0Ni42NCwzLjAzLDY5LjkzLDMuNzYsMy4yLjEsNi40NS43NSw4LjA5LTIuNDkuOTktMS45NSw1LjgtMjIuODksNS44Mi0yNS4xNi4wNS01LjcyLTExLjAzLTMuNzItMTUuMTUtMy45Mi01LjkxLS4yOC0xMi0xLTE3LjkxLTEuMjktMTkuOTQtLjk2LTQxLjY3LS41LTYxLjMzLTIuNDYtMy45MS0uMzktNy4wNy0yLjIxLTcuMTUtNi40NWw2Ljc5LTM4LjM2Yy0uNTMtNC42LTQuMzEtNS41Ni04LjMyLTUuOTEtMjQuNDctMi4xNy01MC4yNi0yLjQxLTc0LjkyLTMuNzMtMTYuMi0uODctMzIuNjQtMi41LTQ4LjktMy4xMS0xLjktLjA3LTUuMDYtLjE5LTYuMzUsMS40M1oiLz4KICAgIDxwYXRoIGQ9Ik0zMDgzLjc3LDM3Ni43bDM4LjA3LDI5LjcxYzMuNDksMy40LTIuMjUsMTEuMzQtNC45MywxMy42Mi0zLjEzLDIuNjUtNS44Ljk4LTguNTYtLjc1LTE4LTExLjIzLTM1LjItMjkuMTktNTMuMTMtNDAuOTgtNC40NC0yLjkyLTExLjMzLTEuNDQtMTYuNjQtMS4yN2wtNTguMDYsNDQuMDljLTMuNTksMi4zOS0xMC41NC02LjY1LTExLjE3LTguOTktLjQ5LTEuODItLjMyLTQuMTYuNzktNS43MmwzOC4wOC0yOS43MmgtMjcuNTZjLTEuMTUsMC00LjQ4LTMuNjEtNC4wNC01LjI1bC0uMDItMTAwLjkyYy4wOC0yLjU2LDEuMTEtNC44NSwzLjU5LTUuNjhsMTI3LjQ2LS4yYzYuODEuNjcsNC45NCw4LjUxLDUuMjMsMTMuMzQsMS42LDI2LjA5LDEuOTgsNTMuNjQsMi41LDc5LjgxLjA4LDMuOTguNiwxMi4wMi0uMDQsMTUuNDgtLjI3LDEuNDUtMi43OSwzLjQyLTQuMDEsMy40MmgtMjcuNTZaTTMwMDAuNzksMjgyLjMzYy0uOCwzLjY5LjU5LDkuOTEsMCwxMy45Mmw1NC45NywzLjVjLjM2LjExLjYxLjMyLjgxLjYzLDEuNzIsMi42My0zLjA4LDE1LjM1LTIuNTYsMTkuMDUuMjEsMS40NywxLjUzLDEuOTEsMi44NiwyLjE0bDMzLjA5LDEuMjhjLS4xMy01LjI2LjE1LTEwLjU1LjAzLTE1LjgxLS4wNC0xLjc2LS42My0zLjI3LS42Ny00LjktLjEyLTQuNTksMS4wNC0xOC45Ny0xLjU1LTIxLjk4LS43Mi0uODQtMi4xOS0xLjMxLTMuMjEtMS43M2wtNzguNTItLjE2Yy0xLjg2LS4yLTQuOTEsMi40NS01LjI1LDQuMDRaTTMwMDAuNzksMzEwLjQ4djQ4LjU4YzAsMi42OSw0Ljk4LDMuODYsNy4xLDQuMDQsMjQuOSwyLjEsNTIuNzgtMS41Nyw3OC0uMDcsMS4yOC0uMTgsNC40LTEuMzYsNC45LTIuNTcsMi4xNi01LjIyLTEuMDEtMTcuNDEtLjItMjMuMzdsLTUyLjY1LTIuNzdjLS42OS0uNjQtMS4wNC0xLjQyLTEuMDQtMi4zNiwwLTQuNTcsMy42MS0xMi40LDMuMjQtMTYuODUtLjA3LS44NS0uNS0xLjc1LTEuMzctMi4wNGwtMzcuOTgtMi41OFoiLz4KICAgIDxwYXRoIGQ9Ik0zNDk1LjQsMjM5LjUxYzMuMjEsMy41MSwxLjU4LDEyLjU3LTQuNDUsMTIuMThsLTEzNy0uNDhjLTQuMDQtMS4zNC00LjgyLTcuMTktMi45LTEwLjYxLDEuNDEtMi41MSw0LjEyLTIuOTUsNi43NC0zLjE3LDE1LjgzLTEuMzQsMzMuNTYsMS4wMiw0OS42LjA1LDIuMy0uMDMsMy4xNi0yLjAxLDMuMzktNC4wNC4zMi0yLjc0LjY1LTE0Ljg5LTEuODctMTYuMTFsLTQ2LjA4LS4zNmMtNy42NC0uOTEtNy4yNi0xMy42NS42Mi0xNC4xMmw0NS4wMy0uMTdjMy4yLS45NiwyLjU2LTEyLjA0LDIuMzEtMTUuMDctLjIxLTIuNTEtLjUtNC44OC0zLjQ3LTUuMmwtNTMuMDktLjE3Yy01LjI0LTEuMTctNi4xNi0xMi42NCwxLjA5LTEzLjUsMTUuNjItMS44NCwzNC44MiwxLjQxLDUwLjgyLjA0LDMuMjctLjI4LDQuMjUtMS4xNyw0LjY0LTQuNjUuODMtNy41MS0uOS0xNi42OS0uMDMtMjQuMTYuMjEtMS43Ny45My0zLjQzLDIuNjUtNC4xNiwxLjg0LS43OCwxNy4xNC0uODMsMTguOS0uMDEsMS4yOS42LDIuMzcsMi44NSwyLjU4LDQuMjMsMS4xMyw3LjM3LS44NSwxNy4xNS4wMywyNC43Mi40LDMuNDksMi4wOSwzLjc3LDUuMjUsNC4wNCwxNi44NiwxLjM5LDM1LjU3LTEuMTIsNTIuNjMuMDEsNi4xNS45Niw1LjUxLDEyLjY3LS42MiwxMy41NGgtNTMuODhjLTIuMDMuMTMtMy4xNiwxLjQ3LTMuNDEsMy40MS0uMjksMi4yNC0uMjMsMTQuMTQuNDksMTUuNjcuMjYuNTYuNTYsMS4wNywxLjE5LDEuMjhsNTAuNjMuMTZjNy45Ni40LDguMzYsMTMuMjMuNjIsMTQuMTJsLTUwLjU5LjE5Yy0uNTUuMTYtMS40My45LTEuNzIsMS4zOC0uOTcsMS42My0uOTksMTYuMzcuMDksMTcuOTQuNzksMS4xNiwyLjY1LDEuNDYsMy45OCwxLjU5LDE2LjQsMS43MSwzNi41NC0xLjk5LDUyLjY2LS4wMywxLjA1LjEzLDIuNDkuNywzLjE4LDEuNDZaIi8+CiAgICA8cGF0aCBkPSJNMjk4MS43OCwyMTUuNjFjLTMuMzQtMy4xMi0yLjQ3LTExLjU5LDIuODYtMTIuNTMsMTQuNDEtMS40LDMwLjA5Ljk0LDQ0LjM1LS4yNCwxLjA0LS4wOSwyLjgyLS4wOSwzLjQzLTEuMDYuODQtMS4zMy45My0xNS45OC4yNS0xNy41Mi0uMjYtLjU5LTEuMDMtMS4xMy0xLjU1LTEuNTVsLTUzLjUxLS4zNmMtNi42OS0uNzctNi42Ni0xMi45MS0uMDUtMTMuNTgsMTYtMS42MSwzNC43NCwxLjUxLDUwLjgyLjAzLDEuNzItLjE2LDMuMzUtLjI2LDQuMTYtMi4wMywxLjk2LTQuMjgtLjQ3LTIxLjE2LjQ5LTI3LjM1LjI1LTEuNjMsMS40MS0zLjI4LDMuMDMtMy43OCwyLjAzLS42MywxNi42OC0uNTcsMTguNDUuMTlzMi40NCwyLjQsMi42NSw0LjE2Yy44OCw3LjU0LTEuMTIsMTcuNDEuMDIsMjQuNzMuMjgsMS43OCwxLjM3LDMuMSwzLjAzLDMuNzhsNTYuNzMuODdjMy44OCwyLjY3LDMuNTQsMTEuNzktMS40LDEyLjg5bC01NC4zOC4xMmMtMi43Mi4zMi0zLjcxLDEuMjgtNC4wMyw0LjAyLS4zNSwzLjA0LS44OCwxNS4zNCwyLjMsMTYuMjlsNDkuNDEuMTNjOC4xNi0uOCw5LjIxLDEzLjAyLDEuODMsMTQuMTlsLTUxLjY4LjM0Yy0yLjU3LDEuMjItMi4yMSwxMy4xOC0xLjg3LDE2LjEuMzIsMi43MiwxLjgzLDQuNDQsNC42NCw0LjY0bDUzLjc2LjEyYzUuMTksMS4xNiw0Ljg1LDExLjY4LS4xNCwxMy4yMWwtMTM4LjMxLjE1Yy03LjQ4LTMuMi01LjMxLTE0LjkzLDMuNTYtMTQuMTNsNTAuMTkuMDJjMS40NC0uMTYsMS45My0xLjU1LDIuMTMtMi44My4zNi0yLjMxLjMzLTE0LjYzLS41NC0xNi4wOS0uMjktLjQ4LTEuMTctMS4yMi0xLjcyLTEuMzhsLTQ1LjA5LS4xMWMtMS4xMi0uMTMtMy4wMi0uNy0zLjgyLTEuNDVaIi8+CiAgICA8cGF0aCBkPSJNMzMyNi4zNCwyMDQuODZjLjkxLjk5LDEuNDUsMy4wNSwxLjQ3LDQuNDJsLS41LDEyOS41MmMtMS4wMywxLjc0LTIuNjYsMy4yMi00Ljc4LDMuMjctMjEuNzMtMS41My00Ni4xMywxLjk4LTY3LjU1LjAyLTQuMDMtLjM3LTUuNy0yLjQ3LTUuODgtNi41bC40OS0xMjguODljMS4wMy0xLjQyLDIuMTgtMy4yNSw0LjE0LTMuMjhsNzAuNDguMmMuNjcuMzYsMS42My43MiwyLjEyLDEuMjdaTTMyNzYuODEsMjE3LjE3Yy0zLjY2LjgyLTMuOTcsNC41My00LjE2LDcuNTYtMS45NywzMi4yMiwxLjM2LDY2LjQ5LjE1LDk4LjkxLjQ3LDIuNjEsMi4wNCw0LjE4LDQuNjQsNC42NCwzLjU3LjY0LDE4LjQzLjY0LDIyLDAsMi42Mi0uNDcsNC42My0yLjM2LDQuODEtNS4xbC0uMTQtMTAxLjk5Yy0uNjYtMi0yLjQyLTMuNzgtNC41NS00LjEyLTMuMTEtLjQ5LTE5LjkzLS41NC0yMi43NS4xWiIvPgogICAgPHBhdGggZD0iTTI4NzUuNTEsMjAzLjU2bDY5Ljg2LS4xNWMxLjgxLjA1LDMuMzQsMS4wNSw0LjE3LDIuNjV2MTMzLjM3Yy0uNzUsMS42NC0zLjYxLDIuNjgtNS4zOSwyLjY1LTIxLjU2LTEuNTMtNDUuNywxLjkzLTY2Ljk0LDAtMi4xOS0uMi0zLjY3LS41NS00Ljc3LTIuNjZsLS41LTEzMC43NmMtLjExLTIuNDMsMS4yMy00LjQzLDMuNTctNS4xWk0yOTI1LjA0LDMyNi45OWMuNTQtLjUuOTEtMS40NSwxLjI3LTIuMTJsLjAzLTEwNC4zYy0uNTQtMS44OS0xLjk3LTMuMTktMy45My0zLjUtMy4yMS0uNS0yMC40Ni0uNTUtMjMuMzYuMS0yLjA1LjQ2LTMuNTEsMi40NC0zLjU1LDQuNWwuMTUsMTAzLjIzYy41LDIuMjMsMy4wNCwzLjMsNS4xMiwzLjU1LDQuNDEuNTIsMTYuMDIuNSwyMC40NiwwLDEuMTUtLjEzLDIuOTktLjY5LDMuODItMS40NVoiLz4KICA8L2c+Cjwvc3ZnPg==" style="height:18px;object-fit:contain" alt="">
+              <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iX+ODrOOCpOODpOODvF8xIiBkYXRhLW5hbWU9IuODrOOCpOODpOODvF8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDE5MjAgNTMwIj4KICA8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMjkuNC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogMi4xLjAgQnVpbGQgMTUyKSAgLS0+CiAgPHBhdGggZD0iTTE1NTkuMzIsNDEzLjgzYy0zLjM2LDMuNTItNS4xLDkuMTctMTEuMTIsNy4wOWwtNTcuMDEtNDMuOWMtMS4yLS41NS0xMS41NS0uNTktMTMuMzMtLjM1LTIuMzEuMzItNi4xNSwzLjgyLTguMjcsNS4zNS0xNywxMi4zNC0zMy4wMiwyNi4xNC01MCwzOC41My0xLjU1Ljk2LTMuNTEuOTUtNS4yMS40My0yLjQyLS43NS0xMC44NC0xMS4yMy02Ljc4LTE0LjI3bDM4LjQtMzAuMDFoLTI3LjU2Yy0xLjU4LDAtNC42LTMuMjYtNC4wNy01LjIybC4zMi0xMDMuNzMsMi43OS0yLjc4aDEyOS41YzIuNjguODMsMy40OSw0LjM2LDMuNzEsNi44MSwxLjEsMTIuNC4yMiwyNi40Ny41NywzOS4wNC40NywxNy4xMS44NywzNC4xOSwxLjI0LDUxLjM2LjA2LDIuOTMsMS43NywxMC4wOC4wNywxMi40LS4yNC4zMy0zLjI1LDIuMTItMy40NiwyLjEyaC0yNy41NmwzNy43OCwyOS4wOXY4LjA0Wk0xNDM4LjU2LDI4MS43MXYxNC41NGw1NC41LDMuNGMuNTMuMzEuOTMuNzYsMS4xMSwxLjM2LDEuMjEsNC4wMy00LjA4LDE3LjY4LTEuNzQsMTkuNjkuNTEuNDMsMS42NS41MiwyLjMyLjc3bDMyLjk4LDEuMzljLjc2LS43Ny0uNi0xMS44OC0uNjUtMTMuOS0uMi04LjAzLjYtMTguMTktLjYzLTI1Ljk4LS41NC0zLjQzLTMuMzktNC40Mi02LjQ0LTQuNy0yNC4xMi0yLjI2LTUxLjcyLDEuNzUtNzYuMjEsMC0xLjc5LjA5LTQuODYsMS42My01LjI1LDMuNDJaTTE0MzguNTYsMzEwLjQ4djQ5LjJjMCwuODUsNC40NSwzLjkxLDUuODgsMy40LDI1LjA1LTEuNTgsNTIuNjksMi4xMSw3Ny40My4wMiw0LjM0LS4zNyw2LjY5LTEuMjIsNy4xMy01Ljg3LjU4LTYuMTItMS42LTEzLjczLS42NC0yMC4xNWwtNTIuMjEtMi42Yy0uOTMtLjMzLTEuNTgtMS4wNS0xLjY3LTIuMDUtLjM3LTQuMTMsNC4wMS0xNC4zLDIuOTgtMTcuOC0uMTctLjU3LS42LTEuMTEtMS4xMy0xLjM3bC0zNy43Ny0yLjc5WiIvPgogIDxwYXRoIGQ9Ik01MzguNTksNjYuODRjMTY2LjM3LTkuMjYsMjgwLjAxLDE2NS40NywxOTkuODYsMzEyLjk3LTM3Ljc1LDY5LjQ4LTEwNy42NiwxMDkuMTItMTg2LjM5LDEwOS41NC05OS4zNi41Mi0xODUuNTUtNjcuOS0yMDYuODgtMTY1LjI0LTUuMDEtMjIuODgtNS40NS02Mi40MS0xLjI1LTg1LjQyLDE3LjExLTkzLjYxLDk5LjMzLTE2Ni41MywxOTQuNjUtMTcxLjg0Wk00MzcuOTYsMjMzLjNjLTIuNCwzLjAzLTIuNzgsMTkuMTgtNC41NCwyMy42OS0uMTgsMi4xMywxLjA5LDQuMSwyLjkzLDUuMWw5NS4yNCw2LjMyYzMuNTkuNDUsNi4yNiwxLjIyLDcuNDcsNC45NGwtNy4xNyw0MC41NmMuMzQsMy44LDMuMTMsNC44OSw2LjUzLDUuMjMsMTUuNTksMS41NywzMy4xLDEuMDcsNDguOTQsMS44NCwyMy4yNiwxLjEzLDQ2LjY0LDMuMDMsNjkuOTMsMy43NiwzLjIuMSw2LjQ1Ljc1LDguMDktMi40OS45OS0xLjk1LDUuOC0yMi44OSw1LjgyLTI1LjE2LjA1LTUuNzItMTEuMDMtMy43Mi0xNS4xNS0zLjkyLTUuOTEtLjI4LTEyLTEtMTcuOTEtMS4yOS0xOS45NC0uOTYtNDEuNjctLjUtNjEuMzMtMi40Ni0zLjkxLS4zOS03LjA3LTIuMjEtNy4xNS02LjQ1bDYuNzktMzguMzZjLS41My00LjYtNC4zMS01LjU2LTguMzItNS45MS0yNC40Ny0yLjE3LTUwLjI2LTIuNDEtNzQuOTItMy43My0xNi4yLS44Ny0zMi42NC0yLjUtNDguOS0zLjExLTEuOS0uMDctNS4wNi0uMTktNi4zNSwxLjQzWiIvPgogIDxwYXRoIGQ9Ik0xMTQzLjc3LDM3Ni43bDM4LjA3LDI5LjcxYzMuNDksMy40LTIuMjUsMTEuMzQtNC45MywxMy42Mi0zLjEzLDIuNjUtNS44Ljk4LTguNTYtLjc1LTE4LTExLjIzLTM1LjItMjkuMTktNTMuMTMtNDAuOTgtNC40NC0yLjkyLTExLjMzLTEuNDQtMTYuNjQtMS4yN2wtNTguMDYsNDQuMDljLTMuNTksMi4zOS0xMC41NC02LjY1LTExLjE3LTguOTktLjQ5LTEuODItLjMyLTQuMTYuNzktNS43MmwzOC4wOC0yOS43MmgtMjcuNTZjLTEuMTUsMC00LjQ4LTMuNjEtNC4wNC01LjI1bC0uMDItMTAwLjkyYy4wOC0yLjU2LDEuMTEtNC44NSwzLjU5LTUuNjhsMTI3LjQ2LS4yYzYuODEuNjcsNC45NCw4LjUxLDUuMjMsMTMuMzQsMS42LDI2LjA5LDEuOTgsNTMuNjQsMi41LDc5LjgxLjA4LDMuOTguNiwxMi4wMi0uMDQsMTUuNDgtLjI3LDEuNDUtMi43OSwzLjQyLTQuMDEsMy40MmgtMjcuNTZaTTEwNjAuNzksMjgyLjMzYy0uOCwzLjY5LjU5LDkuOTEsMCwxMy45Mmw1NC45NywzLjVjLjM2LjExLjYxLjMyLjgxLjYzLDEuNzIsMi42My0zLjA4LDE1LjM1LTIuNTYsMTkuMDUuMjEsMS40NywxLjUzLDEuOTEsMi44NiwyLjE0bDMzLjA5LDEuMjhjLS4xMy01LjI2LjE1LTEwLjU1LjAzLTE1LjgxLS4wNC0xLjc2LS42My0zLjI3LS42Ny00LjktLjEyLTQuNTksMS4wNC0xOC45Ny0xLjU1LTIxLjk4LS43Mi0uODQtMi4xOS0xLjMxLTMuMjEtMS43M2wtNzguNTItLjE2Yy0xLjg2LS4yLTQuOTEsMi40NS01LjI1LDQuMDRaTTEwNjAuNzksMzEwLjQ4djQ4LjU4YzAsMi42OSw0Ljk4LDMuODYsNy4xLDQuMDQsMjQuOSwyLjEsNTIuNzgtMS41Nyw3OC0uMDcsMS4yOC0uMTgsNC40LTEuMzYsNC45LTIuNTcsMi4xNi01LjIyLTEuMDEtMTcuNDEtLjItMjMuMzdsLTUyLjY1LTIuNzdjLS42OS0uNjQtMS4wNC0xLjQyLTEuMDQtMi4zNiwwLTQuNTcsMy42MS0xMi40LDMuMjQtMTYuODUtLjA3LS44NS0uNS0xLjc1LTEuMzctMi4wNGwtMzcuOTgtMi41OFoiLz4KICA8cGF0aCBkPSJNMTU1NS40LDIzOS41MWMzLjIxLDMuNTEsMS41OCwxMi41Ny00LjQ1LDEyLjE4bC0xMzctLjQ4Yy00LjA0LTEuMzQtNC44Mi03LjE5LTIuOS0xMC42MSwxLjQxLTIuNTEsNC4xMi0yLjk1LDYuNzQtMy4xNywxNS44My0xLjM0LDMzLjU2LDEuMDIsNDkuNi4wNSwyLjMtLjAzLDMuMTYtMi4wMSwzLjM5LTQuMDQuMzItMi43NC42NS0xNC44OS0xLjg3LTE2LjExbC00Ni4wOC0uMzZjLTcuNjQtLjkxLTcuMjYtMTMuNjUuNjItMTQuMTJsNDUuMDMtLjE3YzMuMi0uOTYsMi41Ni0xMi4wNCwyLjMxLTE1LjA3LS4yMS0yLjUxLS41LTQuODgtMy40Ny01LjJsLTUzLjA5LS4xN2MtNS4yNC0xLjE3LTYuMTYtMTIuNjQsMS4wOS0xMy41LDE1LjYyLTEuODQsMzQuODIsMS40MSw1MC44Mi4wNCwzLjI3LS4yOCw0LjI1LTEuMTcsNC42NC00LjY1LjgzLTcuNTEtLjktMTYuNjktLjAzLTI0LjE2LjIxLTEuNzcuOTMtMy40MywyLjY1LTQuMTYsMS44NC0uNzgsMTcuMTQtLjgzLDE4LjktLjAxLDEuMjkuNiwyLjM3LDIuODUsMi41OCw0LjIzLDEuMTMsNy4zNy0uODUsMTcuMTUuMDMsMjQuNzIuNCwzLjQ5LDIuMDksMy43Nyw1LjI1LDQuMDQsMTYuODYsMS4zOSwzNS41Ny0xLjEyLDUyLjYzLjAxLDYuMTUuOTYsNS41MSwxMi42Ny0uNjIsMTMuNTRoLTUzLjg4Yy0yLjAzLjEzLTMuMTYsMS40Ny0zLjQxLDMuNDEtLjI5LDIuMjQtLjIzLDE0LjE0LjQ5LDE1LjY3LjI2LjU2LjU2LDEuMDcsMS4xOSwxLjI4bDUwLjYzLjE2YzcuOTYuNCw4LjM2LDEzLjIzLjYyLDE0LjEybC01MC41OS4xOWMtLjU1LjE2LTEuNDMuOS0xLjcyLDEuMzgtLjk3LDEuNjMtLjk5LDE2LjM3LjA5LDE3Ljk0Ljc5LDEuMTYsMi42NSwxLjQ2LDMuOTgsMS41OSwxNi40LDEuNzEsMzYuNTQtMS45OSw1Mi42Ni0uMDMsMS4wNS4xMywyLjQ5LjcsMy4xOCwxLjQ2WiIvPgogIDxwYXRoIGQ9Ik0xMDQxLjc4LDIxNS42MWMtMy4zNC0zLjEyLTIuNDctMTEuNTksMi44Ni0xMi41MywxNC40MS0xLjQsMzAuMDkuOTQsNDQuMzUtLjI0LDEuMDQtLjA5LDIuODItLjA5LDMuNDMtMS4wNi44NC0xLjMzLjkzLTE1Ljk4LjI1LTE3LjUyLS4yNi0uNTktMS4wMy0xLjEzLTEuNTUtMS41NWwtNTMuNTEtLjM2Yy02LjY5LS43Ny02LjY2LTEyLjkxLS4wNS0xMy41OCwxNi0xLjYxLDM0Ljc0LDEuNTEsNTAuODIuMDMsMS43Mi0uMTYsMy4zNS0uMjYsNC4xNi0yLjAzLDEuOTYtNC4yOC0uNDctMjEuMTYuNDktMjcuMzUuMjUtMS42MywxLjQxLTMuMjgsMy4wMy0zLjc4LDIuMDMtLjYzLDE2LjY4LS41NywxOC40NS4xOXMyLjQ0LDIuNCwyLjY1LDQuMTZjLjg4LDcuNTQtMS4xMiwxNy40MS4wMiwyNC43My4yOCwxLjc4LDEuMzcsMy4xLDMuMDMsMy43OGw1Ni43My44N2MzLjg4LDIuNjcsMy41NCwxMS43OS0xLjQsMTIuODlsLTU0LjM4LjEyYy0yLjcyLjMyLTMuNzEsMS4yOC00LjAzLDQuMDItLjM1LDMuMDQtLjg4LDE1LjM0LDIuMywxNi4yOWw0OS40MS4xM2M4LjE2LS44LDkuMjEsMTMuMDIsMS44MywxNC4xOWwtNTEuNjguMzRjLTIuNTcsMS4yMi0yLjIxLDEzLjE4LTEuODcsMTYuMS4zMiwyLjcyLDEuODMsNC40NCw0LjY0LDQuNjRsNTMuNzYuMTJjNS4xOSwxLjE2LDQuODUsMTEuNjgtLjE0LDEzLjIxbC0xMzguMzEuMTVjLTcuNDgtMy4yLTUuMzEtMTQuOTMsMy41Ni0xNC4xM2w1MC4xOS4wMmMxLjQ0LS4xNiwxLjkzLTEuNTUsMi4xMy0yLjgzLjM2LTIuMzEuMzMtMTQuNjMtLjU0LTE2LjA5LS4yOS0uNDgtMS4xNy0xLjIyLTEuNzItMS4zOGwtNDUuMDktLjExYy0xLjEyLS4xMy0zLjAyLS43LTMuODItMS40NVoiLz4KICA8cGF0aCBkPSJNMTM4Ni4zNCwyMDQuODZjLjkxLjk5LDEuNDUsMy4wNSwxLjQ3LDQuNDJsLS41LDEyOS41MmMtMS4wMywxLjc0LTIuNjYsMy4yMi00Ljc4LDMuMjctMjEuNzMtMS41My00Ni4xMywxLjk4LTY3LjU1LjAyLTQuMDMtLjM3LTUuNy0yLjQ3LTUuODgtNi41bC40OS0xMjguODljMS4wMy0xLjQyLDIuMTgtMy4yNSw0LjE0LTMuMjhsNzAuNDguMmMuNjcuMzYsMS42My43MiwyLjEyLDEuMjdaTTEzMzYuODEsMjE3LjE3Yy0zLjY2LjgyLTMuOTcsNC41My00LjE2LDcuNTYtMS45NywzMi4yMiwxLjM2LDY2LjQ5LjE1LDk4LjkxLjQ3LDIuNjEsMi4wNCw0LjE4LDQuNjQsNC42NCwzLjU3LjY0LDE4LjQzLjY0LDIyLDAsMi42Mi0uNDcsNC42My0yLjM2LDQuODEtNS4xbC0uMTQtMTAxLjk5Yy0uNjYtMi0yLjQyLTMuNzgtNC41NS00LjEyLTMuMTEtLjQ5LTE5LjkzLS41NC0yMi43NS4xWiIvPgogIDxwYXRoIGQ9Ik05MzUuNTEsMjAzLjU2bDY5Ljg2LS4xNWMxLjgxLjA1LDMuMzQsMS4wNSw0LjE3LDIuNjV2MTMzLjM3Yy0uNzUsMS42NC0zLjYxLDIuNjgtNS4zOSwyLjY1LTIxLjU2LTEuNTMtNDUuNywxLjkzLTY2Ljk0LDAtMi4xOS0uMi0zLjY3LS41NS00Ljc3LTIuNjZsLS41LTEzMC43NmMtLjExLTIuNDMsMS4yMy00LjQzLDMuNTctNS4xWk05ODUuMDQsMzI2Ljk5Yy41NC0uNS45MS0xLjQ1LDEuMjctMi4xMmwuMDMtMTA0LjNjLS41NC0xLjg5LTEuOTctMy4xOS0zLjkzLTMuNS0zLjIxLS41LTIwLjQ2LS41NS0yMy4zNi4xLTIuMDUuNDYtMy41MSwyLjQ0LTMuNTUsNC41bC4xNSwxMDMuMjNjLjUsMi4yMywzLjA0LDMuMyw1LjEyLDMuNTUsNC40MS41MiwxNi4wMi41LDIwLjQ2LDAsMS4xNS0uMTMsMi45OS0uNjksMy44Mi0xLjQ1WiIvPgo8L3N2Zz4=" style="height:18px;object-fit:contain" alt="">
+            </div>
+            <div class="pf-flag" style="font-size:13px;margin-bottom:4px">🇯🇵 + 🇹🇼</div>
+            <div class="pf-desc">글로벌 진행</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 서류 목록 -->
+      <div class="fsec" id="doc-list-wrap" style="display:none">
+        <div class="ftitle">제출 서류 목록</div>
+        <table class="doc-list-table">
+          <thead>
+            <tr>
+              <th style="width:42%">서류명</th>
+              <th style="width:22%">대상</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody id="doc-list-body"></tbody>
+        </table>
+        <div style="margin-top:20px;text-align:right">
+          <button class="btn btn-bk" onclick="goSec('logistics')">작성 시작 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 진행 방법 안내 -->
+  <div class="card">
+    <div class="card-hd"><div class="card-bar gy"></div><div><div class="card-ttl">진행순서</div></div></div>
+    <div class="card-bd">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--g2)">
+        <div style="background:var(--wh);padding:20px 16px"><div style="font-size:28px;font-weight:700;color:var(--g2);margin-bottom:8px">01</div><div style="font-size:14px;font-weight:700;margin-bottom:6px">정보 입력</div><div style="font-size:13px;color:var(--g4);line-height:1.6">서류별 기본 정보와 항목을 입력합니다. 한 번 입력한 정보는 다른 서류에 자동 연동됩니다.</div></div>
+        <div style="background:var(--wh);padding:20px 16px"><div style="font-size:28px;font-weight:700;color:var(--g2);margin-bottom:8px">02</div><div style="font-size:14px;font-weight:700;margin-bottom:6px">동의 체크</div><div style="font-size:13px;color:var(--g4);line-height:1.6">각 항목을 읽고 동의하는 항목에 체크합니다. 전 항목 체크 필수입니다.</div></div>
+        <div style="background:var(--wh);padding:20px 16px"><div style="font-size:28px;font-weight:700;color:var(--g2);margin-bottom:8px">03</div><div style="font-size:14px;font-weight:700;margin-bottom:6px">전자 서명</div><div style="font-size:13px;color:var(--g4);line-height:1.6">대표자 서명(캔버스)과 법인명으로 자동 생성되는 전자 날인을 등록합니다.</div></div>
+        <div style="background:var(--wh);padding:20px 16px"><div style="font-size:28px;font-weight:700;color:var(--g2);margin-bottom:8px">04</div><div style="font-size:14px;font-weight:700;margin-bottom:6px">PDF · 제출</div><div style="font-size:13px;color:var(--g4);line-height:1.6">PDF를 생성하고 신청서 제출 버튼으로 이메일을 전송합니다.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 1. 물류 히어링 ══ -->
+<div class="sec" id="sec-logistics">
+  <div class="card">
+    <div class="card-hd"><div class="card-bar gy"></div><div><div class="card-ttl">수출입 물류 정보 기입서류</div><div class="card-stl">Import Information Sheet — Ver.2 · ONLEE Import Logistics</div></div></div>
+    <div class="card-bd">
+      <div class="notice">수출자 정보와 제품 정보를 정확히 입력해 주세요. 여기서 입력한 내용이 이후 서류에 자동 반영됩니다.</div>
+
+      <div class="fsec">
+        <div class="ftitle">Exporter Information — 수출자 정보</div>
+        <div class="frow">
+          <div class="fgrp"><label class="flbl">회사명 (영문) <span class="req">*</span></label><input class="fin" id="lg-cen" placeholder="Company Name Inc." oninput="syncFields()"></div>
+          <div class="fgrp"><label class="flbl">회사명 (한글) <span class="req">*</span></label><input class="fin" id="lg-ckr" placeholder="주식회사 ○○○○" oninput="syncFields()"></div>
+        </div>
+        <div class="frow one"><div class="fgrp"><label class="flbl">주소 (영문) <span class="req">*</span></label><input class="fin" id="lg-aen" placeholder="1-1 Gangnam-daero, Gangnam-gu, Seoul, Korea" oninput="syncFields()"></div></div>
+        <div class="frow one"><div class="fgrp"><label class="flbl">주소 (한글) <span class="req">*</span></label><input class="fin" id="lg-akr" placeholder="[12345] 서울특별시 강남구 ○○로 1" oninput="syncFields()"></div></div>
+        <div class="frow tri">
+          <div class="fgrp"><label class="flbl">담당자명 <span class="req">*</span></label><input class="fin" id="lg-contact" placeholder="홍길동 / HONG GIL DONG" oninput="syncFields()"></div>
+          <div class="fgrp"><label class="flbl">전화번호 <span class="req">*</span></label><input class="fin" id="lg-tel" placeholder="01000000000" inputmode="numeric" oninput="numOnly(this)"></div>
+          <div class="fgrp"><label class="flbl">이메일 <span class="req">*</span></label><input class="fin" id="lg-email" type="email" placeholder="email@company.com" oninput="emailOnly(this)"></div>
+        </div>
+        <div class="frow">
+          <div class="fgrp"><label class="flbl">기입일자 <span class="req">*</span></label><input class="fin" id="lg-date" type="date"></div>
+          <div></div>
+        </div>
+      </div>
+
+      <div class="fsec">
+        <div class="ftitle">Product Information — 제품 정보</div>
+        <div class="frow one"><div class="fgrp"><label class="flbl">제품명 (영문/한글) <span class="req">*</span></label><input class="fin" id="lg-pname" placeholder="Product Name / 제품명 (모델명)" oninput="syncFields()"><div class="fhint">시리즈 아이템이 많을 경우 모델명을 함께 기재해 주세요</div></div></div>
+        <div class="frow tri">
+          <div class="fgrp"><label class="flbl">HS CODE <span class="req">*</span></label><input class="fin" id="lg-hs" placeholder="0000.00.0000"></div>
+          <div class="fgrp"><label class="flbl">원산지 <span class="req">*</span></label><input class="fin" id="lg-origin" placeholder="대한민국 / Korea"></div>
+          <div class="fgrp"><label class="flbl">제조사명</label><input class="fin" id="lg-maker" placeholder="제조사명 (OEM/ODM 포함)"></div>
+        </div>
+        <div class="frow tri">
+          <div class="fgrp"><label class="flbl">생산 리드타임 <span class="req">*</span></label><input class="fin" id="lg-lead" placeholder="발주 후 ○○일"></div>
+          <div class="fgrp"><label class="flbl">재질 (Material)</label><input class="fin" id="lg-mat" placeholder="ABS, 스테인리스 등"></div>
+          <div class="fgrp"><label class="flbl">제품코드 (SKU)</label><input class="fin" id="lg-sku" placeholder="모델코드"></div>
+        </div>
+        <div class="frow tri">
+          <div class="fgrp"><label class="flbl">바코드 (JAN/EAN)</label><input class="fin" id="lg-barcode" placeholder="4901234567890" inputmode="numeric" oninput="numOnly(this)"></div>
+          <div class="fgrp"><label class="flbl">제품 사이즈 (mm)</label><input class="fin" id="lg-psz" placeholder="W × D × H mm"></div>
+          <div class="fgrp"><label class="flbl">제품 박스 사이즈 (mm) <span class="req">*</span></label><input class="fin" id="lg-bsz" placeholder="가로 / 세로 / 높이 cm"></div>
+        </div>
+        <div class="frow tri">
+          <div class="fgrp"><label class="flbl">중량 (kg)</label><input class="fin" id="lg-wt" placeholder="0.000"></div>
+          <div class="fgrp"><label class="flbl">카톤 BOX 크기 (mm)</label><input class="fin" id="lg-csz" placeholder="가로 / 세로 / 높이 cm"></div>
+          <div class="fgrp"><label class="flbl">카톤 BOX 중량 (kg)</label><input class="fin" id="lg-cwt" placeholder="0.000"></div>
+        </div>
+        <div class="frow">
+          <div class="fgrp"><label class="flbl">카톤당 입수량</label><input class="fin" id="lg-qty" placeholder="○○개 / 1 carton"></div>
+          <div></div>
+        </div>
+        <!-- 이미지 업로드 -->
+        <div class="fgrp" style="margin-top:6px">
+          <label class="flbl">제품 이미지 업로드</label>
+          <div class="img-drop" id="img-drop-lg" onclick="document.getElementById('img-input-lg').click()" ondragover="dragOv(event,this)" ondragleave="dragLv(event,this)" ondrop="dropImg(event,'img-input-lg','img-prev-lg',this)">
+            <div class="img-drop-ic">🖼</div>
+            <div class="img-drop-tx"><strong>클릭하거나 드래그</strong>하여 이미지 업로드<br><span style="font-size:13px">JPG, PNG, WEBP · 최소 50KB · 최대 5MB · 최대 5개</span></div>
+          </div>
+          <input type="file" id="img-input-lg" accept="image/*" multiple style="display:none" onchange="previewImgs(this,'img-prev-lg')">
+          <div id="img-err-lg" style="display:none;margin-top:8px;padding:8px 12px;background:#fff5f5;border-left:3px solid var(--red);font-size:13px;color:#7f1d1d"></div>
+          <div class="img-previews" id="img-prev-lg"></div>
+          <div class="fhint" style="margin-top:10px">또는 URL로 입력 (Google Drive 공유 링크 등):</div>
+          <input class="fin" id="lg-imgurl" placeholder="https://drive.google.com/..." style="margin-top:6px" oninput="urlOnly(this)">
+        </div>
+      </div>
+
+      <div class="fsec">
+        <div class="ftitle">Trade Terms — 무역 조건</div>
+        <div class="notice" style="margin-bottom:18px">아래 내용은 참고용으로 기입해 주세요. 인코텀즈·결제 조건 등 무역 조건의 최종 확정은 계약 전 담당자와의 개별 상담을 통해 이루어집니다.</div>
+        <div class="frow">
+          <div class="fgrp"><label class="flbl">인코텀즈 <span class="req">*</span></label>
+            <div class="ropts" id="rg-inco">
+              <label class="ro" onclick="selR(this,'inco')"><input type="radio" name="inco" value="DDP">DDP</label>
+              <label class="ro" onclick="selR(this,'inco')"><input type="radio" name="inco" value="DAP">DAP</label>
+              <label class="ro" onclick="selR(this,'inco')"><input type="radio" name="inco" value="CIF">CIF</label>
+              <label class="ro" onclick="selR(this,'inco')"><input type="radio" name="inco" value="FOB">FOB</label>
+            </div>
+            <div class="fhint">상담 후 ONLEE에서 확정합니다</div>
+          </div>
+          <div class="fgrp"><label class="flbl">국제 운송 방법</label>
+            <div class="ropts" id="rg-ship">
+              <label class="ro" onclick="selR(this,'ship')"><input type="radio" name="ship" value="직접수배">직접수배</label>
+              <label class="ro" onclick="selR(this,'ship')"><input type="radio" name="ship" value="ONLEE의뢰">ONLEE 의뢰</label>
+            </div>
+          </div>
+        </div>
+        <div class="frow">
+          <div class="fgrp"><label class="flbl">현지 배송비 부담</label>
+            <div class="ropts" id="rg-deliv">
+              <label class="ro" onclick="selR(this,'deliv')"><input type="radio" name="deliv" value="수출자부담">수출자 부담</label>
+              <label class="ro" onclick="selR(this,'deliv')"><input type="radio" name="deliv" value="수입자부담">수입자 부담</label>
+            </div>
+          </div>
+          <div class="fgrp"><label class="flbl">결제 통화</label>
+            <div class="ropts" id="rg-cur">
+              <label class="ro" onclick="selR(this,'cur')"><input type="radio" name="cur" value="KRW">KRW</label>
+              <label class="ro" onclick="selR(this,'cur')"><input type="radio" name="cur" value="USD">USD</label>
+              <label class="ro" onclick="selR(this,'cur')"><input type="radio" name="cur" value="JPY">JPY</label>
+              <label class="ro" onclick="selR(this,'cur')"><input type="radio" name="cur" value="TWD">TWD</label>
+            </div>
+          </div>
+        </div>
+        <div class="frow">
+          <div class="fgrp"><label class="flbl">결제 조건</label>
+            <div class="ropts" id="rg-pay">
+              <label class="ro" onclick="selR(this,'pay')"><input type="radio" name="pay" value="선결제">선결제</label>
+              <label class="ro" onclick="selR(this,'pay')"><input type="radio" name="pay" value="정산후송금">정산 후 송금</label>
+            </div>
+          </div>
+          <div class="fgrp"><label class="flbl">수입허가 / 인증 필요</label>
+            <div class="ropts" id="rg-cert">
+              <label class="ro" onclick="selR(this,'cert')"><input type="radio" name="cert" value="있음">있음</label>
+              <label class="ro" onclick="selR(this,'cert')"><input type="radio" name="cert" value="없음">없음</label>
+            </div>
+          </div>
+        </div>
+        <div class="frow">
+          <div class="fgrp"><label class="flbl">필요 서류</label>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:4px">
+              <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer"><input type="checkbox" class="chk" id="dc-inv"> Invoice</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer"><input type="checkbox" class="chk" id="dc-pl"> Packing List</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer"><input type="checkbox" class="chk" id="dc-co"> C/O</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer"><input type="checkbox" class="chk" id="dc-sc"> Safety Cert</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer"><input type="checkbox" class="chk" id="dc-pll"> PL Label</label>
+            </div>
+          </div>
+          <div class="fgrp"><label class="flbl">통관 형태</label>
+            <div class="ropts" id="rg-customs">
+              <label class="ro" onclick="selR(this,'customs')"><input type="radio" name="customs" value="일반">일반</label>
+              <label class="ro" onclick="selR(this,'customs')"><input type="radio" name="customs" value="위탁">위탁</label>
+              <label class="ro" onclick="selR(this,'customs')"><input type="radio" name="customs" value="견본">견본</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fsec">
+        <div class="ftitle">Launch Schedule — 런칭 일정</div>
+        <div class="notice" style="margin-bottom:18px">희망 일정을 기입해 주세요. 실제 런칭 일정은 플랫폼 심사 기간, 인증 취득 현황, 페이지 제작 일정 등에 따라 달라질 수 있으며, 계약 후 담당자와 구체적으로 협의합니다.</div>
+        <div class="frow">
+          <div class="fgrp"><label class="flbl">프로젝트명 <span class="req">*</span></label><input class="fin" id="lg-proj" placeholder="프로젝트명 (제품명)"><div class="fhint">위 제품명과 다를 경우 수정 가능합니다</div></div>
+          <div class="fgrp"><label class="flbl">목표 금액</label><input class="fin" id="lg-price" placeholder="¥0,000,000 / NT$0,000,000" oninput="fmtMoney(this)"><div class="fhint">목표 달성 금액을 기재해 주세요 (자동 콤마 삽입)</div></div>
+        </div>
+        <div class="frow">
+          <div class="fgrp"><label class="flbl">프로젝트 시작 희망일</label><input class="fin" id="lg-start" type="date"><div class="fhint">희망하는 펀딩 오픈 일자</div></div>
+          <div class="fgrp"><label class="flbl">프로젝트 진행 희망 기간</label>
+            <div class="ropts" id="rg-duration">
+              <label class="ro" onclick="selR(this,'duration')"><input type="radio" name="duration" value="20일">20일</label>
+              <label class="ro" onclick="selR(this,'duration')"><input type="radio" name="duration" value="30일">30일</label>
+              <label class="ro" onclick="selR(this,'duration')"><input type="radio" name="duration" value="40일">40일</label>
+              <label class="ro" onclick="selR(this,'duration')"><input type="radio" name="duration" value="60일">60일</label>
+            </div>
+          </div>
+        </div>
+        <div class="frow one"><div class="fgrp"><label class="flbl">특이사항</label><textarea class="fta" id="lg-special" placeholder="예: 정부지원 사업 시효 일정 있음 (○월 ○일까지 런칭 필요), 시즌 연동 필요, 기타 일정 제약 등" style="min-height:64px"></textarea></div></div>
+        <div class="frow one"><div class="fgrp"><label class="flbl">리워드 구성</label><textarea class="fta" id="lg-reward" placeholder="리워드 구성 및 수량 계획" style="min-height:64px"></textarea></div></div>
+        <div class="frow one"><div class="fgrp"><label class="flbl">참고 사이트 URL</label><input class="fin" id="lg-refurl" placeholder="https://" oninput="urlOnly(this)"></div></div>
+      </div>
+    </div>
+    <div class="actbar">
+      <span class="badge badge-pend" id="st-logistics">미완료</span>
+      <div class="actbar-r">
+        <button class="btn btn-ol btn-sm" onclick="goSec('intro')">← 이전</button>
+        <button class="btn btn-bk btn-sm" onclick="saveNext('logistics')">저장 후 다음 →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 2. MK 실행자 동의서 ══ -->
+<div class="sec" id="sec-mk-agree">
+  <div class="card">
+    <div class="card-hd"><div class="card-bar"></div><div><div class="card-ttl">🇯🇵 JAPAN 크라우드펀딩 실행자 동의서</div><div class="card-stl">Makuake Project Funding Application & Executor Agreement · ver.5.11</div></div></div>
+    <div class="card-bd">
+      <div class="notice red">모든 항목을 읽고 체크한 후 전자 서명과 날인을 등록해야 합니다.</div>
+      <div class="fsec">
+        <div class="ftitle">진행 플랫폼 선택 <span class="req">*</span></div>
+        <div class="ropts">
+          <label class="ro" onclick="selR(this,'jp-platform')"><input type="radio" name="jp-platform" value="Makuake">Makuake</label>
+          <label class="ro" onclick="selR(this,'jp-platform')"><input type="radio" name="jp-platform" value="Green Funding">Green Funding</label>
+          <label class="ro" onclick="selR(this,'jp-platform')"><input type="radio" name="jp-platform" value="CAMPFIRE">CAMPFIRE</label>
+        </div>
+      </div>
+      <div class="fsec">
+        <div class="ftitle">Ⅰ. 기본 정보 — 물류 시트에서 자동 연동, 수정 가능</div>
+        <div class="frow tri">
+          <div class="fgrp"><label class="flbl">발행일자 <span class="req">*</span></label><input class="fin" id="mk-date" type="date"></div>
+          <div class="fgrp"><label class="flbl">실행자명 (법인명) <span class="req">*</span></label><input class="fin auto-fill" id="mk-corp" placeholder="주식회사 ○○○○" oninput="syncFromMkAgree()"></div>
+          <div class="fgrp"><label class="flbl">프로젝트명 (제품명) <span class="req">*</span></label><input class="fin auto-fill" id="mk-proj" placeholder="자동 입력됩니다"></div>
+        </div>
+        <div class="frow">
+          <div class="fgrp"><label class="flbl">대표자명 (한글) <span class="req">*</span></label><input class="fin" id="mk-ceo-kr" placeholder="홍 길 동" oninput="syncFields()"></div>
+          <div class="fgrp"><label class="flbl">대표자명 (영문) <span class="req">*</span></label><input class="fin" id="mk-ceo-en" placeholder="HONG GIL DONG" oninput="syncFields()"></div>
+        </div>
+        <div class="frow one"><div class="fgrp"><label class="flbl">법인 소재지 (한글) <span class="req">*</span></label><input class="fin auto-fill" id="mk-addr-kr" placeholder="자동 입력됩니다"></div></div>
+        <div class="frow one"><div class="fgrp"><label class="flbl">법인 소재지 (영문)</label><input class="fin auto-fill" id="mk-addr-en" placeholder="자동 입력됩니다"></div></div>
+      </div>
+      <div class="fsec">
+        <div class="ftitle">Ⅱ. 필수 준수사항 — 10개 항목</div>
+        <table class="agt">
+          <thead><tr><th style="width:40px">✓</th><th>항목</th><th>내용</th></tr></thead>
+          <tbody id="mk2-body"></tbody>
+        </table>
+      </div>
+      <div class="fsec">
+        <div class="ftitle">Ⅲ~Ⅵ. 법적·운영·정산 — 16개 항목</div>
+        <table class="agt">
+          <thead><tr><th style="width:40px">✓</th><th>항목</th><th>내용</th></tr></thead>
+          <tbody id="mk3-body"></tbody>
+        </table>
+        <div style="margin-top:12px;padding:11px 16px;background:var(--g1);border-left:3px solid var(--rl);font-size:13px;color:var(--g4);line-height:1.7">정산 방식: 월말 마감 → 익월 25일 입금 (해당 크라우드펀딩 플랫폼 수수료 차감 후 → 배송비, 소비세(10%), 송금수수료 차감 → 익월 말일에 실행자에 송금</div>
+      </div>
+      <div class="fsec" id="mk-sign-sec">
+        <div class="ftitle">Ⅶ. 전자 서명 및 전자 날인</div>
+        <div class="frow">
+          <div class="fgrp">
+            <label class="flbl">전자 서명 (대표자 직접 서명)</label>
+            <div style="position:relative">
+              <canvas class="sign-c" id="mk-cvs" width="400" height="120"></canvas>
+              <div class="sign-hint" id="mk-cvs-hint" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:14px;color:#bbb;pointer-events:none;text-align:center;line-height:1.9">서명란<br><span style="font-size:13px">마우스 드래그 / 터치</span></div>
+            </div>
+            <div style="margin-top:8px"><button class="btn btn-ol btn-sm" onclick="clearCvs('mk-cvs','mk-cvs-hint')">서명 초기화</button></div>
+          </div>
+          <div class="fgrp">
+            <label class="flbl">전자 날인 — 법인명 자동 반영</label>
+            <input class="fin" id="mk-seal-in" placeholder="법인명 입력" oninput="updateSeal('mk-seal','mk-seal-in')">
+            <div style="display:flex;justify-content:center;margin-top:14px">
+              <div class="seal" id="mk-seal"><span class="seal-corp" id="mk-seal-corp">법인명</span><span class="seal-title">대표이사</span><span class="seal-in">인</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="actbar">
+      <span class="badge badge-pend" id="st-mk-agree">미완료</span>
+      <div class="actbar-r">
+        <button class="btn btn-ol btn-sm" onclick="goSec('logistics')">← 이전</button>
+        <button class="btn btn-bk btn-sm" onclick="saveNext('mk-agree')">저장 후 다음 →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 3. MK 협업 동의서 ══ -->
+<div class="sec" id="sec-mk-collab">
+  <div class="card">
+    <div class="card-hd"><div class="card-bar"></div><div><div class="card-ttl">🇯🇵 JAPAN 크라우드펀딩 협업 동의서</div><div class="card-stl">진행자: 온리주식회사 ONLEE INC. · 실행자: 메이커(제조판매원)</div></div></div>
+    <div class="card-bd">
+      <div class="notice red">각 항목을 읽고 모두 체크해 주세요.</div>
+      <div class="fsec">
+        <div class="ftitle">기본 정보 — 이전 서류에서 자동 연동</div>
+        <div class="frow tri">
+          <div class="fgrp"><label class="flbl">프로젝트명 <span class="req">*</span></label><input class="fin auto-fill" id="mkc-proj" placeholder="자동 입력됩니다"></div>
+          <div class="fgrp"><label class="flbl">법인명 <span class="req">*</span></label><input class="fin auto-fill" id="mkc-corp" placeholder="자동 입력됩니다"></div>
+          <div class="fgrp"><label class="flbl">대표자명 <span class="req">*</span></label><input class="fin auto-fill" id="mkc-ceo" placeholder="자동 입력됩니다"></div>
+        </div>
+        <div class="frow"><div class="fgrp"><label class="flbl">작성일 <span class="req">*</span></label><input class="fin" id="mkc-date" type="date"></div><div></div></div>
+      </div>
+      <div class="fsec">
+        <div class="ftitle">협업 동의 사항 — 10개 항목</div>
+        <table class="agt">
+          <thead><tr><th style="width:40px">✓</th><th>동의 내용</th></tr></thead>
+          <tbody id="mkc-body"></tbody>
+        </table>
+      </div>
+      <div class="fsec">
+        <div class="ftitle">전자 서명 및 날인</div>
+        <div class="frow">
+          <div class="fgrp">
+            <label class="flbl">전자 서명</label>
+            <div style="position:relative">
+              <canvas class="sign-c" id="mkc-cvs" width="400" height="120"></canvas>
+              <div class="sign-hint" id="mkc-cvs-hint" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:14px;color:#bbb;pointer-events:none;text-align:center">서명란</div>
+            </div>
+            <div style="margin-top:8px"><button class="btn btn-ol btn-sm" onclick="clearCvs('mkc-cvs','mkc-cvs-hint')">서명 초기화</button></div>
+          </div>
+          <div class="fgrp">
+            <label class="flbl">전자 날인</label>
+            <input class="fin" id="mkc-seal-in" placeholder="법인명" oninput="updateSeal('mkc-seal','mkc-seal-in')">
+            <div style="display:flex;justify-content:center;margin-top:14px">
+              <div class="seal" id="mkc-seal"><span class="seal-corp" id="mkc-seal-corp">법인명</span><span class="seal-title">대표이사</span><span class="seal-in">인</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="actbar">
+      <span class="badge badge-pend" id="st-mk-collab">미완료</span>
+      <div class="actbar-r">
+        <button class="btn btn-ol btn-sm" onclick="goSec('mk-agree')">← 이전</button>
+        <button class="btn btn-bk btn-sm" onclick="saveNext('mk-collab')">저장 후 다음 →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 4. ZZ 실행자 동의서 ══ -->
+<div class="sec" id="sec-zz-agree">
+  <div class="card">
+    <div class="card-hd"><div class="card-bar gr"></div><div><div class="card-ttl">🇹🇼 TAIWAN 크라우드펀딩 실행자 동의서</div><div class="card-stl">Zeczec(嘖嘖) Project Agreement · 대행사: ONLEE INC. · ver.6.01</div></div></div>
+    <div class="card-bd">
+      <div class="notice red">모든 항목을 읽고 체크한 후 전자 서명과 날인을 등록해야 합니다.</div>
+      <div class="fsec">
+        <div class="ftitle">Ⅰ. 기본 정보 — 물류 시트에서 자동 연동, 수정 가능</div>
+        <div class="frow tri">
+          <div class="fgrp"><label class="flbl">발행일자 <span class="req">*</span></label><input class="fin" id="zz-date" type="date"></div>
+          <div class="fgrp"><label class="flbl">실행자명 (법인명) <span class="req">*</span></label><input class="fin auto-fill" id="zz-corp" placeholder="자동 입력됩니다" oninput="syncFromZzAgree()"></div>
+          <div class="fgrp"><label class="flbl">프로젝트명 (제품명) <span class="req">*</span></label><input class="fin auto-fill" id="zz-proj" placeholder="자동 입력됩니다"></div>
+        </div>
+        <div class="frow">
+          <div class="fgrp"><label class="flbl">대표자명 (한글) <span class="req">*</span></label><input class="fin" id="zz-ceo-kr" placeholder="홍 길 동" oninput="syncFields()"></div>
+          <div class="fgrp"><label class="flbl">대표자명 (영문) <span class="req">*</span></label><input class="fin" id="zz-ceo-en" placeholder="HONG GIL DONG" oninput="syncFields()"></div>
+        </div>
+        <div class="frow one"><div class="fgrp"><label class="flbl">법인 소재지 (한글) <span class="req">*</span></label><input class="fin auto-fill" id="zz-addr-kr" placeholder="자동 입력됩니다"></div></div>
+        <div class="frow one"><div class="fgrp"><label class="flbl">법인 소재지 (영문)</label><input class="fin auto-fill" id="zz-addr-en" placeholder="자동 입력됩니다"></div></div>
+      </div>
+      <div class="fsec">
+        <div class="ftitle">Ⅱ~Ⅶ. 전체 동의 사항 — 26개 항목</div>
+        <table class="agt">
+          <thead><tr><th style="width:40px">✓</th><th>항목</th><th>내용</th></tr></thead>
+          <tbody id="zz-body"></tbody>
+        </table>
+        <div style="margin-top:12px;padding:11px 16px;background:var(--g1);border-left:3px solid var(--rl);font-size:13px;color:var(--g4);line-height:1.7">정산 방식: zeczec 입금 후 5영업일 이내 50% 입금 (플랫폼 수수료 차감 후) → 배송 완료 후 국제 물류비, 통관 및 세금, 성과보수(10%), 송금수수료 차감 → 실행자에 잔액 송금</div>
+      </div>
+      <div class="fsec">
+        <div class="ftitle">Ⅷ. 전자 서명 및 전자 날인</div>
+        <div class="frow">
+          <div class="fgrp">
+            <label class="flbl">전자 서명</label>
+            <div style="position:relative">
+              <canvas class="sign-c" id="zz-cvs" width="400" height="120"></canvas>
+              <div class="sign-hint" id="zz-cvs-hint" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:14px;color:#bbb;pointer-events:none;text-align:center">서명란</div>
+            </div>
+            <div style="margin-top:8px"><button class="btn btn-ol btn-sm" onclick="clearCvs('zz-cvs','zz-cvs-hint')">서명 초기화</button></div>
+          </div>
+          <div class="fgrp">
+            <label class="flbl">전자 날인</label>
+            <input class="fin" id="zz-seal-in" placeholder="법인명" oninput="updateSeal('zz-seal','zz-seal-in')">
+            <div style="display:flex;justify-content:center;margin-top:14px">
+              <div class="seal" id="zz-seal"><span class="seal-corp" id="zz-seal-corp">법인명</span><span class="seal-title">대표이사</span><span class="seal-in">인</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="actbar">
+      <span class="badge badge-pend" id="st-zz-agree">미완료</span>
+      <div class="actbar-r">
+        <button class="btn btn-ol btn-sm" onclick="goSec('logistics')">← 이전</button>
+        <button class="btn btn-bk btn-sm" onclick="saveNext('zz-agree')">저장 후 다음 →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 5. ZZ 협업 동의서 ══ -->
+<div class="sec" id="sec-zz-collab">
+  <div class="card">
+    <div class="card-hd"><div class="card-bar gr"></div><div><div class="card-ttl">🇹🇼 TAIWAN 크라우드펀딩 협업 동의서</div><div class="card-stl">진행자: 온리주식회사 ONLEE INC. · 실행자: 메이커(제조판매원)</div></div></div>
+    <div class="card-bd">
+      <div class="notice red">각 항목을 읽고 모두 체크해 주세요.</div>
+      <div class="fsec">
+        <div class="ftitle">기본 정보 — 이전 서류에서 자동 연동</div>
+        <div class="frow tri">
+          <div class="fgrp"><label class="flbl">프로젝트명 <span class="req">*</span></label><input class="fin auto-fill" id="zzc-proj" placeholder="자동 입력됩니다"></div>
+          <div class="fgrp"><label class="flbl">법인명 <span class="req">*</span></label><input class="fin auto-fill" id="zzc-corp" placeholder="자동 입력됩니다"></div>
+          <div class="fgrp"><label class="flbl">대표자명 <span class="req">*</span></label><input class="fin auto-fill" id="zzc-ceo" placeholder="자동 입력됩니다"></div>
+        </div>
+        <div class="frow"><div class="fgrp"><label class="flbl">작성일 <span class="req">*</span></label><input class="fin" id="zzc-date" type="date"></div><div></div></div>
+      </div>
+      <div class="fsec">
+        <div class="ftitle">협업 동의 사항 — 10개 항목</div>
+        <table class="agt">
+          <thead><tr><th style="width:40px">✓</th><th>동의 내용</th></tr></thead>
+          <tbody id="zzc-body"></tbody>
+        </table>
+      </div>
+      <div class="fsec">
+        <div class="ftitle">전자 서명 및 날인</div>
+        <div class="frow">
+          <div class="fgrp">
+            <label class="flbl">전자 서명</label>
+            <div style="position:relative">
+              <canvas class="sign-c" id="zzc-cvs" width="400" height="120"></canvas>
+              <div class="sign-hint" id="zzc-cvs-hint" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:14px;color:#bbb;pointer-events:none;text-align:center">서명란</div>
+            </div>
+            <div style="margin-top:8px"><button class="btn btn-ol btn-sm" onclick="clearCvs('zzc-cvs','zzc-cvs-hint')">서명 초기화</button></div>
+          </div>
+          <div class="fgrp">
+            <label class="flbl">전자 날인</label>
+            <input class="fin" id="zzc-seal-in" placeholder="법인명" oninput="updateSeal('zzc-seal','zzc-seal-in')">
+            <div style="display:flex;justify-content:center;margin-top:14px">
+              <div class="seal" id="zzc-seal"><span class="seal-corp" id="zzc-seal-corp">법인명</span><span class="seal-title">대표이사</span><span class="seal-in">인</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="actbar">
+      <span class="badge badge-pend" id="st-zz-collab">미완료</span>
+      <div class="actbar-r">
+        <button class="btn btn-ol btn-sm" onclick="goSec('zz-agree')">← 이전</button>
+        <button class="btn btn-bk btn-sm" onclick="saveNext('zz-collab')">저장 후 다음 →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SUBMIT ══ -->
+
+<div class="sec" id="sec-us-consult">
+  <div class="card">
+    <div class="card-hd"><div class="card-bar" style="background:#1d4ed8"></div><div><div class="card-ttl">🇺🇸 미국 시장 크라우드펀딩</div><div class="card-stl">Kickstarter / Indiegogo · 별도 상담 필요</div></div></div>
+    <div class="card-bd">
+      <div class="notice blue"><strong>미국 시장 크라우드펀딩 진행 안내</strong><br>물류 히어링 시트만 작성 후 제출해 주세요. 제출 내용 확인 후 <strong>3영업일 이내 info@onleeone.com으로 회신</strong>드리며, 온라인 상담을 통해 진행 방식을 결정합니다.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rl);margin:20px 0">
+        <div style="background:var(--wh);padding:20px 16px"><div style="font-size:11px;letter-spacing:.12em;color:#2bde73;font-weight:700;margin-bottom:8px;text-transform:uppercase">Kickstarter</div><div style="font-size:14px;font-weight:700;margin-bottom:8px">All-or-Nothing 방식</div><ul style="font-size:13px;color:var(--g4);line-height:1.8;list-style:none;padding:0"><li>— 테크·가젯·디자인 카테고리 강점</li><li>— 플랫폼 수수료 5% + 결제 3~5%</li><li>— 미국 법인 또는 파트너 계정 필요</li></ul></div>
+        <div style="background:var(--wh);padding:20px 16px"><div style="font-size:11px;letter-spacing:.12em;color:#eb1478;font-weight:700;margin-bottom:8px;text-transform:uppercase">Indiegogo</div><div style="font-size:14px;font-weight:700;margin-bottom:8px">Flexible Funding · InDemand</div><ul style="font-size:13px;color:var(--g4);line-height:1.8;list-style:none;padding:0"><li>— 목표 미달 시에도 수령 가능</li><li>— 플랫폼 수수료 5% + 결제 3~5%</li><li>— 미국 법인 또는 파트너 계정 필요</li></ul></div>
+      </div>
+      <div style="background:var(--g1);border:1px solid var(--rl);padding:14px 16px;font-size:13px"><strong>대행비</strong> ₩7,000,000 · <strong>관세</strong> 0~25% · <strong>판매세</strong> 주별 상이</div>
+    </div>
+    <div class="actbar"><span style="font-size:13px;color:var(--g4)">물류시트 제출 → 3영업일 내 이메일 회신 → 온라인 상담</span><div class="actbar-r"><button class="btn btn-ol btn-sm" onclick="goSec('logistics')">← 물류 히어링 시트</button><button class="btn btn-bk btn-sm" onclick="goSec('submit')">제출하기 →</button></div></div>
+  </div>
+</div>
+<div class="sec" id="sec-submit">
+  <div class="card">
+    <div class="card-hd"><div class="card-bar"></div><div><div class="card-ttl">PDF 생성 및 신청 제출</div><div class="card-stl">작성 완료된 서류를 PDF로 변환 후 info@onleeone.com으로 발송합니다</div></div></div>
+    <div class="card-bd">
+      <div class="notice blue">PDF 생성 후 <strong>신청서 제출</strong> 버튼을 클릭하면 이메일 클라이언트가 열립니다. 생성된 PDF 파일을 첨부하거나 다운로드해서 첨부해 주세요.<br>제출 후 <strong>3영업일 이내</strong>에 담당자가 자동 회신 및 연락을 드립니다.</div>
+
+      <div class="fsec">
+        <div class="ftitle">서류별 PDF 생성</div>
+        <div id="pdf-list"></div>
+      </div>
+
+      <div class="fsec">
+        <div class="ftitle">이메일 발송 안내</div>
+        <div style="background:var(--g1);border:1px solid var(--rl);padding:18px 20px;margin-bottom:16px">
+          <div style="display:grid;grid-template-columns:72px 1fr;gap:10px;font-size:15px">
+            <span style="color:var(--g4);font-size:12px;font-weight:600;letter-spacing:.06em;padding-top:2px">수신</span><span style="font-weight:700">info@onleeone.com</span>
+            <span style="color:var(--g4);font-size:12px;font-weight:600;letter-spacing:.06em;padding-top:2px">제목</span><span id="email-subj-prev" style="font-weight:500">[ONLEE 신청서류] — Makuake/ZecZec 신청</span>
+            <span style="color:var(--g4);font-size:12px;font-weight:600;letter-spacing:.06em;padding-top:2px">첨부</span><span style="color:var(--g4)">위에서 생성한 PDF 파일을 첨부해 주세요</span>
+          </div>
+        </div>
+
+        <!-- PDF 첨부 필수 경고 -->
+        <div style="
+          border:2.5px solid var(--red);
+          background:#fff5f5;
+          padding:16px 20px;
+          margin-bottom:18px;
+          display:flex;
+          align-items:center;
+          gap:14px;
+          flex-wrap:wrap;
+        ">
+          <div style="
+            background:var(--red);color:#fff;
+            font-size:13px;font-weight:700;
+            padding:7px 14px;
+            letter-spacing:.06em;
+            white-space:nowrap;
+            flex-shrink:0;
+          ">⚠ 필수 첨부</div>
+          <div style="font-size:14px;color:var(--red);font-weight:600;line-height:1.65">
+            이메일 발송 전 반드시 위에서 생성한 <strong>PDF 파일을 첨부</strong>해 주세요.<br>
+            <span style="font-size:13px;font-weight:400;color:#c0392b">PDF 미첨부 시 신청이 접수되지 않을 수 있습니다.</span>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="btn btn-red btn-lg" onclick="openMail()">✉ 신청서 제출</button>
+          <button class="btn btn-ol" onclick="dlAllPdfs()">↓ PDF 전체 다운로드</button>
+        </div>
+      </div>
+
+      <div class="fsec">
+        <div class="ftitle">제출 후 다음 진행 내용 안내</div>
+        <div class="next-steps">
+          <div class="ns-title">다음 단계 안내</div>
+          <div class="ns-item"><div class="ns-num">1</div><div>제출 후 3영업일 이내 자동 회신 이메일 및 담당자 연락 (미팅 일정 조율)</div></div>
+          <div class="ns-item"><div class="ns-num">2</div><div>제품 적합성 검토 및 프로젝트 플랜 수립</div></div>
+          <div class="ns-item"><div class="ns-num">3</div><div><strong style="color:rgba(255,255,255,.9)">독점계약서 + 대행계약서</strong> 전달 및 서명</div></div>
+          <div class="ns-item"><div class="ns-num">4</div><div><strong style="color:rgba(255,255,255,.9)">프로젝트 진행 일정표</strong> 확정 및 공유</div></div>
+          <div class="ns-item"><div class="ns-num">5</div><div>초기 대행비 납입 후 페이지 제작·운영 킥오프</div></div>
+        </div>
+      </div>
+
+      <!-- Apps Script URL은 관리자가 HTML 파일 내 APPS_SCRIPT_URL 변수에 직접 입력 -->
+    </div>
+  </div>
+
+  <!-- 성공 화면 -->
+  <div class="success-wrap" id="success-wrap">
+    <div class="success-ic">✓</div>
+    <div class="success-ttl">신청이 접수되었습니다</div>
+    <p class="success-body">3영업일 이내에 담당자가 회신 및 연락드립니다.<br><strong>info@onleeone.com</strong> · <strong>+81-3-5542-0152</strong></p>
+    <div class="next-steps">
+      <div class="ns-title">다음 단계</div>
+      <div class="ns-item"><div class="ns-num">1</div><div>자동 회신 이메일 수신 확인 (3영업일 이내)</div></div>
+      <div class="ns-item"><div class="ns-num">2</div><div>담당자 미팅 일정 조율</div></div>
+      <div class="ns-item"><div class="ns-num">3</div><div>독점계약서 + 대행계약서 전달</div></div>
+      <div class="ns-item"><div class="ns-num">4</div><div>프로젝트 진행 일정표 확정</div></div>
+      <div class="ns-item"><div class="ns-num">5</div><div>초기 대행비 납입 → 킥오프</div></div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ═══════════════════════════════════
+// DATA / STATE
+// ═══════════════════════════════════
+let PLATFORM = '';
+let pdfBlobs = {};
+const done = {};
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQtB4kM5hAZALXL4N1PtRDQGKfwqR4wRoxFL9SyRLXwCoFL0CHU-cSf44mm2ud0bsQ/exec'; // ← Apps Script URL 입력 시 자동 저장 활성화
+
+// ═══════════════════════════════════
+// AGREEMENT DATA
+// ═══════════════════════════════════
+const MK2 = [
+  ['1','진실성 보증','본 문서의 모든 내용이 사실임을 보증하며, 해당 크라우드펀딩 플랫폼 이용약관, 프로젝트 실행자 가이드라인, 품질·리뷰 가이드라인을 준수합니다.'],
+  ['2','규정 위반 시 조치','법령 또는 규정 위반 발생 시, 귀사의 판단에 따라 프로젝트가 중지될 수 있음에 동의합니다. 중지 시에도 성약 수수료 및 중지 수수료가 발생할 수 있음에 동의합니다.'],
+  ['3','위약금·손해배상','위반 시 응원금 총액의 20%(5만~300만엔)를 위약금으로 납부하며, 손해액이 초과할 경우 초과분을 부담합니다.'],
+  ['4','반사회적 세력 배제','과거 및 현재 어떠한 반사회적 세력과도 관계가 없음을 보증합니다.'],
+  ['5','정보 공개 동의','「특정상거래법」에 따라 서포터 요청 시, 귀사가 실행자 정보를 공개할 수 있음에 동의합니다.'],
+  ['6','비밀 유지 의무','귀사 및 대행사로부터 제공받은 정보를 제3자에게 누설하지 않으며, 프로젝트 진행 목적 외에는 사용하지 않습니다.'],
+  ['7','허위·과장 금지','프로젝트 페이지에 허위 또는 과장 정보를 기재하지 않으며, 요청 시 증빙자료를 제출합니다.'],
+  ['8','응원 구매 조작 금지','실행자 본인, 대리인 또는 관계인이 자사 응원 구매를 유도하거나 허위 구매를 하지 않습니다.'],
+  ['9','입금 계좌 명의 일치','수령 계좌 명의는 실행자 명과 동일해야 하며, 계좌 미등록 시 지급 지연 가능성에 동의합니다.'],
+  ['10','회계 책임 명시','수령한 응원금의 회계 처리는 실행자 본인의 책임 하에 처리합니다.'],
+];
+const MK3 = [
+  ['11','샘플 제공 동의','마쿠아케 또는 대행사의 검수 요청 시, 샘플(또는 소재)을 제공합니다.'],
+  ['12','기술기준 적합증명','Wi-Fi, Bluetooth 등 무선기능 제품은 일본 전파법 인증을 취득합니다.'],
+  ['13','전기용품 안전법','전기제품은 PSE 인증을 취득 및 제출합니다.'],
+  ['14','식품·위생 관련 신고','식품, 식기, 피부 접촉 제품 등은 식품위생법, 검역법에 따른 신고·검사를 완료합니다.'],
+  ['15','수입·통관 확인','일본 내 수입 및 판매 가능 여부를 세관을 통해 확인하고, 관련 서류를 대행사에 제출합니다.'],
+  ['16','독점계약·병행수입방지','프로젝트 기간 동안 대행사(온리)와 독점 계약을 체결하며 병행수입 및 타 경로 판매가 발생하지 않도록 관리합니다.'],
+  ['17','리턴 생산·배송 보증','리턴상품은 일정 내에 확실히 생산·배송하며, 계약서 명기 또는 생산계획서를 제출합니다.'],
+  ['18','가격 유지 의무(3개월)','리턴 배송 완료 후 3개월간, 해당 크라우드펀딩 플랫폼 판매가격 이하로 판매하지 않습니다.'],
+  ['19','서포터 문의 대응','서포터 문의에 대해 3영업일 이내에 성실히 답변합니다.'],
+  ['20','활동리포트 게시의무','프로젝트 진행 중 1회 이상, 종료 후 배송 전까지 월 1회 이상 리포트를 게시합니다.'],
+  ['21','내용변경·취소 처리','변경사항은 사전 보고하며, 서포터 불이익 발생 시 전액 환불 책임을 집니다.'],
+  ['22','중복 게재 금지','동일 상품·서비스를 다른 플랫폼(국내외 포함)에 중복 게재하지 않습니다.'],
+  ['23','배송비·비용 정산','리턴 생산 및 수출입 비용은 실행자 부담으로 하며, 일본 내 배송비는 대행사가 선지급 후 달성금액에서 차감합니다.'],
+  ['24','취소·환불 책임','프로젝트 종료 후 취소 요청 시, 성실히 대응하며 수수료는 환불되지 않음을 승인합니다.'],
+  ['25','개인정보 보호','서포터 정보는 개인정보보호법에 따라 안전하게 관리합니다.'],
+  ['26','문제 발생 시 보고의무','리워드 지연, 사양 변경 등 트러블 발생 시 즉시 대행사에 보고하고 리포트를 게시합니다.'],
+];
+const MKC = [
+  ['1','본 서면에 기재된 모든 내용이 사실임을 보증하며, 해당 크라우드펀딩 플랫폼 신청서·이용규약 및 「프로젝트 실행자 가이드라인」의 전 항목에 동의합니다.'],
+  ['2','실행자는 진행자(온리주식회사)와 독점계약을 체결하고, 제품의 샘플·이미지·동영상 등 콘텐츠와 사양서·시험성적서·특허 등 관련 자료를 제공합니다. 제공된 자료와 콘텐츠의 사용권은 프로젝트 홍보·광고·보도용으로 사용됨을 승인합니다.'],
+  ['3','본 동의서 제출은 해당 크라우드펀딩 플랫폼에 프로젝트 게재를 확약하는 것이 아니며, 심사 결과에 따라 게재가 승인되지 않을 수 있음을 인지하고 동의합니다.'],
+  ['4','프로젝트 페이지의 내용과 리턴의 실제 내용이 상이한 경우, 실행자는 자신의 책임과 비용으로 서포터 전원에게 환불 조치를 이행합니다. 이 경우 성약 수수료는 환불되지 않음을 인정합니다.'],
+  ['5','리턴이 미이행 또는 발송 지연된 경우, 실행자는 그 사유를 신속히 진행자에게 보고하고, 활동 리포트를 통해 서포터에게 공지해야 합니다.'],
+  ['6','프로젝트 개시 후 실행자 사유로 중단될 경우, 실행자는 발생한 플랫폼 수수료 및 진행자가 부담한 비용 일체를 변상함에 동의합니다.'],
+  ['7','서포터 개인정보는 일본 「개인정보보호법(APPI)」을 준수하여 관리하며, 본 프로젝트 목적 외에는 사용하지 않습니다.'],
+  ['8','리턴 배송 완료 이전에는 해당 상품 또는 유사 상품을 일본 내 온·오프라인 채널에서 일반 판매하지 않을 것을 약속합니다.'],
+  ['9','프로젝트에서 할인율을 표시하는 경우, 리턴 배송 완료 후 3개월간 프로젝트 페이지에 기재된 판매정가를 유지합니다.'],
+  ['10','일단 게재된 프로젝트 페이지는 실행자의 단독 판단으로 삭제할 수 없습니다. 불가피한 사유가 있는 경우 진행자 및 플랫폼의 승인을 받아 협의 후 조정합니다.'],
+];
+const ZZ = [
+  ['1','자격','실행자는 완전한 행위능력을 가진 개인 또는 적법하게 등록된 법인/단체임을 확인합니다.'],
+  ['2','규정 준수','Zeczec 이용약관/발기자 위탁계약 및 운영 정책을 숙지하고 준수합니다.'],
+  ['3','서포터 보호','프로젝트 페이지에 제품정보/이행능력/지연·하자 시 처리/법정 표시사항 등을 적정하게 공개하고, 리스크 고지·구제 절차에 협조합니다.'],
+  ['4','수수료','프로젝트 성공 시 Zeczec 수수료 및 금류(결제) 비용이 발생함을 이해합니다. (플랫폼 5.5% + 금류 2.5% = 합계 8%)'],
+  ['5','All-or-Nothing','설정된 목표 금액을 달성하지 못할 경우 펀딩은 성립되지 않고 어떠한 금액도 지급되지 않음을 인식합니다.'],
+  ['6','지급 시점','프로젝트 종료 후(성공 프로젝트) 2차에 나눠 계좌 송금합니다.'],
+  ['7','환불·차감','취소·환불·차지백 발생 시 해당 금액 및 수수료/실비가 차감·보류될 수 있으며, 실행자가 이에 협조·부담함을 동의합니다.'],
+  ['8','진실성','본 문서 및 프로젝트 관련 제출 자료의 내용이 모두 사실임을 보증합니다.'],
+  ['9','품질 표시','프로젝트 페이지 기재 내용과 실제 리턴이 상이하거나 과장·허위인 경우, 실행자 책임으로 환불/교환/보상 등 사후조치를 이행합니다.'],
+  ['10','책임 이행','납기 지연·중요 변경 발생 시 진행자에게 즉시 통지하고 서포터 고지 의무를 준수합니다.'],
+  ['11','개인정보 보호','서포터 정보를 대행사에게 제공할 수 있으며, 대행사는 프로젝트 수행 목적 범위에서만 안전하게 처리합니다.'],
+  ['12','연락처 제공','서포터 요청 시 Zeczec가 실행자 연락처를 제공할 수 있음을 동의합니다.'],
+  ['13','국외 이전 조건','개인정보 국외이전이 필요한 경우, 대만 PDPA 규정을 고려해 적법 절차를 준수합니다.'],
+  ['14','소비자 보호','대만 소비자보호법상 수령 후 7일 철회권 등을 고려하여 반품·환불 정책을 명확히 고지하고 준수합니다.'],
+  ['15','무선·통신 인증','Wi-Fi/Bluetooth 등 무선 기능 제품은 NCC 요건 충족이 필요할 수 있음을 이해합니다.'],
+  ['16','안전·규격 인증','제품군에 따라 BSMI 적합성이 필요할 수 있으며, 라벨/마크 요건을 준수합니다.'],
+  ['17','카테고리 규제','화장품/식품/의약외품/어린이용품 등 해당 시 TFDA 등 관련 법령 및 표시 기준을 준수합니다.'],
+  ['18','분쟁·준거법','본 프로젝트와 관련한 분쟁은 대만 법령을 준거법으로 하며, 관할은 타이베이 지방법원으로 합니다.'],
+  ['19','승인 불가 시 면책','인증·허가 등의 승인 불가 판정으로 프로젝트가 중단·취소되는 경우, 모든 책임은 실행자에게 귀속됩니다.'],
+  ['20','비용 반환 불가','전항의 사유로 프로젝트가 중단되더라도 대행비 등 일체의 비용은 반환되지 않습니다.'],
+  ['21','환급·상계 불가','실행자의 귀책 사유에 기인한 프로젝트 중단 시 발생한 플랫폼 수수료·대행사 제반 비용 일체는 환급 또는 상계 대상이 되지 않습니다.'],
+  ['22','중복 게재 금지','동일 상품·서비스를 다른 플랫폼(국내외 포함)에 중복 게재하지 않습니다.'],
+  ['23','배송비·비용 정산','리턴 생산 및 수출입 비용은 실행자 부담으로 하며, 대만 내 배송비는 대행사가 선지급 후 달성금액에서 차감합니다.'],
+  ['24','취소·환불 책임','프로젝트 종료 후 취소 요청 시 성실히 대응하며 수수료는 환불되지 않음을 승인합니다.'],
+  ['25','개인정보 보호','서포터 정보는 개인정보보호법에 따라 안전하게 관리합니다.'],
+  ['26','문제 발생 시 보고','리워드 지연, 사양 변경 등 트러블 발생 시 즉시 대행사에 보고하고 리포트를 게시합니다.'],
+];
+const ZZC = [
+  ['1','실행자는 Zeczec 진행 위탁계약/FAQ/개인정보정책 등 플랫폼 정책을 확인·준수하며, 정보공개/리스크 고지/구제 절차에 협조합니다.'],
+  ['2','실행자는 진행자(ONLEE)가 프로젝트 기획·페이지 제작·광고/PR·운영을 수행할 수 있도록 샘플/사양서/시험성적/인증서/사진·영상·카피 자료를 기한 내 제공하고 제출 자료의 정확성을 보증합니다.'],
+  ['3','본 동의서 제출은 Zeczec 게재/승인을 보장하지 않으며, 심사 결과 불승인 또는 수정 요구가 발생할 수 있음을 이해합니다.'],
+  ['4','(정산) 프로젝트 성공 시 플랫폼/금류 수수료가 발생하며, 프로젝트 종료 후 약 28영업일 내 지급 구조임을 이해합니다.'],
+  ['5','실행자는 리턴의 생산·품질·납기·A/S·환불 책임의 1차 주체이며, 사양 변경/지연/하자 발생 시 진행자와 협의해 즉시 공지·대응합니다.'],
+  ['6','서포터 개인정보는 프로젝트 이행 목적 범위에서만 이용하고, 안전조치를 취하며, 임의 마케팅 활용/제3자 제공/재판매를 금지합니다.'],
+  ['7','대만 내 판매·수입에 필요한 인증(NCC/BSMI 등) 및 표시·라벨(중문)·주의문을 실행자 책임으로 확보하며, 진행자가 요청하는 서류를 기한 내 제출합니다.'],
+  ['8','(동시판매/가격) 서포터 혼선을 야기하는 동일/유사 상품의 타 채널 판매를 진행자와 사전 협의 없이 진행하지 않습니다.'],
+  ['9','(지식재산/클레임) IP 침해 주장 또는 규정 위반으로 인한 클레임/손해가 발생할 경우, 실행자가 1차적으로 대응·해결하고 진행자 및 플랫폼에 발생한 손해를 배상합니다.'],
+  ['10','(준거법/관할) 본 협업 동의서의 준거법은 대만 법령(또는 별도 합의)으로 하며, 관할은 타이베이 지방법원으로 합니다.'],
+];
+
+// ═══════════════════════════════════
+// BUILD AGREEMENT TABLES
+// ═══════════════════════════════════
+function buildTable(bodyId, rows, hasTitleCol) {
+  const tb = document.getElementById(bodyId);
+  if (!tb) return;
+  tb.innerHTML = '';
+  rows.forEach(r => {
+    const tr = document.createElement('tr');
+    if (hasTitleCol) {
+      tr.innerHTML = `<td><input type="checkbox" class="chk" id="chk-${bodyId}-${r[0]}" onchange="syncAll('${bodyId}')"></td><td class="nm">${r[1]}</td><td style="font-size:15px;color:var(--g5)">${r[2]}</td>`;
+    } else {
+      tr.innerHTML = `<td><input type="checkbox" class="chk" id="chk-${bodyId}-${r[0]}" onchange="syncAll('${bodyId}')"></td><td style="font-size:15px;color:var(--g5)">${r[1]}</td>`;
+    }
+    tb.appendChild(tr);
+  });
+  // 전체동의 행
+  const allTr = document.createElement('tr');
+  allTr.style.cssText = 'background:#111;';
+  const colspan = hasTitleCol ? 3 : 2;
+  allTr.innerHTML = `<td style="width:40px;text-align:center"><input type="checkbox" class="chk" id="chkall-${bodyId}" style="accent-color:#c0392b" onchange="checkAll('${bodyId}',this)"></td><td colspan="${colspan-1}" style="font-size:14px;font-weight:700;color:#fff;letter-spacing:.04em">전체 동의</td>`;
+  tb.appendChild(allTr);
+}
+
+function checkAll(bodyId, master) {
+  // 마스터 → 모든 항목 체크/해제
+  tb = document.getElementById(bodyId);
+  tb.querySelectorAll('input.chk').forEach(chk => {
+    if (chk.id !== master.id) chk.checked = master.checked;
+  });
+}
+
+function syncAll(bodyId) {
+  // 개별 항목 변경 시 전체동의 상태 동기화
+  const tb = document.getElementById(bodyId);
+  const items = Array.from(tb.querySelectorAll('input.chk')).filter(c => !c.id.startsWith('chkall-'));
+  const master = document.getElementById('chkall-'+bodyId);
+  if (master) master.checked = items.every(c => c.checked);
+}
+buildTable('mk2-body', MK2, true);
+buildTable('mk3-body', MK3, true);
+buildTable('mkc-body', MKC, false);
+buildTable('zz-body', ZZ, true);
+buildTable('zzc-body', ZZC, false);
+
+// ═══════════════════════════════════
+// PLATFORM SELECTION
+// ═══════════════════════════════════
+function setPlatform(pf) {
+  PLATFORM = pf;
+  // visual
+  ['jp','tw','us','both'].forEach(p => { const el=document.getElementById('pfc-'+p); if(el) el.className='pf-card'; });
+  if (pf === 'JP') document.getElementById('pfc-jp').className = 'pf-card on-jp';
+  if (pf === 'TW') document.getElementById('pfc-tw').className = 'pf-card on-tw';
+  if (pf === 'BOTH') document.getElementById('pfc-both').className = 'pf-card on-both';
+  if (pf === 'US') { const el=document.getElementById('pfc-us'); if(el) el.className='pf-card on-us'; }
+
+  // sidebar groups
+  const showJP = pf === 'JP' || pf === 'BOTH';
+  const showTW = pf === 'TW' || pf === 'BOTH';
+  document.getElementById('sb-jp-group').style.display = showJP ? '' : 'none';
+  document.getElementById('sb-jp-div').style.display = showJP ? '' : 'none';
+  document.getElementById('sb-tw-group').style.display = showTW ? '' : 'none';
+  document.getElementById('sb-tw-div').style.display = showTW ? '' : 'none';
+  var showUS = pf === 'US';
+  var _usg=document.getElementById('sb-us-group'); if(_usg)_usg.style.display=showUS?'':'none';
+  var _usd=document.getElementById('sb-us-div'); if(_usd)_usd.style.display=showUS?'':'none';
+
+  // unlock sidebar items
+  document.getElementById('si-logistics').classList.remove('locked');
+  if (showJP) {
+    document.getElementById('si-mk-agree').classList.remove('locked');
+    document.getElementById('si-mk-collab').classList.remove('locked');
+  }
+  if (showTW) {
+    document.getElementById('si-zz-agree').classList.remove('locked');
+    document.getElementById('si-zz-collab').classList.remove('locked');
+  }
+  document.getElementById('si-submit').classList.remove('locked');
+  var _usc=document.getElementById('si-us-consult'); if(showUS&&_usc)_usc.classList.remove('locked');
+
+  // build doc list
+  const tbody = document.getElementById('doc-list-body');
+  tbody.innerHTML = '';
+  const docs = [
+    {n:'물류 히어링 시트 (Import Information Sheet)', t:'공통 필수', tc:'badge-co', note:'수출입·물류 전반 정보'},
+  ];
+  if (showJP) {
+    docs.push({n:'마쿠아케 실행자 동의서', t:'🇯🇵 Japan', tc:'badge-jp', note:'26개 항목 체크·서명'});
+    docs.push({n:'일본 크라우드펀딩 협업 동의서', t:'🇯🇵 Japan', tc:'badge-jp', note:'10개 항목 체크·서명'});
+  }
+  if (showUS) {
+    docs.push({n:'미국시장 크라우드펀딩 실행자', t:'🇺🇸 America', tc:'badge-co', note:'별도 상담 후 진행'});
+  }
+  if (showTW) {
+    docs.push({n:'ZecZec 실행자 동의서', t:'🇹🇼 Taiwan', tc:'badge-tw', note:'26개 항목 체크·서명'});
+    docs.push({n:'대만 크라우드펀딩 협업 동의서', t:'🇹🇼 Taiwan', tc:'badge-tw', note:'10개 항목 체크·서명'});
+  }
+  docs.forEach((d,i) => {
+    tbody.innerHTML += `<tr><td class="doc-name">${d.n}</td><td class="doc-target"><span class="badge ${d.tc}">${d.t}</span></td><td class="doc-note">${d.note}</td></tr>`;
+  });
+  document.getElementById('doc-list-wrap').style.display = '';
+
+  // build PDF list & progress
+  buildPdfList();
+  buildProgress();
+}
+
+// ═══════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════
+function goSec(id) {
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('on'));
+  document.getElementById('sec-'+id).classList.add('on');
+  document.querySelectorAll('.sb-it').forEach(s => s.classList.remove('on'));
+  const si = document.getElementById('si-'+id);
+  if (si) si.classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function saveNext(current) {
+  done[current] = true;
+  const si = document.getElementById('si-'+current);
+  if (si) si.classList.add('done');
+  const st = document.getElementById('st-'+current);
+  if (st) { st.textContent = '저장 완료'; st.className = 'badge badge-done'; }
+  const ps = document.getElementById('ps-'+current);
+  if (ps) ps.classList.add('done');
+  updateProgress();
+  // determine next section
+  const order = getDocOrder();
+  const idx = order.indexOf(current);
+  const next = idx >= 0 && idx < order.length - 1 ? order[idx+1] : 'submit';
+  syncAllFields();
+  goSec(next);
+}
+
+function getDocOrder() {
+  const o = ['logistics'];
+  if (PLATFORM === 'JP' || PLATFORM === 'BOTH') o.push('mk-agree', 'mk-collab');
+  if (PLATFORM === 'TW' || PLATFORM === 'BOTH') o.push('zz-agree', 'zz-collab');
+  if (PLATFORM === 'US') o.push('us-consult');
+  o.push('submit');
+  return o;
+}
+
+// ═══════════════════════════════════
+// PROGRESS
+// ═══════════════════════════════════
+function buildProgress() {
+  const keys = ['logistics'];
+  const labels = {logistics:'물류 시트', 'mk-agree':'MK 실행자', 'mk-collab':'MK 협업', 'zz-agree':'ZZ 실행자', 'zz-collab':'ZZ 협업'};
+  if (PLATFORM === 'JP' || PLATFORM === 'BOTH') { keys.push('mk-agree'); keys.push('mk-collab'); }
+  if (PLATFORM === 'TW' || PLATFORM === 'BOTH') { keys.push('zz-agree'); keys.push('zz-collab'); }
+  const ps = document.getElementById('prog-steps');
+  ps.innerHTML = '';
+  keys.forEach(k => {
+    const d = document.createElement('div');
+    d.className = 'prog-step' + (done[k] ? ' done' : '');
+    d.id = 'ps-'+k;
+    d.textContent = labels[k];
+    ps.appendChild(d);
+  });
+  updateProgress();
+}
+
+function updateProgress() {
+  const keys = ['logistics'];
+  if (PLATFORM === 'JP' || PLATFORM === 'BOTH') { keys.push('mk-agree','mk-collab'); }
+  if (PLATFORM === 'TW' || PLATFORM === 'BOTH') { keys.push('zz-agree','zz-collab'); }
+  const total = keys.length;
+  const comp = keys.filter(k => done[k]).length;
+  document.getElementById('prog-fill').style.width = Math.round(comp/total*100) + '%';
+}
+
+// ═══════════════════════════════════
+// FIELD SYNC (auto-fill)
+// ═══════════════════════════════════
+function g(id) { const el = document.getElementById(id); return el ? el.value || '' : ''; }
+function s(id, val, force) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (force || !el.dataset.manualEdit) { el.value = val; }
+}
+function syncFields() {
+  const corp_kr = g('lg-ckr');
+  const corp_en = g('lg-cen');
+  const addr_kr = g('lg-akr');
+  const addr_en = g('lg-aen');
+  const pname   = g('lg-pname');
+  const proj    = g('lg-proj') || pname;
+  const ceo_kr  = g('mk-ceo-kr') || g('zz-ceo-kr');
+  const ceo_en  = g('mk-ceo-en') || g('zz-ceo-en');
+
+  // Update project field default from product name
+  const lpel = document.getElementById('lg-proj');
+  if (lpel && !lpel.dataset.manualEdit && pname) lpel.value = pname;
+
+  // MK agree
+  if (!document.getElementById('mk-corp')?.dataset.manualEdit) s('mk-corp', corp_kr);
+  if (!document.getElementById('mk-proj')?.dataset.manualEdit) s('mk-proj', proj);
+  if (!document.getElementById('mk-addr-kr')?.dataset.manualEdit) s('mk-addr-kr', addr_kr);
+  if (!document.getElementById('mk-addr-en')?.dataset.manualEdit) s('mk-addr-en', addr_en);
+  if (!document.getElementById('mk-seal-in')?.dataset.manualEdit) { s('mk-seal-in', corp_kr); updateSeal('mk-seal','mk-seal-in'); }
+
+  // MK collab
+  if (!document.getElementById('mkc-corp')?.dataset.manualEdit) s('mkc-corp', corp_kr);
+  if (!document.getElementById('mkc-proj')?.dataset.manualEdit) s('mkc-proj', proj);
+  const mkceo = g('mk-ceo-kr') || ceo_kr;
+  if (!document.getElementById('mkc-ceo')?.dataset.manualEdit) s('mkc-ceo', mkceo);
+  if (!document.getElementById('mkc-seal-in')?.dataset.manualEdit) { s('mkc-seal-in', corp_kr); updateSeal('mkc-seal','mkc-seal-in'); }
+
+  // ZZ agree
+  if (!document.getElementById('zz-corp')?.dataset.manualEdit) s('zz-corp', corp_kr);
+  if (!document.getElementById('zz-proj')?.dataset.manualEdit) s('zz-proj', proj);
+  if (!document.getElementById('zz-addr-kr')?.dataset.manualEdit) s('zz-addr-kr', addr_kr);
+  if (!document.getElementById('zz-addr-en')?.dataset.manualEdit) s('zz-addr-en', addr_en);
+  if (!document.getElementById('zz-seal-in')?.dataset.manualEdit) { s('zz-seal-in', corp_kr); updateSeal('zz-seal','zz-seal-in'); }
+
+  // ZZ collab
+  if (!document.getElementById('zzc-corp')?.dataset.manualEdit) s('zzc-corp', corp_kr);
+  if (!document.getElementById('zzc-proj')?.dataset.manualEdit) s('zzc-proj', proj);
+  const zzceo = g('zz-ceo-kr') || ceo_kr;
+  if (!document.getElementById('zzc-ceo')?.dataset.manualEdit) s('zzc-ceo', zzceo);
+  if (!document.getElementById('zzc-seal-in')?.dataset.manualEdit) { s('zzc-seal-in', corp_kr); updateSeal('zzc-seal','zzc-seal-in'); }
+
+  // update email subject preview
+  const corp = corp_kr || corp_en;
+  if (corp) document.getElementById('email-subj-prev').textContent = `[ONLEE 신청서류] ${corp} — Makuake/ZecZec 신청`;
+}
+
+function syncAllFields() { syncFields(); }
+function syncFromMkAgree() { document.getElementById('mk-corp').dataset.manualEdit = '1'; }
+function syncFromZzAgree() { document.getElementById('zz-corp').dataset.manualEdit = '1'; }
+
+// Mark manual edits on auto-fill fields
+document.querySelectorAll('.auto-fill').forEach(el => {
+  el.addEventListener('input', () => { el.dataset.manualEdit = '1'; });
+});
+
+// ═══════════════════════════════════
+// INPUT VALIDATORS
+// ═══════════════════════════════════
+function numOnly(el) { el.value = el.value.replace(/[^0-9\-]/g, ''); }
+function emailOnly(el) { el.value = el.value.replace(/[^a-zA-Z0-9@._\-+]/g, ''); }
+function urlOnly(el) { el.value = el.value.replace(/[^a-zA-Z0-9:/?#\[\]@!$&'()*+,;=._\-%~]/g, ''); }
+function fmtMoney(el) {
+  // 통화 기호(¥ NT$ $ 등)와 숫자만 추출, 숫자 부분에 콤마 삽입
+  const raw = el.value;
+  // 기호 분리
+  const symMatch = raw.match(/^([¥$€NT\s]*)/);
+  const sym = symMatch ? symMatch[1] : '';
+  const numPart = raw.replace(/[^0-9]/g, '');
+  if (!numPart) return;
+  el.value = sym + Number(numPart).toLocaleString('en-US');
+}
+
+// ═══════════════════════════════════
+// RADIO BUTTONS
+// ═══════════════════════════════════
+function selR(el, name) {
+  document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.parentElement.classList.remove('on'));
+  el.classList.add('on');
+  el.querySelector('input').checked = true;
+}
+function gR(name) { const r = document.querySelector(`input[name="${name}"]:checked`); return r ? r.value : '—'; }
+
+// ═══════════════════════════════════
+// CANVAS SIGNATURE
+// ═══════════════════════════════════
+const signPads = {};
+function initCvs(id) {
+  const c = document.getElementById(id); if (!c || signPads[id]) return;
+  const ctx = c.getContext('2d');
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 2.2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  let drawing = false, lx = 0, ly = 0;
+  const pos = (e) => { const r = c.getBoundingClientRect(); const src = e.touches ? e.touches[0] : e; return {x:src.clientX-r.left, y:src.clientY-r.top}; };
+  c.addEventListener('mousedown', e => { drawing = true; const p = pos(e); lx = p.x; ly = p.y; hideHint(id); });
+  c.addEventListener('mousemove', e => { if (!drawing) return; const p = pos(e); ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(p.x,p.y); ctx.stroke(); lx=p.x; ly=p.y; });
+  c.addEventListener('mouseup', () => drawing = false);
+  c.addEventListener('mouseleave', () => drawing = false);
+  c.addEventListener('touchstart', e => { e.preventDefault(); drawing = true; const p = pos(e); lx=p.x; ly=p.y; hideHint(id); }, {passive:false});
+  c.addEventListener('touchmove', e => { e.preventDefault(); if (!drawing) return; const p = pos(e); ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(p.x,p.y); ctx.stroke(); lx=p.x; ly=p.y; }, {passive:false});
+  c.addEventListener('touchend', () => drawing = false);
+  signPads[id] = true;
+}
+function hideHint(cvsId) {
+  const hintId = cvsId.replace('-cvs','-cvs-hint');
+  const h = document.getElementById(hintId); if (h) h.style.display = 'none';
+}
+function clearCvs(id, hintId) {
+  const c = document.getElementById(id); if (!c) return;
+  c.getContext('2d').clearRect(0,0,c.width,c.height);
+  const h = document.getElementById(hintId); if (h) h.style.display = 'block';
+}
+['mk-cvs','mkc-cvs','zz-cvs','zzc-cvs'].forEach(id => initCvs(id));
+
+// ═══════════════════════════════════
+// SEAL
+// ═══════════════════════════════════
+function updateSeal(sealId, inputId) {
+  const name = (document.getElementById(inputId) || {}).value || '';
+  const seal = document.getElementById(sealId); if (!seal) return;
+  const corpEl = seal.querySelector('.seal-corp');
+  if (corpEl) corpEl.textContent = name || '법인명';
+}
+
+// ═══════════════════════════════════
+// IMAGE UPLOAD
+// ═══════════════════════════════════
+function dragOv(e, el) { e.preventDefault(); el.classList.add('drag'); }
+function dragLv(e, el) { el.classList.remove('drag'); }
+function dropImg(e, inputId, prevId, el) {
+  e.preventDefault(); el.classList.remove('drag');
+  const dt = e.dataTransfer;
+  if (dt && dt.files) previewImgs({files: dt.files}, prevId);
+}
+function previewImgs(input, prevId) {
+  const prev = document.getElementById(prevId); if (!prev) return;
+  const errEl = document.getElementById('img-err-lg');
+  const MIN_BYTES = 50 * 1024;    // 50KB
+  const MAX_BYTES = 5 * 1024 * 1024; // 5MB
+  const MAX_COUNT = 5;
+  const files = Array.from(input.files || []).filter(f => f.type.startsWith('image/'));
+  const errors = [];
+
+  // 현재 썸네일 수 확인
+  const current = prev.querySelectorAll('.img-thumb').length;
+  let added = 0;
+
+  files.forEach(f => {
+    if (current + added >= MAX_COUNT) { errors.push(`최대 ${MAX_COUNT}개까지 업로드 가능합니다.`); return; }
+    if (f.size < MIN_BYTES) { errors.push(`"${f.name}" 파일이 너무 작습니다 (최소 50KB, 현재 ${(f.size/1024).toFixed(0)}KB).`); return; }
+    if (f.size > MAX_BYTES) { errors.push(`"${f.name}" 파일이 너무 큽니다 (최대 5MB, 현재 ${(f.size/1024/1024).toFixed(1)}MB).`); return; }
+
+    const sizeTxt = f.size >= 1024*1024
+      ? `${(f.size/1024/1024).toFixed(1)}MB`
+      : `${(f.size/1024).toFixed(0)}KB`;
+
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const src = ev.target.result;
+      const wrap = document.createElement('div');
+      wrap.className = 'img-thumb';
+      wrap.dataset.src = src;
+      wrap.dataset.name = f.name;
+      wrap.innerHTML = `
+        <img src="${src}" alt="${f.name}" onclick="openLB('${src}','${f.name} · ${sizeTxt}')">
+        <div class="img-sz">${sizeTxt}</div>
+        <div class="img-rm" onclick="event.stopPropagation();this.parentElement.remove()">×</div>`;
+      prev.appendChild(wrap);
+    };
+    reader.readAsDataURL(f);
+    added++;
+  });
+
+  if (errEl) {
+    if (errors.length > 0) {
+      errEl.style.display = 'block';
+      errEl.innerHTML = errors.join('<br>');
+    } else {
+      errEl.style.display = 'none';
+    }
+  }
+  // input 초기화 (같은 파일 재업로드 허용)
+  input.value = '';
+}
+
+function openLB(src, info) {
+  document.getElementById('lb-img').src = src;
+  document.getElementById('lb-info').textContent = info || '';
+  document.getElementById('lightbox').classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+function closeLB() {
+  document.getElementById('lightbox').classList.remove('on');
+  document.body.style.overflow = '';
+}
+// ESC 키로 닫기
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLB(); });
+
+// ═══════════════════════════════════
+// PDF GENERATION
+// ═══════════════════════════════════
+function buildPdfList() {
+  const list = document.getElementById('pdf-list'); if (!list) return;
+  list.innerHTML = '';
+  const docs = [{id:'logistics', name:'물류 히어링 시트', sub:'Import Information Sheet'}];
+  if (PLATFORM === 'JP' || PLATFORM === 'BOTH') {
+    docs.push({id:'mk-agree', name:'마쿠아케 실행자 동의서', sub:'Makuake Project Agreement'});
+    docs.push({id:'mk-collab', name:'일본 크라우드펀딩 협업 동의서', sub:'Makuake Collaboration Agreement'});
+  }
+  if (PLATFORM === 'TW' || PLATFORM === 'BOTH') {
+    docs.push({id:'zz-agree', name:'ZecZec 실행자 동의서', sub:'Zeczec Project Agreement'});
+    docs.push({id:'zz-collab', name:'대만 크라우드펀딩 협업 동의서', sub:'Zeczec Collaboration Agreement'});
+  }
+  docs.forEach(d => {
+    list.innerHTML += `<div class="pdf-doc-row"><div class="pdf-doc-info"><div class="pdf-doc-name">${d.name}</div><div class="pdf-doc-sub">${d.sub}</div></div><div class="pdf-doc-actions"><span class="badge badge-pend" id="pst-${d.id}">미생성</span><button class="btn btn-ol btn-sm" onclick="genPDF('${d.id}')">PDF 생성</button></div></div>`;
+  });
+}
+
+async function genPDF(type) {
+  // HTML→Canvas→PDF 방식으로 한글 완벽 지원
+  // 먼저 html2canvas 라이브러리 동적 로드
+  if (!window.html2canvas) {
+    await new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+  const {jsPDF} = window.jspdf;
+  if (!jsPDF) { alert('PDF 라이브러리 로딩 중입니다. 잠시 후 다시 시도해 주세요.'); return; }
+
+  // 버튼 상태 업데이트
+  const pst = document.getElementById('pst-'+type);
+  if (pst) { pst.textContent = '생성 중...'; pst.className = 'badge badge-pend'; }
+
+  // PDF용 HTML 컨텐츠 생성
+  const content = buildPdfContent(type);
+  if (!content) { if (pst) { pst.textContent = '미생성'; } return; }
+
+  // 임시 컨테이너 생성
+  const container = document.createElement('div');
+  container.style.cssText = `
+    position:fixed; left:-9999px; top:0;
+    width:794px; background:#fff; color:#111;
+    font-family:'Noto Sans KR',sans-serif; font-size:13px;
+    line-height:1.72; padding:0;
+  `;
+  container.innerHTML = content;
+  document.body.appendChild(container);
+
+  try {
+    const canvas = await html2canvas(container, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+      windowWidth: 794,
+    });
+
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+    const PW = 210, PH = 297;
+    // A4 픽셀 환경: 794px wide, 1123px tall (96dpi 기준)
+    const A4_PX_H = Math.round(canvas.width * PH / PW); // 캔버스 scale에 맞춘 A4 높이(px)
+    const totalH = canvas.height;
+    const totalPages = Math.ceil(totalH / A4_PX_H);
+
+    for (let i = 0; i < totalPages; i++) {
+      if (i > 0) doc.addPage();
+      // 이번 페이지의 소스 y 시작점(픽셀)
+      const srcY = i * A4_PX_H;
+      // 이번 페이지에서 실제로 사용할 픽셀 높이
+      const srcH = Math.min(A4_PX_H, totalH - srcY);
+      // srcH → mm 환산
+      const sliceMM = srcH * PH / A4_PX_H;
+
+      // 슬라이스 캔버스 생성
+      const sliceCanvas = document.createElement('canvas');
+      sliceCanvas.width = canvas.width;
+      sliceCanvas.height = srcH;
+      const ctx = sliceCanvas.getContext('2d');
+      ctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
+      const sliceData = sliceCanvas.toDataURL('image/jpeg', 0.95);
+
+      // 페이지에 배치 (1cm = 약 3.78mm → 실제 여백은 CSS에서 처리, 여기선 0,0에서 full width)
+      doc.addImage(sliceData, 'JPEG', 0, 0, PW, sliceMM);
+
+      // 푸터: 항상 페이지 하단 여백 안에 표시 (하단 1cm = 10mm 지점)
+      doc.setFontSize(7); doc.setTextColor(160,160,160);
+      doc.text('ONLEE INC.', PW/2, PH - 4, {align:'center'});
+      // 페이지 번호
+      doc.setFontSize(7); doc.setTextColor(180,180,180);
+      doc.text(`${i+1} / ${totalPages}`, PW - 8, PH - 4, {align:'right'});
+    }
+
+    // 파일명: 영문 회사명 첫 4글자 + 서류종류 + 날짜
+    const raw = (collectFormData().corp_en || collectFormData().corp_kr || 'ONLEE')
+      .replace(/\b(inc|co|ltd|llc|corp|company|株式会社|주식회사)\b/gi,'')
+      .replace(/[^a-zA-Z가-힣]/g,'')
+      .trim();
+    const prefix = raw.slice(0,4).toUpperCase() || 'ONLE';
+    const fname = `${prefix}_${type}_${new Date().toISOString().slice(0,10)}.pdf`;
+    const blob = doc.output('blob');
+    pdfBlobs[type] = {blob, name: fname};
+    doc.save(fname);
+
+    if (pst) { pst.textContent='생성 완료'; pst.className='badge badge-done'; }
+
+    // Apps Script Drive 업로드
+    const asUrl = APPS_SCRIPT_URL;
+    if (asUrl) {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const b64 = e.target.result.split(',')[1];
+        try {
+          await fetch(asUrl, {method:'POST', mode:'no-cors', body: JSON.stringify({action:'savePDF', filename:fname, pdfBase64:b64, type, formData: collectFormData()}), headers:{'Content-Type':'application/json'}});
+        } catch(err) { console.log('Drive upload:', err); }
+      };
+      reader.readAsDataURL(blob);
+    }
+  } catch(err) {
+    console.error('PDF 생성 오류:', err);
+    alert('PDF 생성 중 오류가 발생했습니다: ' + err.message);
+    if (pst) { pst.textContent='오류'; pst.className='badge badge-pend'; }
+  } finally {
+    document.body.removeChild(container);
+  }
+}
+
+// ═══════════════════════════════════
+// PDF 내용 HTML 빌더 (한글 완전 지원)
+// ═══════════════════════════════════
+function buildPdfContent(type) {
+  const g = id => { const el = document.getElementById(id); return el ? (el.value || '').trim() : ''; };
+  const gR = name => { const r = document.querySelector(`input[name="${name}"]:checked`); return r ? r.value : '—'; };
+  const gC = (bodyId, num) => { const el = document.getElementById(`chk-${bodyId}-${num}`); return el && el.checked; };
+
+  const baseStyle = `
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Noto Sans KR', sans-serif; font-size: 11px; color: #111; background: #fff; line-height: 1.45; }
+      .page { padding: 38px 38px 48px 38px; }
+      .hdr-bar { background: #111; color: #fff; padding: 6px 38px; font-size: 9px; display: flex; justify-content: space-between; letter-spacing:.04em; }
+      h1 { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+      h2 { font-size: 10px; color: #888; font-weight: 400; margin-bottom: 12px; }
+      .sec-lbl { font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #555; background: #f3f3f3; padding: 4px 8px; margin: 12px 0 6px; border-left: 3px solid #111; }
+      table.info { width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 10px; }
+      table.info td { padding: 3.5px 7px; border-bottom: 1px solid #ebebeb; vertical-align: top; line-height: 1.4; }
+      table.info td:first-child { width: 110px; color: #888; font-size: 9px; }
+      table.agree { width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 10px; }
+      table.agree thead tr { background: #111; color: #fff; }
+      table.agree th { padding: 5px 8px; font-size: 9px; font-weight: 400; text-align: left; }
+      table.agree td { padding: 5px 8px; border-bottom: 1px solid #ebebeb; vertical-align: top; font-size: 10px; line-height: 1.42; }
+      table.agree td.chk-cell { width: 24px; text-align: center; font-size: 13px; }
+      table.agree td.nm-cell { width: 100px; font-weight: 700; font-size: 10px; }
+      .checked { color: #111; }
+      .unchecked { color: #ccc; }
+      .sign-area { margin-top: 12px; border-top: 1px solid #e8e8e8; padding-top: 10px; display: flex; gap: 20px; }
+      .sign-box { flex: 1; }
+      .sign-label { font-size: 8.5px; color: #888; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 5px; }
+      .sign-img-wrap { border: 1px solid #ddd; height: 68px; background: #fafafa; display: flex; align-items: center; justify-content: center; }
+      .seal-circle { width: 68px; height: 68px; border-radius: 50%; border: 2px solid #c0392b; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #c0392b; font-size: 9.5px; font-weight: 700; text-align: center; line-height: 1.35; }
+      .note-box { background: #f9f9f9; border-left: 3px solid #ddd; padding: 5px 10px; font-size: 9.5px; color: #666; margin-top: 6px; line-height: 1.5; }
+      .footer-bar { margin-top: 14px; padding-top: 6px; border-top: 1px solid #e8e8e8; font-size: 8px; color: #bbb; text-align: center; white-space: nowrap; overflow: hidden; }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  `;
+
+  const infoRow = (lbl, val) => `<tr><td>${lbl}</td><td>${val || '—'}</td></tr>`;
+
+  const agreeRowWith = (bodyId, rows, hasTitleCol) => rows.map(r => {
+    const checked = gC(bodyId, r[0]);
+    const chkMark = `<span class="${checked?'checked':'unchecked'}">${checked?'☑':'☐'}</span>`;
+    if (hasTitleCol) {
+      return `<tr><td class="chk-cell">${chkMark}</td><td class="nm-cell">${r[1]}</td><td>${r[2]}</td></tr>`;
+    } else {
+      return `<tr><td class="chk-cell">${chkMark}</td><td>${r[1]}</td></tr>`;
+    }
+  }).join('');
+
+  const getSignImg = (cvsId) => {
+    const cvs = document.getElementById(cvsId);
+    if (!cvs) return '<div style="color:#ccc;font-size:12px;text-align:center">서명 없음</div>';
+    const dataUrl = cvs.toDataURL('image/png');
+    // 빈 캔버스인지 체크
+    const blank = document.createElement('canvas');
+    blank.width = cvs.width; blank.height = cvs.height;
+    if (cvs.toDataURL() === blank.toDataURL()) return '<div style="color:#ccc;font-size:12px;text-align:center">서명 없음</div>';
+    return `<img src="${dataUrl}" style="max-height:72px;max-width:100%">`;
+  };
+
+  const getSealHtml = (sealId, corp) => {
+    const name = corp || '법인명';
+    return `<div class="seal-circle"><span style="font-size:10px;max-width:60px;word-break:keep-all;display:block;text-align:center">${name}</span><span style="font-size:10px">대표이사</span><span style="font-size:10px">인</span></div>`;
+  };
+
+  const signSection = (cvsId, sealId, corp, ceo) => `
+    <div class="sign-area">
+      <div class="sign-box">
+        <div class="sign-label">전자 서명 (대표자)</div>
+        <div class="sign-img-wrap">${getSignImg(cvsId)}</div>
+        <div style="font-size:11px;color:#555;margin-top:5px">대표자: ${ceo || '—'}</div>
+      </div>
+      <div class="sign-box" style="max-width:160px;text-align:center">
+        <div class="sign-label">전자 날인</div>
+        <div style="display:flex;justify-content:center;margin-top:6px">${getSealHtml(sealId, corp)}</div>
+        <div style="font-size:11px;color:#555;margin-top:8px">${corp || '—'}</div>
+      </div>
+    </div>
+  `;
+
+  let html = baseStyle + '<div class="hdr-bar"><span>ONLEE INC.</span><span>info@onleeone.com · +81-3-5542-0152</span></div><div class="page">';
+
+  if (type === 'logistics') {
+    html += `<h1>수출입 물류 정보 기입서류</h1><h2>Import Information Sheet — Ver.2 · ONLEE Import Logistics</h2>`;
+    html += `<div class="sec-lbl">수출자 정보</div><table class="info">
+      ${infoRow('회사명 (영문)', g('lg-cen'))}
+      ${infoRow('회사명 (한글)', g('lg-ckr'))}
+      ${infoRow('주소 (영문)', g('lg-aen'))}
+      ${infoRow('주소 (한글)', g('lg-akr'))}
+      ${infoRow('담당자명', g('lg-contact'))}
+      ${infoRow('전화번호', g('lg-tel'))}
+      ${infoRow('이메일', g('lg-email'))}
+      ${infoRow('기입일자', g('lg-date'))}
+    </table>`;
+    html += `<div class="sec-lbl">제품 정보</div><table class="info">
+      ${infoRow('제품명', g('lg-pname'))}
+      ${infoRow('HS CODE', g('lg-hs'))}
+      ${infoRow('원산지', g('lg-origin'))}
+      ${infoRow('제조사명', g('lg-maker'))}
+      ${infoRow('생산 리드타임', g('lg-lead'))}
+      ${infoRow('재질 (Material)', g('lg-mat'))}
+      ${infoRow('제품코드 (SKU)', g('lg-sku'))}
+      ${infoRow('바코드', g('lg-barcode'))}
+      ${infoRow('제품 사이즈', g('lg-psz'))}
+      ${infoRow('박스 사이즈', g('lg-bsz'))}
+      ${infoRow('중량 (kg)', g('lg-wt'))}
+      ${infoRow('카톤 BOX 크기', g('lg-csz'))}
+      ${infoRow('카톤 BOX 중량', g('lg-cwt'))}
+      ${infoRow('카톤당 입수량', g('lg-qty'))}
+      ${infoRow('이미지 URL', g('lg-imgurl'))}
+    </table>`;
+
+    // 업로드된 제품 이미지 삽입
+    const imgThumbs = document.querySelectorAll('#img-prev-lg .img-thumb');
+    if (imgThumbs.length > 0) {
+      const imgSrcs = Array.from(imgThumbs).map(t => t.dataset.src).filter(Boolean);
+      if (imgSrcs.length > 0) {
+        // 이미지를 가로로 나열 (최대 120px × 120px, 간격 8px)
+        const imgCells = imgSrcs.map((src, i) => {
+          const name = imgThumbs[i]?.dataset?.name || `이미지 ${i+1}`;
+          return `<td style="padding:4px;text-align:center;vertical-align:top">
+            <img src="${src}" style="max-width:120px;max-height:120px;object-fit:contain;border:1px solid #e8e8e8;display:block">
+            <div style="font-size:9px;color:#aaa;margin-top:3px;max-width:120px;word-break:break-all">${name}</div>
+          </td>`;
+        }).join('');
+        html += `<div class="sec-lbl">제품 이미지</div>
+          <table style="border-collapse:collapse;margin-bottom:12px"><tr>${imgCells}</tr></table>`;
+      }
+    }
+    html += `<div class="sec-lbl">무역 조건</div><table class="info">
+      ${infoRow('인코텀즈', gR('inco'))}
+      ${infoRow('국제 운송 방법', gR('ship'))}
+      ${infoRow('배송비 부담', gR('deliv'))}
+      ${infoRow('결제 통화', gR('cur'))}
+      ${infoRow('결제 조건', gR('pay'))}
+      ${infoRow('수입허가/인증', gR('cert'))}
+    </table>`;
+    html += `<div class="sec-lbl">런칭 일정</div><table class="info">
+      ${infoRow('프로젝트명', g('lg-proj'))}
+      ${infoRow('목표 금액', g('lg-price'))}
+      ${infoRow('시작 희망일', g('lg-start'))}
+      ${infoRow('진행 기간', gR('duration'))}
+      ${infoRow('특이사항', g('lg-special'))}
+      ${infoRow('리워드 구성', g('lg-reward'))}
+      ${infoRow('참고 URL', g('lg-refurl'))}
+    </table>`;
+
+  } else if (type === 'mk-agree') {
+    html += `<h1>마쿠아케 프로젝트 펀딩신청 및 실행자 동의서</h1><h2>Makuake Project Funding Application &amp; Executor Agreement · ver.5.11</h2>`;
+    html += `<div class="sec-lbl">Ⅰ. 기본 정보</div><table class="info">
+      ${infoRow('발행일자', g('mk-date'))}
+      ${infoRow('실행자명 (법인명)', g('mk-corp'))}
+      ${infoRow('프로젝트명', g('mk-proj'))}
+      ${infoRow('대표자명 (한글)', g('mk-ceo-kr'))}
+      ${infoRow('대표자명 (영문)', g('mk-ceo-en'))}
+      ${infoRow('법인 소재지 (한글)', g('mk-addr-kr'))}
+      ${infoRow('법인 소재지 (영문)', g('mk-addr-en'))}
+    </table>`;
+    html += `<div class="sec-lbl">Ⅱ. 필수 준수사항 — 10개 항목</div>
+    <table class="agree"><thead><tr><th style="width:30px">✓</th><th style="width:110px">항목</th><th>내용</th></tr></thead><tbody>
+      ${agreeRowWith('mk2-body', MK2, true)}
+    </tbody></table>`;
+    html += `<div class="sec-lbl">Ⅲ~Ⅵ. 법적·운영·정산 — 16개 항목</div>
+    <table class="agree"><thead><tr><th style="width:30px">✓</th><th style="width:110px">항목</th><th>내용</th></tr></thead><tbody>
+      ${agreeRowWith('mk3-body', MK3, true)}
+    </tbody></table>`;
+    html += `<div class="note-box">정산 방식: 월말 마감 → 익월 25일 입금 (해당 크라우드펀딩 플랫폼 수수료 차감 후 → 배송비, 소비세(10%), 송금수수료 차감 → 익월 말일에 실행자에 송금</div>`;
+    html += signSection('mk-cvs', 'mk-seal', g('mk-corp'), g('mk-ceo-kr'));
+
+  } else if (type === 'mk-collab') {
+    html += `<h1>일본 크라우드펀딩 협업 동의서</h1><h2>진행자: 온리주식회사 ONLEE INC. / 실행자: 메이커(제조판매원)</h2>`;
+    html += `<div class="sec-lbl">기본 정보</div><table class="info">
+      ${infoRow('프로젝트명', g('mkc-proj'))}
+      ${infoRow('법인명', g('mkc-corp'))}
+      ${infoRow('대표자명', g('mkc-ceo'))}
+      ${infoRow('작성일', g('mkc-date'))}
+    </table>`;
+    html += `<div class="sec-lbl">협업 동의 사항 — 10개 항목</div>
+    <table class="agree"><thead><tr><th style="width:30px">✓</th><th>동의 내용</th></tr></thead><tbody>
+      ${agreeRowWith('mkc-body', MKC, false)}
+    </tbody></table>`;
+    html += signSection('mkc-cvs', 'mkc-seal', g('mkc-corp'), g('mkc-ceo'));
+
+  } else if (type === 'zz-agree') {
+    html += `<h1>Zeczec 프로젝트 신청 및 실행자 동의서</h1><h2>Zeczec(嘖嘖) Project Agreement · 대행사: ONLEE INC. · ver.6.01</h2>`;
+    html += `<div class="sec-lbl">Ⅰ. 기본 정보</div><table class="info">
+      ${infoRow('발행일자', g('zz-date'))}
+      ${infoRow('실행자명 (법인명)', g('zz-corp'))}
+      ${infoRow('프로젝트명', g('zz-proj'))}
+      ${infoRow('대표자명 (한글)', g('zz-ceo-kr'))}
+      ${infoRow('대표자명 (영문)', g('zz-ceo-en'))}
+      ${infoRow('법인 소재지 (한글)', g('zz-addr-kr'))}
+      ${infoRow('법인 소재지 (영문)', g('zz-addr-en'))}
+    </table>`;
+    html += `<div class="sec-lbl">Ⅱ~Ⅶ. 전체 동의 사항 — 26개 항목</div>
+    <table class="agree"><thead><tr><th style="width:30px">✓</th><th style="width:110px">항목</th><th>내용</th></tr></thead><tbody>
+      ${agreeRowWith('zz-body', ZZ, true)}
+    </tbody></table>`;
+    html += `<div class="note-box">정산 방식: zeczec 입금 후 5영업일 이내 50% 입금 (플랫폼 수수료 차감 후) → 배송 완료 후 국제 물류비, 통관 및 세금, 성과보수(10%), 송금수수료 차감 → 실행자에 잔액 송금</div>`;
+    html += signSection('zz-cvs', 'zz-seal', g('zz-corp'), g('zz-ceo-kr'));
+
+  } else if (type === 'zz-collab') {
+    html += `<h1>대만 크라우드펀딩 협업 동의서</h1><h2>진행자: 온리주식회사 ONLEE INC. / 실행자: 메이커(제조판매원)</h2>`;
+    html += `<div class="sec-lbl">기본 정보</div><table class="info">
+      ${infoRow('프로젝트명', g('zzc-proj'))}
+      ${infoRow('법인명', g('zzc-corp'))}
+      ${infoRow('대표자명', g('zzc-ceo'))}
+      ${infoRow('작성일', g('zzc-date'))}
+    </table>`;
+    html += `<div class="sec-lbl">협업 동의 사항 — 10개 항목</div>
+    <table class="agree"><thead><tr><th style="width:30px">✓</th><th>동의 내용</th></tr></thead><tbody>
+      ${agreeRowWith('zzc-body', ZZC, false)}
+    </tbody></table>`;
+    html += signSection('zzc-cvs', 'zzc-seal', g('zzc-corp'), g('zzc-ceo'));
+  } else {
+    return null;
+  }
+
+  html += ''; // 푸터는 jsPDF에서 직접 렌더링
+  html += '</div>'; // .page
+  return html;
+}
+
+
+// ═══════════════════════════════════
+// COLLECT FORM DATA
+// ═══════════════════════════════════
+function collectFormData() {
+  return {
+    timestamp: new Date().toISOString(),
+    platform: PLATFORM,
+    corp_kr: g('lg-ckr'), corp_en: g('lg-cen'),
+    addr_kr: g('lg-akr'), addr_en: g('lg-aen'),
+    contact: g('lg-contact'), tel: g('lg-tel'), email: g('lg-email'),
+    product: g('lg-pname'), hs: g('lg-hs'), origin: g('lg-origin'),
+    project: g('lg-proj'), price: g('lg-price'),
+    start: g('lg-start'), duration: gR('duration'), special: g('lg-special'),
+    inco: gR('inco'), ship: gR('ship'), cur: gR('cur'), pay: gR('pay'),
+    ceo_kr: g('mk-ceo-kr') || g('zz-ceo-kr'),
+    ceo_en: g('mk-ceo-en') || g('zz-ceo-en'),
+  };
+}
+
+// ═══════════════════════════════════
+// EMAIL / SUBMIT
+// ═══════════════════════════════════
+function openMail() {
+  const corp = g('lg-ckr') || g('lg-cen') || '○○';
+  const contact = g('lg-contact') || '';
+  const tel = g('lg-tel') || '';
+  const email = g('lg-email') || '';
+  const pf = PLATFORM === 'JP' ? 'Makuake' : PLATFORM === 'TW' ? 'Zeczec' : PLATFORM === 'US' ? 'America (미국)' : 'Makuake + Zeczec';
+  const prod = g('lg-pname') || '';
+
+  const subj = encodeURIComponent(`[ONLEE 신청서류] ${corp} — ${pf} 신청`);
+  const body = encodeURIComponent(
+`ONLEE INC. 담당자님,
+
+아래 서류를 첨부하여 제출합니다.
+첨부 서류에 포함된 PDF를 확인해 주시기 바랍니다.
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+신청 정보
+━━━━━━━━━━━━━━━━━━━━━━━━
+신청 플랫폼: ${pf}
+법인명: ${corp}
+담당자: ${contact}
+연락처: ${tel}
+이메일: ${email}
+제품명: ${prod}
+
+첨부 파일:
+- 물류 히어링 시트${PLATFORM !== 'TW' ? '\n- 마쿠아케 실행자 동의서\n- 마쿠아케 협업 동의서' : ''}${PLATFORM !== 'JP' ? '\n- Zeczec 실행자 동의서\n- Zeczec 협업 동의서' : ''}
+
+잘 부탁드립니다.
+${corp}  ${contact}`
+  );
+
+  // Submit to Apps Script first
+  const asUrl = APPS_SCRIPT_URL;
+  if (asUrl) {
+    fetch(asUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: JSON.stringify({action:'saveForm', formData: collectFormData()}),
+      headers: {'Content-Type':'application/json'}
+    }).then(r => r.json()).then(res => {
+      console.log('Apps Script response:', res);
+    }).catch(err => console.log('Apps Script error:', err));
+  }
+
+  window.location.href = `mailto:info@onleeone.com?subject=${subj}&body=${body}`;
+
+  // Show success after short delay
+  setTimeout(() => {
+    document.getElementById('success-wrap').classList.add('on');
+    window.scrollTo({top: document.getElementById('success-wrap').offsetTop, behavior:'smooth'});
+  }, 600);
+}
+
+function dlAllPdfs() {
+  const generated = Object.keys(pdfBlobs);
+  if (!generated.length) { alert('먼저 각 서류의 PDF를 생성해 주세요.'); return; }
+  generated.forEach(k => {
+    const {blob, name} = pdfBlobs[k];
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = name; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 800);
+  });
+}
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+const today = new Date().toISOString().slice(0,10);
+['lg-date','mk-date','mkc-date','zz-date','zzc-date'].forEach(id => {
+  const el = document.getElementById(id); if (el && !el.value) el.value = today;
+});
+document.getElementById('lg-pname')?.addEventListener('input', function() {
+  const pj = document.getElementById('lg-proj');
+  if (pj && !pj.dataset.manualEdit) pj.value = this.value;
+  syncFields();
+});
+document.getElementById('lg-proj')?.addEventListener('input', function() {
+  this.dataset.manualEdit = '1'; syncFields();
+});
+</script>
+</body>
+</html>
