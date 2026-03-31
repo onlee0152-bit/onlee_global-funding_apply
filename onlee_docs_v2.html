@@ -248,7 +248,7 @@ body{font-family:'Noto Sans KR',sans-serif;font-weight:400;background:var(--g1);
   <div id="sb-tw-div" class="sb-div" style="display:none"></div>
   <div id="sb-us-group" style="display:none">
     <div class="sb-lbl">🇺🇸 America</div>
-    <div class="sb-it locked" onclick="goSec('us-consult')" id="si-us-consult"><div class="sb-dot">4</div>미국 상담 안내</div>
+    <div class="sb-it locked" id="si-us-consult"><div class="sb-dot">4</div>미국 상담 안내</div>
   </div>
   <div id="sb-us-div" class="sb-div" style="display:none"></div>
   <div>
@@ -277,22 +277,22 @@ body{font-family:'Noto Sans KR',sans-serif;font-weight:400;background:var(--g1);
       <div class="fsec">
         <div class="ftitle">신청 플랫폼 선택</div>
         <div class="pf-select" id="pf-cards">
-          <div class="pf-card" id="pfc-jp" onclick="setPlatform('JP')">
+          <div class="pf-card" id="pfc-jp" data-pf="JP">
             <div class="pf-logo-wrap" style="font-size:44px;display:flex;align-items:center;justify-content:center;height:52px">🇯🇵</div>
             <div style="font-size:13px;font-weight:700;margin-bottom:4px;letter-spacing:.04em">JAPAN</div>
             <div class="pf-desc">일본 크라우드펀딩</div>
           </div>
-          <div class="pf-card" id="pfc-tw" onclick="setPlatform('TW')">
+          <div class="pf-card" id="pfc-tw" data-pf="TW">
             <div class="pf-logo-wrap" style="font-size:44px;display:flex;align-items:center;justify-content:center;height:52px">🇹🇼</div>
             <div style="font-size:13px;font-weight:700;margin-bottom:4px;letter-spacing:.04em">TAIWAN</div>
             <div class="pf-desc">대만 크라우드펀딩</div>
           </div>
-          <div class="pf-card" id="pfc-us" onclick="setPlatform('US')">
+          <div class="pf-card" id="pfc-us" data-pf="US">
             <div class="pf-logo-wrap" style="font-size:44px;display:flex;align-items:center;justify-content:center;height:52px">🇺🇸</div>
             <div style="font-size:13px;font-weight:700;margin-bottom:4px;letter-spacing:.04em;color:#1d4ed8">AMERICA</div>
             <div class="pf-desc">미국 크라우드펀딩</div>
           </div>
-          <div class="pf-card" id="pfc-both" onclick="setPlatform('BOTH')">
+          <div class="pf-card" id="pfc-both" data-pf="BOTH">
             <div class="pf-logo-wrap" style="font-size:36px;display:flex;align-items:center;justify-content:center;height:52px;gap:4px">🇯🇵🇹🇼</div>
             <div style="font-size:13px;font-weight:700;margin-bottom:4px;letter-spacing:.04em">GLOBAL</div>
             <div class="pf-desc">글로벌 진행</div>
@@ -757,7 +757,7 @@ body{font-family:'Noto Sans KR',sans-serif;font-weight:400;background:var(--g1);
       </div>
       <div style="background:var(--g1);border:1px solid var(--rl);padding:14px 16px;font-size:13px"><strong>대행비</strong> ₩7,000,000 · <strong>관세</strong> 0~25% · <strong>판매세</strong> 주별 상이</div>
     </div>
-    <div class="actbar"><span style="font-size:13px;color:var(--g4)">물류시트 제출 → 3영업일 내 이메일 회신 → 온라인 상담</span><div class="actbar-r"><button class="btn btn-ol btn-sm" onclick="goSec('logistics')">← 물류 히어링 시트</button><button class="btn btn-bk btn-sm" onclick="goSec('submit')">제출하기 →</button></div></div>
+    <div class="actbar"><span style="font-size:13px;color:var(--g4)">물류시트 제출 → 3영업일 내 이메일 회신 → 온라인 상담</span><div class="actbar-r"><button class="btn btn-ol btn-sm" id="btn-us-back">← 물류 히어링 시트</button><button class="btn btn-bk btn-sm" id="btn-us-submit">제출하기 →</button></div></div>
   </div>
 </div>
 <div class="sec" id="sec-submit">
@@ -848,6 +848,7 @@ body{font-family:'Noto Sans KR',sans-serif;font-weight:400;background:var(--g1);
 </div>
 
 <script>
+
 // ═══════════════════════════════════
 // DATA / STATE
 // ═══════════════════════════════════
@@ -992,35 +993,22 @@ buildTable('zzc-body', ZZC, false);
 // ═══════════════════════════════════
 function setPlatform(pf) {
   PLATFORM = pf;
-  // visual
   ['jp','tw','us','both'].forEach(function(p){ var el=document.getElementById('pfc-'+p); if(el) el.className='pf-card'; });
-  if (pf === 'JP') document.getElementById('pfc-jp').className = 'pf-card on-jp';
-  if (pf === 'TW') document.getElementById('pfc-tw').className = 'pf-card on-tw';
-  if (pf === 'BOTH') document.getElementById('pfc-both').className = 'pf-card on-both';
-  if (pf === 'US') { var _eu=document.getElementById('pfc-us'); if(_eu) _eu.className='pf-card on-us'; }
-
-  // sidebar groups
-  var showJP = pf === 'JP' || pf === 'BOTH';
-  var showTW = pf === 'TW' || pf === 'BOTH';
-  var showUS = pf === 'US';
-  document.getElementById('sb-jp-group').style.display = showJP ? '' : 'none';
-  document.getElementById('sb-jp-div').style.display = showJP ? '' : 'none';
-  document.getElementById('sb-tw-group').style.display = showTW ? '' : 'none';
-  document.getElementById('sb-tw-div').style.display = showTW ? '' : 'none';
-  var _usg=document.getElementById('sb-us-group'); if(_usg) _usg.style.display=showUS?'':'none';
-  var _usd=document.getElementById('sb-us-div'); if(_usd) _usd.style.display=showUS?'':'none';
-
-  // unlock sidebar items
+  if (pf==='JP') document.getElementById('pfc-jp').className='pf-card on-jp';
+  if (pf==='TW') document.getElementById('pfc-tw').className='pf-card on-tw';
+  if (pf==='BOTH') document.getElementById('pfc-both').className='pf-card on-both';
+  var eu=document.getElementById('pfc-us'); if(eu) eu.className=(pf==='US')?'pf-card on-us':'pf-card';
+  var showJP=pf==='JP'||pf==='BOTH', showTW=pf==='TW'||pf==='BOTH', showUS=pf==='US';
+  document.getElementById('sb-jp-group').style.display=showJP?'':'none';
+  document.getElementById('sb-jp-div').style.display=showJP?'':'none';
+  document.getElementById('sb-tw-group').style.display=showTW?'':'none';
+  document.getElementById('sb-tw-div').style.display=showTW?'':'none';
+  var ug=document.getElementById('sb-us-group'); if(ug) ug.style.display=showUS?'':'none';
+  var ud=document.getElementById('sb-us-div'); if(ud) ud.style.display=showUS?'':'none';
   document.getElementById('si-logistics').classList.remove('locked');
-  if (showJP) {
-    document.getElementById('si-mk-agree').classList.remove('locked');
-    document.getElementById('si-mk-collab').classList.remove('locked');
-  }
-  if (showTW) {
-    document.getElementById('si-zz-agree').classList.remove('locked');
-    document.getElementById('si-zz-collab').classList.remove('locked');
-  }
-  var _usc=document.getElementById('si-us-consult'); if(showUS&&_usc) _usc.classList.remove('locked');
+  if(showJP){document.getElementById('si-mk-agree').classList.remove('locked');document.getElementById('si-mk-collab').classList.remove('locked');}
+  if(showTW){document.getElementById('si-zz-agree').classList.remove('locked');document.getElementById('si-zz-collab').classList.remove('locked');}
+  var uc=document.getElementById('si-us-consult'); if(showUS&&uc) uc.classList.remove('locked');
   document.getElementById('si-submit').classList.remove('locked');
 
   // build doc list
@@ -1033,7 +1021,7 @@ function setPlatform(pf) {
     docs.push({n:'마쿠아케 실행자 동의서', t:'🇯🇵 Japan', tc:'badge-jp', note:'26개 항목 체크·서명'});
     docs.push({n:'일본 크라우드펀딩 협업 동의서', t:'🇯🇵 Japan', tc:'badge-jp', note:'10개 항목 체크·서명'});
   }
-  if (showUS) { docs.push({n:'미국시장 크라우드펀딩 실행자', t:'🇺🇸 America', tc:'badge-co', note:'별도 상담 후 진행'}); }
+  if(showUS){docs.push({n:'미국시장 크라우드펀딩 실행자',t:'🇺🇸 America',tc:'badge-co',note:'별도 상담 후 진행'});}
   if (showTW) {
     docs.push({n:'ZecZec 실행자 동의서', t:'🇹🇼 Taiwan', tc:'badge-tw', note:'26개 항목 체크·서명'});
     docs.push({n:'대만 크라우드펀딩 협업 동의서', t:'🇹🇼 Taiwan', tc:'badge-tw', note:'10개 항목 체크·서명'});
@@ -1046,9 +1034,6 @@ function setPlatform(pf) {
   // build PDF list & progress
   buildPdfList();
   buildProgress();
-
-  // set next section nav for logistics
-  updateNav('logistics');
 }
 
 // ═══════════════════════════════════
@@ -1709,7 +1694,7 @@ function openMail() {
   const contact = g('lg-contact') || '';
   const tel = g('lg-tel') || '';
   const email = g('lg-email') || '';
-  const pf = PLATFORM==='JP'?'Makuake':PLATFORM==='TW'?'Zeczec':PLATFORM==='US'?'America':'Makuake+Zeczec';
+  const pf = PLATFORM === 'JP' ? 'Makuake (일본)' : PLATFORM === 'TW' ? 'Zeczec (대만)' : 'Makuake (일본) + Zeczec (대만)';
   const prod = g('lg-pname') || '';
 
   const subj = encodeURIComponent(`[ONLEE 신청서류] ${corp} — ${pf} 신청`);
@@ -1771,26 +1756,34 @@ function dlAllPdfs() {
 // ═══════════════════════════════════
 // INIT
 // ═══════════════════════════════════
-const today = new Date().toISOString().slice(0,10);
-['lg-date','mk-date','mkc-date','zz-date','zzc-date'].forEach(id => {
-  const el = document.getElementById(id); if (el && !el.value) el.value = today;
+var _today = new Date().toISOString().slice(0,10);
+['lg-date','mk-date','mkc-date','zz-date','zzc-date'].forEach(function(id){
+  var el=document.getElementById(id); if(el&&!el.value) el.value=_today;
 });
 
-// lg-proj auto-fill from pname
-document.getElementById('lg-pname')?.addEventListener('input', function() {
-  const pj = document.getElementById('lg-proj');
-var today = new Date().toISOString().slice(0,10);
-['lg-date','mk-date','mkc-date','zz-date','zzc-date'].forEach(function(id) {
-  var el = document.getElementById(id); if (el && !el.value) el.value = today;
+// 플랫폼 카드 클릭
+document.querySelectorAll('.pf-card[data-pf]').forEach(function(card){
+  card.addEventListener('click', function(){ setPlatform(this.getAttribute('data-pf')); });
 });
-document.getElementById('lg-pname').addEventListener('input', function() {
-  var pj = document.getElementById('lg-proj');
-  if (pj && !pj.dataset.manualEdit) pj.value = this.value;
+
+// 사이드바 US
+var _usc=document.getElementById('si-us-consult');
+if(_usc) _usc.addEventListener('click',function(){goSec('us-consult');});
+var _bub=document.getElementById('btn-us-back');
+if(_bub) _bub.addEventListener('click',function(){goSec('logistics');});
+var _bus=document.getElementById('btn-us-submit');
+if(_bus) _bus.addEventListener('click',function(){goSec('submit');});
+
+// lg-pname → lg-proj 자동 연동
+var _pn=document.getElementById('lg-pname');
+if(_pn) _pn.addEventListener('input',function(){
+  var pj=document.getElementById('lg-proj');
+  if(pj&&!pj.dataset.manualEdit) pj.value=this.value;
   syncFields();
 });
-document.getElementById('lg-proj').addEventListener('input', function() {
-  this.dataset.manualEdit = '1'; syncFields();
-});
+var _pg=document.getElementById('lg-proj');
+if(_pg) _pg.addEventListener('input',function(){ this.dataset.manualEdit='1'; syncFields(); });
+
 </script>
 </body>
 </html>
